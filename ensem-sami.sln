@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "khepera3", "khepera3\khepera3.vcxproj", "{1284631D-F66D-46FD-87D9-C84973D9E4EE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dlluser", "dlluser\dlluser.vcxproj", "{4F8E9CDB-56FE-49D7-B26A-7E3CFAD52DA6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1284631D-F66D-46FD-87D9-C84973D9E4EE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1284631D-F66D-46FD-87D9-C84973D9E4EE}.Debug|Win32.Build.0 = Debug|Win32
+		{1284631D-F66D-46FD-87D9-C84973D9E4EE}.Release|Win32.ActiveCfg = Release|Win32
+		{1284631D-F66D-46FD-87D9-C84973D9E4EE}.Release|Win32.Build.0 = Release|Win32
+		{4F8E9CDB-56FE-49D7-B26A-7E3CFAD52DA6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4F8E9CDB-56FE-49D7-B26A-7E3CFAD52DA6}.Debug|Win32.Build.0 = Debug|Win32
+		{4F8E9CDB-56FE-49D7-B26A-7E3CFAD52DA6}.Release|Win32.ActiveCfg = Release|Win32
+		{4F8E9CDB-56FE-49D7-B26A-7E3CFAD52DA6}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
