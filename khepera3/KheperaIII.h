@@ -7,6 +7,7 @@
 
 #include "boost/asio.hpp"
 #include "boost/shared_ptr.hpp"
+#include "boost/date_time/posix_time/posix_time.hpp"
 
 class LocalizationSystem;
 class CommunicationSystem;
@@ -19,16 +20,20 @@ private:
 	int nIrSensors;
 	double axis;
 	int *irValues;
+
+	int tick;
+	boost::shared_ptr<boost::asio::deadline_timer> timer;
 	//CSerial *serial;
 	//string serialPort;
 	//int testSerial;
 	
 	boost::asio::io_service      io_service_;
 	boost::shared_ptr<boost::asio::ip::tcp::socket> socket_;
+	boost::shared_ptr<boost::asio::streambuf> tcp_buf;
 
 	string speedMsg(double,double);
 	string encodersMsg(int,int);
-	string sendMsg(string);
+	int sendMsg(string msg, int n, vector<string>* answer);
 	CommunicationSystem* communicationSystem;	
 
 public:

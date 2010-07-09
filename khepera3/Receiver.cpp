@@ -50,5 +50,4 @@ void Receiver::handler_receiver(const boost::system::error_code& error, size_t b
 		
 		socket_.async_receive_from(boost::asio::buffer(data_, max_length), sender_endpoint_, boost::bind(&Receiver::handler_receiver, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
     }
-
 }

@@ -8,8 +8,10 @@
 #include <cstdlib>
 #include <tchar.h>
 #include <sstream>
+
 #include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/asio.hpp>
 
 #include "LocalizationSystem.h"
 #include "KheperaIII.h"
@@ -24,6 +26,10 @@ using namespace boost;
 //CONSTRUCTOR AND DESTRUCTOR----------------------------------
 KheperaIII::KheperaIII(int id)
 {
+	tick = 0;
+	timer = boost::shared_ptr<asio::deadline_timer>(new asio::deadline_timer(io_service_,posix_time::milliseconds(0)));
+	tcp_buf = boost::shared_ptr<asio::streambuf>(new asio::streambuf(1000000));
+
 	nIrSensors = NB_SENSORS;
 	axis = AXIS;
 	irValues = (int*)malloc(nIrSensors*sizeof(int));
@@ -52,6 +58,8 @@ KheperaIII::KheperaIII(int id)
 	if (ec) {
 		cout<< "ERROR: connection to the robo failed. Error code: "<<ec<<".\n";
 	}
+	vector<string> test;
+	sendMsg("$GetId\r\n",2,&test);
 	//serialPort = serialPortArg;
 	
 		
@@ -96,17 +104,16 @@ void KheperaIII::setVelocity(double vSpeed, double wSpeed)
 	rSpeed = K_SPEED*(vSpeed + wSpeed*axis/2);
 	string msg = this->speedMsg(lSpeed,rSpeed);
 
-	this->sendMsg(msg);
+//	this->sendMsg(msg);
 }
 
 void KheperaIII::timeStep()
 {	
-	//NEED REAL-TIME
-	//Sleep(TIME_STEP);
+	timer->expires_from_now(posix_time::milliseconds(TIME_STEP));
+	timer->wait();
 	this->trackGenerator->nextStep();
 	this->localizationSystem->atualizePosition();
-	this->communicationSystem->sendPosition();
-	
+	this->communicationSystem->sendPosition();	
 }
 
 int* KheperaIII::getIrOutput()
@@ -137,7 +144,7 @@ int* KheperaIII::getIrOutput()
 void KheperaIII::setEncodersValue(int lValue,int rValue)
 {
 	string msg = this->encodersMsg(lValue,rValue);
-	this->sendMsg(msg);
+//	this->sendMsg(msg);
 }
 int* KheperaIII::getEncodersValue()
 {
@@ -188,6 +195,7 @@ string KheperaIII::speedMsg(double lSpeed, double rSpeed)
 
 string KheperaIII::encodersMsg(int lValue, int rValue)
 {
+	
 	string msg = "I,l";
 	
 	//char *myBuff;
@@ -209,55 +217,28 @@ string KheperaIII::encodersMsg(int lValue, int rValue)
 
 	return msg;
 }
-string KheperaIII::sendMsg(string msg)
+
+// send the msg and wait for the response, which must contain n lines, the last one 
+// repeating the message command
+int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 {
-	//byte abBuffer[1000];
- //   memset(abBuffer,'\0',1000);
+	*answer = vector<string>();
+	asio::write(*socket_,asio::buffer(msg));
+	tcp_buf->prepare(tcp_buf->size());
 
-	//byte msgAux[1000];
-	//memset(msgAux,'\0',1000);
+	string ans;
+	int	bytesRead;
+	system::error_code& ec = system::error_code();
+	istream is(&*tcp_buf);
+	for (int i=0;i<n;i++){
+		bytesRead = asio::read_until(*socket_,*tcp_buf,"\r\n",ec);
+		tcp_buf->commit(bytesRead);
+		is >> ans;
+		tcp_buf->consume(2);
+		answer->push_back(ans);
+	}
 
-	//string data = "";
-	//DWORD dwBytesRead;
-	//int nRec;
-	//int i;
-	//int stop;
-	//
-
-	////serial->Write(msg.c_str());
-	//
-	//dwBytesRead = 0;
- //   nRec = 0;
-	//stop = 0;
-
-	//while(stop==0)
-	//{
-	//serial->WaitEvent();
-	//serial->SetupReadTimeouts(CSerial::EReadTimeoutNonblocking);
-	//serial->Read(abBuffer,sizeof(abBuffer),&dwBytesRead);
-	//	for(i=0; i<dwBytesRead; i++)
-	//	{
-	//		if(abBuffer[i] == 0x0A)
-	//			{	
-	//				stop =1;
-	//				i=dwBytesRead;
-	//			}
-	//		else
-	//			{
-	//				if(stop == 0)
-	//				{msgAux[i+nRec] = abBuffer[i];}
-	//			}
-	//	}
-	//	nRec= nRec+dwBytesRead;
-	//}
-	//
-	//for(i=0;i<nRec;i++)
-	//{
-	//	data = data + (char)msgAux[i];
-	//}
-	////cout << "data: " << data << " msgAux: " << msgAux <<endl;
-
-	return "";
+	return 0;
 }
 
 void KheperaIII::initComm(std::string adLoc, std::string adMult, int porMult)
