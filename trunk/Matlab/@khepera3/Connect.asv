@@ -1,0 +1,20 @@
+function error = Connect(k3,hostIp,h_message)
+    error = 0;    
+    set(k3.t,'RemoteHost',hostIp);
+    if strcmp(get(k3.t,'status'),'open')
+        fclose(k3.t);
+    end
+    try
+        fopen(k3.t);
+        if k3.lock(5)==0
+            fprintf(k3.t,'$GetId');
+            message = 'Connection established';'Robot Id : ' fscanf(k3.t)];
+        else
+            message = 'Connection failed
+    catch
+        message = 'Connection failed';
+        error = 1;
+    end
+    set(h_message,'string',message);
+end
+
