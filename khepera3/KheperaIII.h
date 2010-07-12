@@ -5,6 +5,7 @@
 //#include "Serial.h"
 #include "Agent.h"
 
+#include "boost/thread.hpp"
 #include "boost/asio.hpp"
 #include "boost/shared_ptr.hpp"
 #include "boost/date_time/posix_time/posix_time.hpp"
@@ -29,22 +30,24 @@ private:
 	
 	boost::asio::io_service      io_service_;
 	boost::shared_ptr<boost::asio::ip::tcp::socket> socket_;
+	boost::mutex	tcpLock;
 	boost::shared_ptr<boost::asio::streambuf> tcp_buf;
 
 	string speedMsg(int,int);
 	string encodersMsg(int,int);
 	int sendMsg(string msg, int n, vector<string>* answer);
-	CommunicationSystem* communicationSystem;	
+	boost::shared_ptr<CommunicationSystem> communicationSystem;	
 
 public:
 	KheperaIII(int id);
 	~KheperaIII(void);
 
-	LocalizationSystem* localizationSystem;
+	boost::shared_ptr<LocalizationSystem> localizationSystem;
 	void initComm(std::string,std::string,int);
 
 	void timeStep();
-	void setVelocity(int,int);
+	void ContinuousChecks();
+	void setVelocity(double,double);
 	int* getIrOutput();
 	
 	int* getEncodersValue();
