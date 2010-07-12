@@ -95,7 +95,7 @@ KheperaIII::~KheperaIII()
 
 //FUNCTIONAL METHODS------------------------------------------
 //vSpeed: cm/s		wSpeed: rad/s positive->clockwise
-void KheperaIII::setVelocity(double vSpeed, double wSpeed)
+void KheperaIII::setVelocity(int vSpeed, int wSpeed)
 {
 	double rSpeed;
 	double lSpeed;
@@ -103,8 +103,8 @@ void KheperaIII::setVelocity(double vSpeed, double wSpeed)
 	lSpeed = K_SPEED*(vSpeed - wSpeed*axis/2);
 	rSpeed = K_SPEED*(vSpeed + wSpeed*axis/2);
 	string msg = this->speedMsg(lSpeed,rSpeed);
-
-//	this->sendMsg(msg);
+	vector<string> ans;
+	this->sendMsg(msg,1,&ans);
 }
 
 void KheperaIII::timeStep()
@@ -136,6 +136,8 @@ int* KheperaIII::getIrOutput()
 		irValues[i] = atoi(aux.c_str());
 	}*/
 	int		irValues[2];
+	irValues[0] = 0;
+	irValues[1] = 0;
 	return irValues;
 }
 
@@ -144,78 +146,31 @@ int* KheperaIII::getIrOutput()
 void KheperaIII::setEncodersValue(int lValue,int rValue)
 {
 	string msg = this->encodersMsg(lValue,rValue);
-//	this->sendMsg(msg);
+	vector<string> ans;
+	this->sendMsg(msg,1,&ans);
 }
 int* KheperaIII::getEncodersValue()
 {
 	int* ret = (int*)malloc(2*sizeof(int));
-	/*string aux;
-	string::size_type index;
-	
-
-	string commandMsg = "R\n";
-	string data = this->sendMsg(commandMsg);
-
-	
-	index = data.find(",",0);
-	data = data.substr(index+1);
-	index = data.find(",",0);
-	aux = data.substr(0,index);
-	ret[0] = atoi(aux.c_str());
-	aux = data.substr(index+1);
-	ret[1] = atoi(aux.c_str());*/
-
-	
+	vector<string> ans;
+	sendMsg("$GetPosition\r\n",3,&ans);
+	for (int i=0;i<2;i++)
+		ret[i]=atoi(ans[i].c_str());	
 	return ret;
 }
 //AUXILIAR METHODS--------------------------------------------
-string KheperaIII::speedMsg(double lSpeed, double rSpeed)
+string KheperaIII::speedMsg(int lSpeed, int rSpeed)
 {
-	string msg = "D,l";
-	
-	//char *myBuff;
-	//// Create a new char array
-	//myBuff = new char[100];
-	//// Set it to empty
-	//memset(myBuff,'\0',100);
-	//// Convert lSpeed to string
-	//_itoa_s((int)lSpeed,myBuff,100,10);
-	//// Copy the lSpeed into the msg
-	//msg = msg+myBuff+",l";
-	//// Set it to empty
-	//memset(myBuff,'\0',100);
-	//// Convert rSpeed to string
-	//_itoa_s((int)rSpeed,myBuff,100,10);
-	//msg = msg+myBuff+"\n";
-	//// Delete the buffer
-	//delete[] myBuff;
-
-	return msg;
+	stringstream msg;
+	msg << "$SetSpeed,"<<lSpeed<<','<<rSpeed<<"\r\n";
+	return msg.str();
 }
 
 string KheperaIII::encodersMsg(int lValue, int rValue)
 {
-	
-	string msg = "I,l";
-	
-	//char *myBuff;
-	//// Create a new char array
-	//myBuff = new char[100];
-	//// Set it to empty
-	//memset(myBuff,'\0',100);
-	//// Convert lSpeed to string
-	//_itoa_s(lValue,myBuff,100,10);
-	//// Copy the lSpeed into the msg
-	//msg = msg+myBuff+",l";
-	//// Set it to empty
-	//memset(myBuff,'\0',100);
-	//// Convert rSpeed to string
-	//_itoa_s(rValue,myBuff,100,10);
-	//msg = msg+myBuff+"\n";
-	//// Delete the buffer
-	//delete[] myBuff;
-
-	return msg;
+	stringstream msg;
+	msg << "$ResetPosition,"<<lValue<<','<<rValue<<"\r\n";
+	return msg.str();
 }
 
 // send the msg and wait for the response, which must contain n lines, the last one 
@@ -237,8 +192,11 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 		tcp_buf->consume(2);
 		answer->push_back(ans);
 	}
-
-	return 0;
+	string cmdSent = msg.substr(1,msg.find(','));
+	if (cmdSent.compare(ans))
+		return 0;
+	else
+		return -1;
 }
 
 void KheperaIII::initComm(std::string adLoc, std::string adMult, int porMult)
@@ -249,5 +207,5 @@ void KheperaIII::initComm(std::string adLoc, std::string adMult, int porMult)
 void KheperaIII::closeSession()
 {
 	this->setVelocity(0,0);
-	//serial->Close();
+	socket_->close();
 }
