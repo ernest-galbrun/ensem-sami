@@ -26,6 +26,7 @@ using namespace boost;
 //CONSTRUCTOR AND DESTRUCTOR----------------------------------
 KheperaIII::KheperaIII(int id)
 {
+	setId(id);
 	tick = 0;
 	timer = boost::shared_ptr<asio::deadline_timer>(new asio::deadline_timer(io_service_,posix_time::milliseconds(0)));
 	tcp_buf = boost::shared_ptr<asio::streambuf>(new asio::streambuf(100));
@@ -47,20 +48,20 @@ KheperaIII::KheperaIII(int id)
 	asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
 	asio::ip::tcp::resolver::iterator end;
 	socket_ = boost::shared_ptr<boost::asio::ip::tcp::socket>(new asio::ip::tcp::socket(io_service_));
-	cout << "Estabilishing connection with the Robot..." << endl;
+	cout << "Establishing connection with the Robot..." << endl;
 	boost::system::error_code& ec = boost::system::error_code();
 	while (iter != end) {
 		socket_->connect(*iter,ec);
 		if (ec == false)
 			break;
+		iter++;
 	}
 
 	if (ec) {
 		cout<< "ERROR: connection to the robo failed. Error code: "<<ec<<".\n";
 	}
 	vector<string> test;
-	sendMsg("$GetPosition\r\n",2,&test);
-	//thread(&KheperaIII::ContinuousChecks, this);
+	//sendMsg("$GetPosition\r\n",2,&test);
 }
 
 KheperaIII::~KheperaIII()
@@ -157,24 +158,28 @@ string KheperaIII::encodersMsg(int lValue, int rValue)
 // repeating the message command
 int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 {
+	char buf[1000];
 	tcpLock.lock();
 	*answer = vector<string>();
 	asio::write(*socket_,asio::buffer(msg));
 	//tcp_buf->prepare(msg.size());
 	string ans;
+	char cr,lf;
 	int	bytesRead;
 	system::error_code& ec = system::error_code();
 	istream is(&*tcp_buf);
 	for (int i=0;i<n;i++){
 		bytesRead = asio::read_until(*socket_,*tcp_buf,"\r\n",ec);
-		tcp_buf->commit(bytesRead);
-		is >> ans;
+		//tcp_buf->commit(bytesRead);
+		is.getline(buf,1000,'\r');
+		is.ignore(1);
+		ans = string(buf);
 		//tcp_buf->consume(bytesRead);
 		//tcp_buf->consume(2);
 		answer->push_back(ans);
 	}
 	string cmdSent = msg.substr(1,msg.find(',')-1);
-	tcp_buf->consume(tcp_buf->size());
+	//tcp_buf->consume(tcp_buf->size());
 	tcpLock.unlock();
 	if (cmdSent.compare(ans))
 		return 0;

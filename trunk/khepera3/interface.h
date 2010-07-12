@@ -7,11 +7,13 @@ extern "C" {
 
 	// Set speed for both motor (this changes the operating mode at every call, maybe
 	// use SetMode then SetPoint for more efficient use)
-	__declspec(dllexport) int SetSpeed(void* k3ptr, int left, int right);
+	__declspec(dllexport) int SetSpeed(void* k3ptr, int linear, int angular);
 
 	__declspec(dllexport) int InitLocalizationSystem(void* k3ptr, const char* localIP, const char* cortexIP);
 
-	__declspec(dllexport) int GetPosition(void* agent_ptr, double* posLeft, double* posRight);
+	__declspec(dllexport) int GetPosition(void* agent_ptr, double* posX, double* posY);
+
+	__declspec(dllexport) int GetOrientation(void* agent_ptr, double* orientation);
 
 #ifdef __cplusplus
 }
