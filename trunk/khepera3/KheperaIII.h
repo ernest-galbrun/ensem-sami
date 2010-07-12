@@ -31,7 +31,7 @@ private:
 	boost::shared_ptr<boost::asio::ip::tcp::socket> socket_;
 	boost::shared_ptr<boost::asio::streambuf> tcp_buf;
 
-	string speedMsg(double,double);
+	string speedMsg(int,int);
 	string encodersMsg(int,int);
 	int sendMsg(string msg, int n, vector<string>* answer);
 	CommunicationSystem* communicationSystem;	
@@ -44,7 +44,7 @@ public:
 	void initComm(std::string,std::string,int);
 
 	void timeStep();
-	void setVelocity(double,double);
+	void setVelocity(int,int);
 	int* getIrOutput();
 	
 	int* getEncodersValue();

@@ -37,11 +37,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Documents and Settings\Ernest Galbrun\Mes documents\Lucas\ensem-sami\khepera3;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\khepera3;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Documents and Settings\Ernest Galbrun\Mes documents\Lucas\ensem-sami\khepera3;C:\Documents and Settings\Ernest Galbrun\Mes documents\Lucas\ensem-sami\khepera3\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Documents and Settings\Ernest Galbrun\Mes documents\Lucas\ensem-sami\khepera3;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\khepera3;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
