@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 	void* p;
 	LaunchKhepera(2,2,&p);
 	//SetSpeed(p,0,2);
-	InitLocalizationSystem(p,"193.49.136.176","193.49.136.176");
+	InitLocalizationSystem(p,2,"193.49.136.176","193.49.136.176");
 	double x,y,t;
 	while (true) {		
 		SetSpeed(p,0,1);

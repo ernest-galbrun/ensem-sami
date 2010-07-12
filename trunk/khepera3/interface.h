@@ -9,7 +9,7 @@ extern "C" {
 	// use SetMode then SetPoint for more efficient use)
 	__declspec(dllexport) int SetSpeed(void* k3ptr, int linear, int angular);
 
-	__declspec(dllexport) int InitLocalizationSystem(void* k3ptr, const char* localIP, const char* cortexIP);
+	__declspec(dllexport) int InitLocalizationSystem(void* k3ptr, int mode, const char* localIP, const char* cortexIP);
 
 	__declspec(dllexport) int GetPosition(void* agent_ptr, double* posX, double* posY);
 

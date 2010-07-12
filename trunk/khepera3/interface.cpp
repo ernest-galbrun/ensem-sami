@@ -28,7 +28,7 @@ extern "C" __declspec(dllexport) int SetSpeed(void* k3ptr, int linear, int angul
 	return 0;
 }
 
-extern "C" __declspec(dllexport) int InitLocalizationSystem(void* k3ptr, const char* localIP, const char* cortexIP){
+extern "C" __declspec(dllexport) int InitLocalizationSystem(void* k3ptr,int mode, const char* localIP, const char* cortexIP){
 	KheperaIII* k3 = (KheperaIII*) k3ptr;
 	string bodyName("khe");
 	char buf[10];
@@ -36,7 +36,7 @@ extern "C" __declspec(dllexport) int InitLocalizationSystem(void* k3ptr, const c
 	itoa(k3->getId(),buf,10);
 
 	bodyName += buf;
-	k3->localizationSystem->init(2,1,string(localIP), string(cortexIP), bodyName);	
+	k3->localizationSystem->init(mode,1,string(localIP), string(cortexIP), bodyName);	
 	thread(&KheperaIII::ContinuousChecks, k3);
 	return 0;
 }
