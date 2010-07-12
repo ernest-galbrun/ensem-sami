@@ -7,6 +7,7 @@
 #include <sstream>
 #include <math.h>
 
+#include "boost/thread.hpp"
 
 #include "EVaRT2.h"
 #include "KheperaIII.h"
@@ -29,8 +30,8 @@ void LocalizationSystem::init(int modeArg, int autoAtualize)
 	
 	enable = autoAtualize;
 
-	previousL= 0;
-	previousR= 0;
+	previousL= X0;
+	previousR= Y0;
 	if(mode == 1)
 	{
 		robot->setPosition(X0,Y0);
@@ -46,7 +47,7 @@ void LocalizationSystem::init(int modeArg, int autoAtualize)
 	if(mode == 3)
 	{
 		//TODO
-	}
+	}	
 }
 
 
@@ -54,6 +55,9 @@ void LocalizationSystem::init(int modeArg, int autoAtualize)
 
 void LocalizationSystem::init(int modeArg, int autoAtualize, string myAddress, string hostAddress, string bodyName)
 {
+
+	previousL= X0;
+	previousR= Y0;
 	countT = 0;
 	countO = 0;
 	int test = 0;
@@ -73,7 +77,7 @@ void LocalizationSystem::init(int modeArg, int autoAtualize, string myAddress, s
 
 		robot->setEncodersValue(0,0);
 	}
-	if(mode == 2)
+	if(mode == 2 || mode == 3)
 	{		
 		robot->setEncodersValue(0,0);
 
@@ -136,13 +140,7 @@ void LocalizationSystem::init(int modeArg, int autoAtualize, string myAddress, s
 				{enable =0;printf("Error: Unable to find body with provided name.\n");exit(0);}
 			}
 		}
-	}
-	if(mode == 3)
-	{
-		//TODO
-	}
-	
-	
+	}	
 }
 
 
@@ -228,13 +226,11 @@ void LocalizationSystem::atualizePosition()
 				previousL= encoders[0];
 				previousR= encoders[1];
 			}
-
 		}
 		if(mode==3)
 		{
 		}
 	}
-
 }
 
 
