@@ -74,8 +74,7 @@ void LocalizationSystem::init(int modeArg, int autoAtualize, string myAddress, s
 		robot->setEncodersValue(0,0);
 	}
 	if(mode == 2)
-	{
-		
+	{		
 		robot->setEncodersValue(0,0);
 
 		me = myAddress;
