@@ -8,7 +8,9 @@ classdef khepera3 < handle
     end
     
     properties (Access = private) %t : handle to the tcpip object
-        t = tcpip('0.0.0.0', 14,'terminator','CR/LF','inputbuffersize',1000000);
+        %p = libpointer('voidPtr');
+        %t = tcpip('0.0.0.0',
+        %14,'terminator','CR/LF','inputbuffersize',1000000);
         id = 0;
         busy = false;
         timerAcquisition = timer('Period',0.5,'ExecutionMode','fixedSpacing',...
@@ -19,13 +21,14 @@ classdef khepera3 < handle
         % Constructor, specifying the handles to the position and speed
         % indicator on screen
         function k3 = khepera3(h_array)
+            loadlibrary('khepera3clib.dll','khepera3clib.h');
             if nargin>0
                 set(k3.timerAcquisition,'TimerFcn',{@CallBackAcquisition,k3,h_array});
             end
         end
         
         function delete(k3)
-            delete(k3.t);
+           %delete(k3.t);
             delete(k3.timerAcquisition);
         end
         
@@ -33,7 +36,7 @@ classdef khepera3 < handle
         % h_array is an array of handles to the screen display
         % mode = {'start'|'stop'}
         RunAcquisition(k3, mode)
-        error = Connect(k3,hostIp,h_message)   
+        error = Connect(k3,Id,localIP,h_message)   
         Disconnect(k3)
         SetMode(k3,modeLeft,modeRight)
         modes = GetMode(k3)
@@ -44,6 +47,12 @@ classdef khepera3 < handle
         SetPosition(k3,left,right);
         StopMotors(k3);
         StartMotors(k3);
+        % Get motor positions directly from encoders values
+        pos = GetPosition(k3);
+        % Get XY position
+        posXY = GetXYPosition(k3);
+        orientation = GetOrientation(k3);
+        SetVelocity(k3,lineraVelocity, angularVelocity);
     end
     
     methods (Access = private)

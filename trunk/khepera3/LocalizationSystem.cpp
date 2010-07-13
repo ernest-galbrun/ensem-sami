@@ -164,6 +164,11 @@ void LocalizationSystem::atualizePosition()
 
 			robot->setOrientation(robot->getOrientation() + (dr-dl)/AXIS);
 
+			
+			xAux = robot->getPosition()[0] + dc*cos( (robot->getOrientation() + thetaAux)/2);
+			yAux = robot->getPosition()[1] + dc*sin( (robot->getOrientation() + thetaAux)/2);
+			robot->setPosition(xAux,yAux);
+
 			if(robot->getOrientation() < 0)
 			{
 				robot->setOrientation(2*PI + robot->getOrientation());
@@ -173,10 +178,7 @@ void LocalizationSystem::atualizePosition()
 				robot->setOrientation(robot->getOrientation() - 2*PI);
 			}
 			
-			xAux = robot->getPosition()[0] + dc*cos( (robot->getOrientation() + thetaAux)/2);
-			yAux = robot->getPosition()[1] + dc*sin( (robot->getOrientation() + thetaAux)/2);
 						
-			robot->setPosition(xAux,yAux);
 			
 			previousL= encoders[0];
 			previousR= encoders[1];
