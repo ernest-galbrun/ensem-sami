@@ -8,7 +8,8 @@ classdef khepera3 < handle
     end
     
     properties (Access = private) %t : handle to the tcpip object
-        t = tcpip('0.0.0.0', 14,'terminator','CR/LF','inputbuffersize',1000000);
+        %t = tcpip('0.0.0.0', 14,'terminator','CR/LF','inputbuffersize',1000000);
+        p = libpointer('voidPtr');
         id = 0;
         busy = false;
         timerAcquisition = timer('Period',0.5,'ExecutionMode','fixedSpacing',...
@@ -19,13 +20,14 @@ classdef khepera3 < handle
         % Constructor, specifying the handles to the position and speed
         % indicator on screen
         function k3 = khepera3(h_array)
+            loadlibrary('khepera3clib.dll','khepera3clib.h');
             if nargin>0
                 set(k3.timerAcquisition,'TimerFcn',{@CallBackAcquisition,k3,h_array});
             end
         end
         
         function delete(k3)
-            delete(k3.t);
+           %delete(k3.t);
             delete(k3.timerAcquisition);
         end
         
@@ -40,8 +42,15 @@ classdef khepera3 < handle
         PID = GetPID(k3)
         SetPID(k3,PID)
         SetPoint(k3,targetLeft,targetRight)
-        record = StepAcquisition(k3,stepData)
+        record = StepAcquisition(k3,stepData,acquisitionMode)
         SetPosition(k3,left,right);
+        StopMotors(k3);
+        StartMotors(k3);
+        % Get motor positions directly from encoders values
+        pos = GetPosition(k3);
+        % Get XY position
+        posXY = GetXYPosition(k3);
+        orientation = GetOrientation(k
     end
     
     methods (Access = private)
@@ -51,6 +60,11 @@ classdef khepera3 < handle
         timeout = lock(k3,timeout_val)
         unlock(k3)     
     end    
+    
+    methods (Static)
+        K3value = RWtoK3(mode, RWvalue);
+        RWvalue = K3toRW(mode, k3value);
+    end
 end
 
 function CallBackAcquisition (obj,event,k3, h_Array)
