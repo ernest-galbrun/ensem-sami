@@ -162,30 +162,31 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 	tcpLock.lock();
 	*answer = vector<string>();
 	asio::write(*socket_,asio::buffer(msg));
-	//tcp_buf->prepare(msg.size());
 	string ans;
 	char cr,lf;
 	int	bytesRead;
 	system::error_code& ec = system::error_code();
 	istream is(&*tcp_buf);
-	for (int i=0;i<n;i++){
+	for (int i=0;i<n-1;i++){
 		bytesRead = asio::read_until(*socket_,*tcp_buf,"\r\n",ec);
-		//tcp_buf->commit(bytesRead);
 		is.getline(buf,1000,'\r');
 		is.ignore(1);
 		ans = string(buf);
-		//tcp_buf->consume(bytesRead);
-		//tcp_buf->consume(2);
 		answer->push_back(ans);
 	}
-	string cmdSent = msg.substr(1,msg.find(',')-1);
-	//tcp_buf->consume(tcp_buf->size());
+	// read the last line asynchronously
+	asio::async_read_until(*socket_,*tcp_buf,"\r\n",boost::bind(&KheperaIII::ReadLastLineHandler,this,
+																boost::asio::placeholders::error,
+																boost::asio::placeholders::bytes_transferred));
 	tcpLock.unlock();
+	/*string cmdSent = msg.substr(1,msg.find(',')-1);
 	if (cmdSent.compare(ans))
 		return 0;
 	else
-		return -1;
+		return -1;*/
+	return 0;	
 }
+
 
 void KheperaIII::initComm(std::string adLoc, std::string adMult, int porMult)
 {
