@@ -1,0 +1,10 @@
+function modes = GetMode(k3)
+if k3.lock(1)==0;
+    fprintf(k3.t,'$GetMode');
+    modes = fscanf(k3.t,'%d,%d');
+    if (modes(1)==255,
+    fscanf(k3.t);
+    k3.unlock();
+end
+end
+
