@@ -33,6 +33,7 @@ private:
 	boost::mutex	tcpLock;
 	boost::shared_ptr<boost::asio::streambuf> tcp_buf;
 
+	void	ReadLastLineHandler(const boost::system::error_code& e, std::size_t size) {}
 	string speedMsg(int,int);
 	string encodersMsg(int,int);
 	int sendMsg(string msg, int n, vector<string>* answer);
