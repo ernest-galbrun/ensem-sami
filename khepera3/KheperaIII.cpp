@@ -56,6 +56,7 @@ KheperaIII::KheperaIII(int id)
 			break;
 		iter++;
 	}
+	firstRead = true;
 
 	if (ec) {
 		cout<< "ERROR: connection to the robo failed. Error code: "<<ec<<".\n";
@@ -167,6 +168,13 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 	int	bytesRead;
 	system::error_code& ec = system::error_code();
 	istream is(&*tcp_buf);
+	if (!firstRead) {
+		asio::read_until(*socket_,*tcp_buf,"\r\n",ec);
+		is.getline(buf,1000,'\r');
+		is.ignore(1);
+	}
+	else
+		firstRead = false;
 	for (int i=0;i<n-1;i++){
 		bytesRead = asio::read_until(*socket_,*tcp_buf,"\r\n",ec);
 		is.getline(buf,1000,'\r');
@@ -174,11 +182,11 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 		ans = string(buf);
 		answer->push_back(ans);
 	}
-	// read the last line asynchronously
-	asio::async_read_until(*socket_,*tcp_buf,"\r\n",boost::bind(&KheperaIII::ReadLastLineHandler,this,
-																boost::asio::placeholders::error,
-																boost::asio::placeholders::bytes_transferred));
 	tcpLock.unlock();
+	// read the last line asynchronously
+	//asio::async_read_until(*socket_,*tcp_buf,"\r\n",boost::bind(&KheperaIII::ReadLastLineHandler,this,
+	//															boost::asio::placeholders::error,
+	//															boost::asio::placeholders::bytes_transferred));
 	/*string cmdSent = msg.substr(1,msg.find(',')-1);
 	if (cmdSent.compare(ans))
 		return 0;
@@ -187,6 +195,8 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 	return 0;	
 }
 
+void	KheperaIII::ReadLastLineHandler(const boost::system::error_code& e, std::size_t size){
+}
 
 void KheperaIII::initComm(std::string adLoc, std::string adMult, int porMult)
 {

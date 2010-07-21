@@ -1,7 +1,7 @@
 %  myRobot=khepera3()
 %  myRobot.Connect(2,'193.49.136.176')
 t=0:0.1:2*pi;
-trajectory = 5*sin(t);
+trajectory = sin(t);
 T=zeros(size(trajectory));
 O=T;
 X=[T;T];
@@ -9,7 +9,7 @@ tmax=0;
 for i=1:length(trajectory)
     t0=clock;
     tic
-    myRobot.SetVelocity(25,trajectory(i));
+    myRobot.SetVelocity(10,trajectory(i));
     % myRobot.SetVelocity(,trajectory(i));
     toc
     tic
@@ -23,7 +23,7 @@ for i=1:length(trajectory)
     
     
     %comp=0;
-    while etime(clock,t0)<.3
+    while etime(clock,t0)<.2
     %    comp=comp+1;
     end 
     %comp
