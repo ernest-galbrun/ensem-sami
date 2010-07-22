@@ -21,6 +21,7 @@ private:
 	int nIrSensors;
 	double axis;
 	int *irValues;
+	int encoderValues[2];
 
 	int tick;
 	boost::shared_ptr<boost::asio::deadline_timer> timer;
@@ -34,7 +35,7 @@ private:
 	boost::shared_ptr<boost::asio::streambuf> tcp_buf;
 
 	void	ReadLastLineHandler(const boost::system::error_code& e, std::size_t size);
-	bool	firstRead;
+	bool	communicationDone;
 	string speedMsg(int,int);
 	string encodersMsg(int,int);
 	int sendMsg(string msg, int n, vector<string>* answer);
@@ -52,7 +53,7 @@ public:
 	void setVelocity(double,double);
 	int* getIrOutput();
 	
-	int* getEncodersValue();
+	void getEncodersValue(int* left, int* right);
 	void setEncodersValue(int,int);
 	void closeSession();
 

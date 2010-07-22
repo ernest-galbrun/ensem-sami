@@ -156,9 +156,10 @@ void LocalizationSystem::atualizePosition()
 		if(mode==1)
 		{
 			double dl, dr, dc, thetaAux, xAux, yAux;
-			int* encoders = robot->getEncodersValue();
-			dl = (encoders[0]-previousL)*K_ENCODER;
-			dr = (encoders[1]-previousR)*K_ENCODER;
+			int left,right;
+			robot->getEncodersValue(&left, &right);
+			dl = (left-previousL)*K_ENCODER;
+			dr = (right-previousR)*K_ENCODER;
 			dc = (dl+dr)/2;
 			thetaAux = robot->getOrientation();
 
@@ -180,8 +181,8 @@ void LocalizationSystem::atualizePosition()
 			
 						
 			
-			previousL= encoders[0];
-			previousR= encoders[1];
+			previousL= left;
+			previousR= right;
 			//robot->setEncodersValue(0,0);
 
 		}
@@ -191,21 +192,23 @@ void LocalizationSystem::atualizePosition()
 			if(auxCor[0]==1)
 			{
 				countO++;
+				int left,right;
 				//printf("Ct: %d Co: %d\n",countT, countO);
 				robot->setPosition(auxCor[1],auxCor[2]);
 				robot->setOrientation(auxCor[4]);
 
-				int* encoders = robot->getEncodersValue();
-				previousL= encoders[0];
-				previousR= encoders[1];
+				robot->getEncodersValue(&left,&right);
+				previousL= left;
+				previousR= right;
 			}
 			else
 			{
 				//printf("MARKER LOSS\n");
 				double dl, dr, dc, thetaAux, xAux, yAux;
-				int* encoders = robot->getEncodersValue();
-				dl = (encoders[0]-previousL)*K_ENCODER;
-				dr = (encoders[1]-previousR)*K_ENCODER;
+				int left,right;
+				robot->getEncodersValue(&left,&right);
+				dl = (left-previousL)*K_ENCODER;
+				dr = (right-previousR)*K_ENCODER;
 				dc = (dl+dr)/2;
 				thetaAux = robot->getOrientation();
 
@@ -225,8 +228,8 @@ void LocalizationSystem::atualizePosition()
 							
 				robot->setPosition(xAux,yAux);
 				
-				previousL= encoders[0];
-				previousR= encoders[1];
+				previousL= left;
+				previousR= right;
 			}
 		}
 		if(mode==3)

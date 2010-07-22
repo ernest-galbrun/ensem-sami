@@ -39,7 +39,7 @@ extern "C" __declspec(dllexport) int InitLocalizationSystem(int mode, const char
 
 	bodyName += buf;
 	k3->localizationSystem->init(mode,1,string(localIP), string(cortexIP), bodyName);	
-	thread(&KheperaIII::ContinuousChecks, k3);
+	//thread(&KheperaIII::ContinuousChecks, k3);
 	return 0;
 }
 

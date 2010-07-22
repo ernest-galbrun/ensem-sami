@@ -56,7 +56,7 @@ KheperaIII::KheperaIII(int id)
 			break;
 		iter++;
 	}
-	firstRead = true;
+	communicationDone = true;
 
 	if (ec) {
 		cout<< "ERROR: connection to the robo failed. Error code: "<<ec<<".\n";
@@ -70,6 +70,7 @@ KheperaIII::~KheperaIII()
 }
 
 void KheperaIII::ContinuousChecks(){
+	//io_service_.run();
 	while (true)
 		timeStep();
 }
@@ -129,16 +130,18 @@ void KheperaIII::setEncodersValue(int lValue,int rValue)
 	vector<string> ans;
 	this->sendMsg(msg,1,&ans);
 }
-int* KheperaIII::getEncodersValue()
+void KheperaIII::getEncodersValue(int *left, int* right)
 {
 	int* ret = (int*)malloc(2*sizeof(int));
 	vector<string> ans;
 	stringstream ss;
 	char comma;
-	sendMsg("$GetPosition\r\n",2,&ans);
-	ss.str(ans[0]);
-	ss>>ret[0]>>comma>>ret[1];
-	return ret;
+	if(!sendMsg("$GetPosition\r\n",2,&ans)) {
+		ss.str(ans[0]);
+		ss>>encoderValues[0]>>comma>>encoderValues[1];
+	}
+	*left = encoderValues[0];
+	*right = encoderValues[1];
 }
 //AUXILIAR METHODS--------------------------------------------
 string KheperaIII::speedMsg(int lSpeed, int rSpeed)
@@ -154,11 +157,18 @@ string KheperaIII::encodersMsg(int lValue, int rValue)
 	msg << "$ResetPosition,"<<lValue<<','<<rValue<<"\r\n";
 	return msg.str();
 }
-
+void handler(const boost::system::error_code& e, std::size_t size){
+	int a=2;
+	cout<<"youhou\n";
+}
 // send the msg and wait for the response, which must contain n lines, the last one 
 // repeating the message command
 int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 {
+	if (!communicationDone)
+		return 1;
+	else{
+	communicationDone = false;
 	char buf[1000];
 	tcpLock.lock();
 	*answer = vector<string>();
@@ -167,14 +177,14 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 	char cr,lf;
 	int	bytesRead;
 	system::error_code& ec = system::error_code();
-	istream is(&*tcp_buf);
+	istream is(&*tcp_buf);/*
 	if (!firstRead) {
 		asio::read_until(*socket_,*tcp_buf,"\r\n",ec);
 		is.getline(buf,1000,'\r');
 		is.ignore(1);
 	}
 	else
-		firstRead = false;
+		firstRead = false;*/
 	for (int i=0;i<n-1;i++){
 		bytesRead = asio::read_until(*socket_,*tcp_buf,"\r\n",ec);
 		is.getline(buf,1000,'\r');
@@ -183,19 +193,21 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 		answer->push_back(ans);
 	}
 	tcpLock.unlock();
-	// read the last line asynchronously
-	//asio::async_read_until(*socket_,*tcp_buf,"\r\n",boost::bind(&KheperaIII::ReadLastLineHandler,this,
-	//															boost::asio::placeholders::error,
-	//															boost::asio::placeholders::bytes_transferred));
-	/*string cmdSent = msg.substr(1,msg.find(',')-1);
+	// Read the last line asynchronously
+	asio::async_read_until(*socket_,*tcp_buf,"\r\n",handler);//boost::bind(&KheperaIII::ReadLastLineHandler,this,
+															//	boost::asio::placeholders::error,
+																//boost::asio::placeholders::bytes_transferred));
+	/*string cmdSent = msg.subst(r1,msg.find(',')-1);
 	if (cmdSent.compare(ans))
 		return 0;
 	else
 		return -1;*/
 	return 0;	
+	}
 }
 
 void	KheperaIII::ReadLastLineHandler(const boost::system::error_code& e, std::size_t size){
+	communicationDone=true;
 }
 
 void KheperaIII::initComm(std::string adLoc, std::string adMult, int porMult)
