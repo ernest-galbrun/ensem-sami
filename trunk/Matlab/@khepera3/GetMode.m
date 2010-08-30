@@ -1,19 +1,9 @@
 function modes = GetMode(k3)
-if k3.lock(1)==0;
-    fprintf(k3.t,'$GetMode');
-    modes = fscanf(k3.t,'%d,%d');
-    if modes(1)==255
-        modes(1)=0;
-    end
-    if modes(2) == 255
-        modes(2) = 0;
-    end
-    str = fscanf(k3.t);
-    if ~strcmp(str(1:end-2),'GetMode')
-        error('Transmission error during mode read');
-    end
-    modes = modes +1;
-    k3.unlock();
-end
+modes = zeros(2,1);
+left = libpointer('int32Ptr',0);
+right = libpointer('int32Ptr',0);
+calllib('khepera3clib', 'GetMode',k3.id,left,right);
+modes(1) = get(left,'value')+1;
+modes(2) = get(right,'value')+1;
 end
 

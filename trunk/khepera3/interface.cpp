@@ -14,47 +14,108 @@ for use with matlab or other third party software*/
 using namespace std;
 using namespace boost;
 
-KheperaIII* k3;
+KheperaIII* k3[10];
+
 
 extern "C" __declspec(dllexport) int LaunchKhepera(int robotID){
-	k3 = new KheperaIII(robotID);
-	//KheperaIII* k3 = (KheperaIII*) *k3ptr;
-	//cout<<"Initialising local system...\n";
-	//k3->localizationSystem->init(mode,1,string(localIP), string(cortexIP), "objectNameCortex");
+	k3[robotID] = new KheperaIII(robotID);
 	return 0;
 }
 
-extern "C" __declspec(dllexport) int SetSpeed(double linear, double angular){
-	//KheperaIII* k3 = (KheperaIII*) k3ptr;
-	k3->setVelocity(linear,angular);
+extern "C" __declspec(dllexport) int DeleteKhepera(int robotID){
+	delete(k3[robotID]);
 	return 0;
 }
 
-extern "C" __declspec(dllexport) int InitLocalizationSystem(int mode, const char* localIP, const char* cortexIP){
-	//KheperaIII* k3 = (KheperaIII*) k3ptr;
+extern "C" __declspec(dllexport) int SetSpeed(int robotID, double linear, double angular){
+	k3[robotID]->setVelocity(linear,angular);
+	return 0;
+}
+
+extern "C" __declspec(dllexport) int InitLocalizationSystem(int robotID, int mode, const char* localIP, const char* cortexIP){
 	string bodyName("khe");
 	char buf[10];
-	int i=k3->getId();
-	itoa(k3->getId(),buf,10);
+	int i=k3[robotID]->getId();
+	itoa(k3[robotID]->getId(),buf,10);
 
 	bodyName += buf;
-	k3->localizationSystem->init(mode,1,string(localIP), string(cortexIP), bodyName);	
-	//thread(&KheperaIII::ContinuousChecks, k3);
+	k3[robotID]->localizationSystem->init(mode,1,string(localIP), string(cortexIP), bodyName);	
+	k3[robotID]->LaunchContinuousThread();
 	return 0;
 }
 
-extern "C" __declspec(dllexport) int GetPosition(double *posX, double *posY) {
-	//Agent* a = (KheperaIII*) agent_ptr;
+extern "C" __declspec(dllexport) int GetPosition(int robotID, double *posX, double *posY) {
 	double* pos = new double[2];
-	pos = k3->getPosition();
+	pos = k3[robotID]->getPosition();
 	*posX = pos[0];
 	*posY = pos[1];
 	return 0;
 }
 
-extern "C" __declspec(dllexport) int GetOrientation(double* orientation){
-	//Agent* a = (KheperaIII*) agent_ptr;
-	*orientation = k3->getOrientation();
+extern "C" __declspec(dllexport) int GetOrientation(int robotID, double* orientation){
+	*orientation = k3[robotID]->getOrientation();
 	return 0;
 }
 
+extern "C" __declspec(dllexport) int GetMode(int robotID, int* modeLeft, int* modeRight){
+	return k3[robotID]->GetMode(modeLeft, modeRight);
+}
+
+extern "C" __declspec(dllexport) int GetPID(int robotID, int* pLeft, int* iLeft, int* dLeft, int* pRight, int* iRight, int* dRight){
+	int PIDLeft[3];
+	int PIDRight[3];
+	int ret;
+	ret = k3[robotID]->GetPID(&PIDLeft, &PIDRight);
+	*pLeft = PIDLeft[0];
+	*iLeft = PIDLeft[1];
+	*dLeft=  PIDLeft[2];
+	*pRight = PIDRight[0];
+	*iRight = PIDRight[1];
+	*dRight = PIDRight[2];
+	return ret;
+}
+
+extern "C" __declspec(dllexport) int GetEncoderPosition(int robotID, int* left, int* right){
+	k3[robotID]->getEncodersValue(left, right);
+	return 0;
+}
+
+extern "C" __declspec(dllexport) int GetSpeed(int robotID, int* left, int* right){
+	return k3[robotID]->GetSpeed(left,right);
+}
+
+extern "C" __declspec(dllexport) int SetMode(int robotID, int left, int right){
+	return k3[robotID]->SetMode(left, right);
+}
+
+extern "C" __declspec(dllexport) int SetPID(int robotID, int pLeft, int iLeft, int dLeft, int pRight, int iRight, int dRight){
+	return k3[robotID]->SetPID(pLeft, iLeft, dLeft, pRight, iRight, dRight);
+}
+
+extern "C" __declspec(dllexport) int SetTargetPoint(int robotID, int targetLeft, int targetRight){
+	return k3[robotID]->SetTargetPoint(targetLeft, targetRight);
+}
+
+extern "C" __declspec(dllexport) int ResetPosition(int robotID, int posLeft, int posRight){
+	return k3[robotID]->ResetPosition(posLeft, posRight);
+}
+
+extern "C" __declspec(dllexport) int StartMotors(int robotID){
+	return k3[robotID]->StartMotors();
+}
+
+extern "C" __declspec(dllexport) int StopMotors(int robotID){
+	return k3[robotID]->StopMotors();
+}
+
+extern "C" __declspec(dllexport) int RecordPulse(int robotID, int modeLeft, int modeRight, int nStep, double* targetLeft, double* targetRight, int* NAcquisition,
+										  double** timeStamp, int** valuesLeft, int** valuesRight){
+	return k3[robotID]->RecordPulse(modeLeft, modeRight, nStep, targetLeft, targetRight, NAcquisition, timeStamp, valuesLeft, valuesRight);
+}
+
+extern "C" __declspec(dllexport) int StartInternalTracking(int robotID){
+	return k3[robotID]->StartInternalTracking();
+}
+extern "C" __declspec(dllexport) int StopInternalTracking(int robotID){
+	return k3[robotID]->StopInternalTracking();
+}

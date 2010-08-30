@@ -4,9 +4,9 @@ function RunAcquisition(k3, mode)
 % mode = {'start'|'stop'})
     switch mode
         case 'start'
-            if k3.
-            start(k3.timerAcquisition);
+            c
         case 'stop'
             stop(k3.timerAcquisition);
+            k3.unlock();
     end
 end

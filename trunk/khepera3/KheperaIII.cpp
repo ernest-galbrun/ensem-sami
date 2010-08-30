@@ -30,12 +30,13 @@ KheperaIII::KheperaIII(int id)
 	tick = 0;
 	timer = boost::shared_ptr<asio::deadline_timer>(new asio::deadline_timer(io_service_,posix_time::milliseconds(0)));
 	tcp_buf = boost::shared_ptr<asio::streambuf>(new asio::streambuf(100));
-
+	
+	stopContinuousAcquisition = false;
+	firstRead = true;
 	nIrSensors = NB_SENSORS;
 	axis = AXIS;
 	irValues = (int*)malloc(nIrSensors*sizeof(int));
 	//serial = new CSerial();
-	long aux1,aux2;
 	
 	localizationSystem = boost::shared_ptr<LocalizationSystem> (new LocalizationSystem(this));
 	communicationSystem = boost::shared_ptr<CommunicationSystem> (new CommunicationSystem(this));
@@ -56,23 +57,36 @@ KheperaIII::KheperaIII(int id)
 			break;
 		iter++;
 	}
-	communicationDone = true;
-
 	if (ec) {
 		cout<< "ERROR: connection to the robo failed. Error code: "<<ec<<".\n";
 	}
+	else {
+		vector<string> ans;
+		sendMsg("$SetAcquisitionFrequencyx1,1,1\r\n",1,&ans);
+	}
 	vector<string> test;
-	//sendMsg("$GetPosition\r\n",2,&test);
 }
+
+
 
 KheperaIII::~KheperaIII()
 {
+	stopContinuousAcquisition = true;
+	continuousThread.join();
+	//continuousThread.interrupt();
+}
+
+void KheperaIII::LaunchContinuousThread(){	
+	continuousThread=  thread(&KheperaIII::ContinuousChecks, this);
 }
 
 void KheperaIII::ContinuousChecks(){
 	//io_service_.run();
-	while (true)
+	while (!stopContinuousAcquisition){
+		timer->expires_from_now(posix_time::milliseconds(TIME_STEP));
+		timer->wait();
 		timeStep();
+	}
 }
 //FUNCTIONAL METHODS------------------------------------------
 //vSpeed: cm/s		wSpeed: rad/s positive->clockwise
@@ -83,15 +97,13 @@ void KheperaIII::setVelocity(double vSpeed, double wSpeed)
 	
 	lSpeed = K_SPEED*(vSpeed - wSpeed*axis/2);
 	rSpeed = K_SPEED*(vSpeed + wSpeed*axis/2);
-	string msg = this->speedMsg(lSpeed,rSpeed);
+	string msg = this->speedMsg((int)lSpeed,(int)rSpeed);
 	vector<string> ans;
 	this->sendMsg(msg,1,&ans);
 }
 
 void KheperaIII::timeStep()
 {	
-	timer->expires_from_now(posix_time::milliseconds(TIME_STEP));
-	timer->wait();
 	this->trackGenerator->nextStep();
 	this->localizationSystem->atualizePosition();
 	this->communicationSystem->sendPosition();	
@@ -157,34 +169,26 @@ string KheperaIII::encodersMsg(int lValue, int rValue)
 	msg << "$ResetPosition,"<<lValue<<','<<rValue<<"\r\n";
 	return msg.str();
 }
-void handler(const boost::system::error_code& e, std::size_t size){
-	int a=2;
-	cout<<"youhou\n";
-}
 // send the msg and wait for the response, which must contain n lines, the last one 
 // repeating the message command
 int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 {
-	if (!communicationDone)
-		return 1;
-	else{
-	communicationDone = false;
-	char buf[1000];
 	tcpLock.lock();
+	
+	char buf[1000];
 	*answer = vector<string>();
 	asio::write(*socket_,asio::buffer(msg));
 	string ans;
-	char cr,lf;
 	int	bytesRead;
 	system::error_code& ec = system::error_code();
-	istream is(&*tcp_buf);/*
+	istream is(&*tcp_buf);
 	if (!firstRead) {
 		asio::read_until(*socket_,*tcp_buf,"\r\n",ec);
 		is.getline(buf,1000,'\r');
 		is.ignore(1);
 	}
 	else
-		firstRead = false;*/
+		firstRead = false;
 	for (int i=0;i<n-1;i++){
 		bytesRead = asio::read_until(*socket_,*tcp_buf,"\r\n",ec);
 		is.getline(buf,1000,'\r');
@@ -193,21 +197,17 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 		answer->push_back(ans);
 	}
 	tcpLock.unlock();
-	// Read the last line asynchronously
-	asio::async_read_until(*socket_,*tcp_buf,"\r\n",handler);//boost::bind(&KheperaIII::ReadLastLineHandler,this,
-															//	boost::asio::placeholders::error,
-																//boost::asio::placeholders::bytes_transferred));
-	/*string cmdSent = msg.subst(r1,msg.find(',')-1);
-	if (cmdSent.compare(ans))
-		return 0;
-	else
-		return -1;*/
 	return 0;	
-	}
+}
+
+void	KheperaIII::RunIOService(){
+	tcpLock.lock();
+	io_service_.run();
+	tcpLock.unlock();
 }
 
 void	KheperaIII::ReadLastLineHandler(const boost::system::error_code& e, std::size_t size){
-	communicationDone=true;
+	//communicationStackCount--;
 }
 
 void KheperaIII::initComm(std::string adLoc, std::string adMult, int porMult)
@@ -219,4 +219,136 @@ void KheperaIII::closeSession()
 {
 	this->setVelocity(0,0);
 	socket_->close();
+}
+
+int KheperaIII::GetMode(int* left, int* right){
+	stringstream message, ssAnswer;
+	vector<string> answer;
+	char comma;
+	message << "$GetMode\r\n";
+	sendMsg(message.str(), 2, &answer);
+	ssAnswer.str(answer[0]);
+	ssAnswer >> *left >> comma >> *right;
+	return 0;
+}
+
+int KheperaIII::GetPID(int (*PIDLeft)[3], int (*PIDRight)[3]){
+	stringstream message, ssAnswer;
+	vector<string> answer;
+	char comma;
+	int modeLeft, modeRight;
+	GetMode(&modeLeft, &modeRight);
+	message << "$GetPID,"<<modeLeft<<",0\r\n";
+	sendMsg(message.str(),2,&answer);
+	ssAnswer.str(answer[0]);
+	ssAnswer >> (*PIDLeft)[0] >> comma >> (*PIDLeft)[1] >> comma >> (*PIDLeft)[2];
+	message.str("");
+	message << "$GetPID,"<<modeRight<<",1\r\n";
+	sendMsg(message.str(),2,&answer);
+	ssAnswer.str(answer[0]);
+	ssAnswer >> (*PIDRight)[0] >> comma >> (*PIDRight)[1] >> comma >> (*PIDRight)[2];
+	return 0;
+}
+
+int KheperaIII::GetSpeed(int* left, int* right){	
+	stringstream message, ssAnswer;
+	vector<string> answer;
+	char comma;
+	message << "$GetSpeed\r\n";
+	sendMsg(message.str(),2, &answer);
+	ssAnswer.str(answer[0]);
+	ssAnswer >> *left >> comma >> *right;
+	return 0;
+}
+
+int KheperaIII::SetMode(int left, int right){
+	stringstream message, ssAnswer;
+	vector<string> answer;
+	message << "$SetMode,"<<left<<','<<right<<"\r\n";
+	sendMsg(message.str(),1, &answer);
+	return 0;
+}
+
+int KheperaIII::SetPID(int pLeft, int iLeft, int dLeft, int pRight, int iRight, int dRight){	
+	stringstream message, ssAnswer;
+	vector<string> answer;
+	int modeLeft, modeRight;
+	GetMode(&modeLeft, &modeRight);
+	message << "$SetPID,"<<modeLeft<<",0,"<<pLeft<<','<<iLeft<<','<<dLeft<<"\r\n";
+	sendMsg(message.str(),1, &answer);
+	message << "$SetPID,"<<modeRight<<",1,"<<pRight<<','<<iRight<<','<<dRight<<"\r\n";
+	sendMsg(message.str(),1, &answer);
+	return 0;
+}
+
+int KheperaIII::SetTargetPoint(int targetLeft, int targetRight){
+	stringstream message, ssAnswer;
+	vector<string> answer;
+	message << "$SetPoint,"<<targetLeft<<','<<targetRight<<"\r\n";
+	sendMsg(message.str(),1, &answer);
+	return 0;
+}
+
+int KheperaIII::ResetPosition(int posLeft, int posRight){
+	stringstream message, ssAnswer;
+	vector<string> answer;
+	message << "$ResetPosition,"<<posLeft<<','<<posRight<<"\r\n";
+	sendMsg(message.str(),1, &answer);
+	return 0;
+}
+
+int KheperaIII::StopMotors(){
+	stringstream message, ssAnswer;
+	vector<string> answer;
+	message << "$MotorStop,0\r\n";
+	sendMsg(message.str(),1, &answer);
+	message << "$MotorStop,1\r\n";
+	sendMsg(message.str(),1, &answer);
+	return 0;
+}
+
+int KheperaIII::StartMotors(){
+	stringstream message, ssAnswer;
+	vector<string> answer;
+	message << "$MotorStart,0\r\n";
+	sendMsg(message.str(),1, &answer);
+	message << "$MotorStart,1\r\n";
+	sendMsg(message.str(),1, &answer);
+	return 0;
+}
+
+int	KheperaIII::RecordPulse(int modeLeft, int modeRight, int nStep, double* targetLeft, double* targetRight, int* NAcquisition,
+							double** timeStamp, int** valuesLeft, int** valuesRight){
+	stringstream message, ssAnswer;
+	vector<string> answer;
+	message<< "$RecordPulse,"<<modeLeft<<','<<modeRight;
+	int N = 0;
+	for (int i=0;i<nStep;i++) {
+		message<<','<<targetLeft[i]<<','<<targetRight[i]<<','<<NAcquisition[i];
+		N+=NAcquisition[i];
+	}
+	message<<"\r\n";
+	sendMsg(message.str(),N+1,&answer);
+	*timeStamp = (double*) malloc(N * sizeof(double));
+	*valuesLeft = (int*) malloc(N * sizeof(int));
+	*valuesRight = (int*) malloc(N * sizeof(int));
+	for (int i=0;i<N;i++){
+		char comma;
+		ssAnswer.str(answer[i]);
+		ssAnswer >> (*timeStamp)[i] >> comma >> (*valuesLeft)[i] >> comma >> (*valuesRight)[i];
+	}
+	return 0;
+}
+
+int KheperaIII::StopInternalTracking(){
+	stopContinuousAcquisition = true;
+	return 0;
+}
+
+int KheperaIII::StartInternalTracking(){
+	if (stopContinuousAcquisition == true) {
+		LaunchContinuousThread();
+	}
+	stopContinuousAcquisition = false;
+	return 0;
 }

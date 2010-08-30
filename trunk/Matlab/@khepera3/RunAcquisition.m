@@ -4,11 +4,10 @@ function RunAcquisition(k3, mode)
 % mode = {'start'|'stop'})
     switch mode
         case 'start'
-            if k3.lock(1)==0
-                start(k3.timerAcquisition);
-            end
+            start(k3.timerAcquisition);
+            calllib('khepera3clib', 'StartInternalTracking',k3.id);
         case 'stop'
             stop(k3.timerAcquisition);
-            k3.unlock();
+            calllib('khepera3clib', 'StopInternalTracking',k3.id);            
     end
 end
