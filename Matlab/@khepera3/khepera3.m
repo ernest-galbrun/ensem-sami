@@ -29,7 +29,8 @@ classdef khepera3 < handle
         
         function delete(k3)
            %delete(k3.t);
-            delete(k3.timerAcquisition);
+           calllib('khepera3clib', 'DeleteKhepera',k3.id);
+           delete(k3.timerAcquisition);
         end
         
         % Start or stop continuous acquisition of position and speed

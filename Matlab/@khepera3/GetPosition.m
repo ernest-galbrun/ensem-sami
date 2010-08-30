@@ -2,12 +2,12 @@
 % lock is acquired by RunAcquisition
 
 function pos = GetPosition(k3)
-    fprintf(k3.t,'$GetPosition');
-    pos = fscanf(k3.t,'%d,%d');
-    str = fscanf(k3.t);
-    if ~strcmp(str(1:end-2),'GetPosition')
-        error('Transmission error position reading');
-    end
+    pos = zeros(2,1); 
+    left = libpointer('int32Ptr',0);
+    right = libpointer('int32Ptr',0);
+    calllib('khepera3clib', 'GetEncoderPosition',k3.id,left,right);
+    pos(1) = get(left,'value');
+    pos(2) = get(right,'value');
     pos = khepera3.K3toRW(2,pos);
 end
 

@@ -11,8 +11,8 @@
 //ROBOT DEFINITIONS
 #define NB_SENSORS 9
 #define AXIS 8.9 //cm
-#define K_SPEED 1440.1
-#define K_ENCODER 0.0047 // cm/pulse
+#define K_SPEED 360.0025//1440.1 (value if x4 is used
+#define K_ENCODER 0.018634 //0.0047 (value if x4 used) // cm/pulse
 
 //INITIAL POSITION 
 #define X0 0 //cm
