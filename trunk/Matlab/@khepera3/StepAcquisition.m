@@ -2,8 +2,12 @@ function record = StepAcquisition(k3,stepData,acquisitionMode)
 timeStamp = libpointer('doublePtrPtr',0);
 valuesLeft = libpointer('doublePtrPtr',0);
 valuesRight = libpointer('doublePtrPtr',0);
-calllib('khepera3clib', 'RecordPulse',k3.id, acquisitionMode(1),acquisitionMode(2), size(stepData(1,:)),...
-        stepData{:,1},stepData{:,2},stepData{:,3},...
+N = 0;
+while(~isempty(stepData{N+1,1}))
+    N = N+1;
+end
+calllib('khepera3clib', 'RecordPulse',k3.id, acquisitionMode(1),acquisitionMode(2), N,...
+        stepData{1:N,1},stepData{1:N,2},stepData{1:N,3},...
         timeStamp,valuesLeft,valuesRight);
 
 while n< length(stepData) && ~isempty(stepData{n+1,1})

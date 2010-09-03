@@ -3,25 +3,29 @@ classdef khepera3 < handle
     % it is used in conjonction with the proper tcpip server program 
     % running on the robots
     
-    properties (Access = public)
-       
+    properties (GetAccess = 'public', SetAccess = 'private')
+        id     
     end
     
     properties (Access = private) %t : handle to the tcpip object
         %p = libpointer('voidPtr');
         %t = tcpip('0.0.0.0',
         %14,'terminator','CR/LF','inputbuffersize',1000000);
-        id = 0;
-        busy = false;
-        timerAcquisition = timer('Period',0.5,'ExecutionMode','fixedSpacing',...
-                                 'BusyMode','drop','TasksToExecute',Inf);
+        busy
+        timerAcquisition
     end
        
     methods (Access = public)
         % Constructor, specifying the handles to the position and speed
         % indicator on screen
         function k3 = khepera3(h_array)
+            k3.id = 0;
+            k3.busy = false;
+            k3.timerAcquisition = timer('Period',0.5,'ExecutionMode','fixedSpacing',...
+                                 'BusyMode','drop','TasksToExecute',Inf);
+            if (~libisloaded('khepera3clib'))
             loadlibrary('khepera3clib.dll','khepera3clib.h');
+            end
             if nargin>0
                 set(k3.timerAcquisition,'TimerFcn',{@CallBackAcquisition,k3,h_array});
             end
@@ -31,6 +35,7 @@ classdef khepera3 < handle
            %delete(k3.t);
            calllib('khepera3clib', 'DeleteKhepera',k3.id);
            delete(k3.timerAcquisition);
+           unloadlibrary('khepera3clib')
         end
         
         % Start or stop continuous acquisition of position and speed
