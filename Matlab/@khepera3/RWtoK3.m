@@ -14,6 +14,6 @@ function K3value = RWtoK3(mode, RWvalue)
         case 6
             K3value = RWvalue;
     end
-    K3value = round(K3value);
+    K3value = int32(round(K3value));
 end
 

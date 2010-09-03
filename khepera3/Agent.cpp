@@ -5,7 +5,10 @@
 Agent::Agent(void)
 {
 	trackGenerator = new TrackGenerator();
+	localAddress = "1.1.1.1";
 	nNeighbors = 0;
+	neighbors = NULL;
+	obstacles = NULL;
 }
 
 Agent::~Agent(void)

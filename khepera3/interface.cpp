@@ -25,7 +25,9 @@ extern "C" __declspec(dllexport) int LaunchKhepera(int robotID){
 }
 
 extern "C" __declspec(dllexport) int DeleteKhepera(int robotID){
-	delete(k3[robotID]);
+	//delete(k3[robotID]);
+	k3[robotID]->CloseConnection();
+	k3[robotID]->closeSession();
 	k3[robotID] = NULL;
 	return 0;
 }
@@ -111,8 +113,8 @@ extern "C" __declspec(dllexport) int StopMotors(int robotID){
 	return k3[robotID]->StopMotors();
 }
 
-extern "C" __declspec(dllexport) int RecordPulse(int robotID, int modeLeft, int modeRight, int nStep, double* targetLeft, double* targetRight, int* NAcquisition,
-										  double** timeStamp, int** valuesLeft, int** valuesRight){
+extern "C" __declspec(dllexport) int RecordPulse(int robotID, int modeLeft, int modeRight, int nStep, int* targetLeft, int* targetRight, int* NAcquisition,
+										  int** timeStamp, int** valuesLeft, int** valuesRight){
 	return k3[robotID]->RecordPulse(modeLeft, modeRight, nStep, targetLeft, targetRight, NAcquisition, timeStamp, valuesLeft, valuesRight);
 }
 

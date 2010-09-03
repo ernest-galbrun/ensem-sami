@@ -1,23 +1,26 @@
-function record = StepAcquisition(k3,stepData,acquisitionMode)
-timeStamp = libpointer('doublePtrPtr',0);
-valuesLeft = libpointer('doublePtrPtr',0);
-valuesRight = libpointer('doublePtrPtr',0);
+function record = StepAcquisition(k3,stepData,acquisitionMode, controlModeLeft, controlModeRight)
 N = 0;
-while(~isempty(stepData{N+1,1}))
+Nacquisition = 0;
+while(stepData(N+1,3)~=0)
     N = N+1;
+    Nacquisition = Nacquisition + stepData(N,3);
 end
-calllib('khepera3clib', 'RecordPulse',k3.id, acquisitionMode(1),acquisitionMode(2), N,...
-        stepData{1:N,1},stepData{1:N,2},stepData{1:N,3},...
+timeStamp = libpointer('int32PtrPtr',zeros(Nacquisition,1));
+valuesLeft = libpointer('int32PtrPtr',zeros(Nacquisition,1));
+valuesRight = libpointer('int32PtrPtr',zeros(Nacquisition,1));
+targetLeft = khepera3.RWtoK3(controlModeLeft,stepData(1:N,1));
+targetRight = khepera3.RWtoK3(controlModeRight,stepData(1:N,2));
+
+calllib('khepera3clib', 'RecordPulse',k3.id, acquisitionMode(1)-1,acquisitionMode(2)-1, N,...
+        targetLeft,targetRight,stepData(1:N,3),...
         timeStamp,valuesLeft,valuesRight);
 
-while n< length(stepData) && ~isempty(stepData{n+1,1})
-     n=n+1;
-     Nacquisition = Nacquisition + stepData{n,3};
-end
-record = zeros(3,n);
+record = zeros(3,Nacquisition);
 record(1,:) = get(timeStamp,'value');
 record(2,:) = get(valuesLeft,'value');
 record(3,:) = get(valuesRight,'value');
+record(2,:)=khepera3.K3toRW(4,record(2,:));
+record(3,:)=khepera3.K3toRW(4,record(3,:)); 
 %     modes = k3.GetMode();
 %     acquisitionMode = acquisitionMode -1;
 % if k3.lock() ==0
