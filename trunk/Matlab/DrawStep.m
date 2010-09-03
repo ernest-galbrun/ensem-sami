@@ -5,9 +5,9 @@ timestamp = result(1,:);
 i=1;
 L_target = [];
 R_target = [];
-while i<= length(stepData) && ~isempty(stepData{i,3})
-    L_target = [L_target zeros(1,stepData{i,3}) + stepData{i,1}];
-    R_target = [R_target zeros(1,stepData{i,3}) + stepData{i,2}];
+while (i<= length(stepData) && stepData(i,3)~=0)
+    L_target = [L_target zeros(1,stepData(i,3)) + double(stepData(i,1))];
+    R_target = [R_target zeros(1,stepData(i,3)) + double(stepData(i,2))];
     i=i+1;
 end
 plot(h_stepPlot,timestamp,[L_target;L_value;R_target;R_value]);

@@ -76,6 +76,13 @@ KheperaIII::~KheperaIII()
 	//continuousThread.interrupt();
 }
 
+void	KheperaIII::CloseConnection()// use instead of destructor because of heap corruption in matlab
+{
+	stopContinuousAcquisition = true;
+	continuousThread.join();
+	//continuousThread.interrupt();
+}
+
 void KheperaIII::LaunchContinuousThread(){	
 	continuousThread=  thread(&KheperaIII::ContinuousChecks, this);
 }
@@ -321,8 +328,8 @@ int KheperaIII::StartMotors(){
 	return 0;
 }
 
-int	KheperaIII::RecordPulse(int modeLeft, int modeRight, int nStep, double* targetLeft, double* targetRight, int* NAcquisition,
-							double** timeStamp, int** valuesLeft, int** valuesRight){
+int	KheperaIII::RecordPulse(int modeLeft, int modeRight, int nStep, int* targetLeft, int* targetRight, int* NAcquisition,
+							int** timeStamp, int** valuesLeft, int** valuesRight){
 	stringstream message, ssAnswer;
 	vector<string> answer;
 	message<< "$RecordPulse,"<<modeLeft<<','<<modeRight;
@@ -333,11 +340,12 @@ int	KheperaIII::RecordPulse(int modeLeft, int modeRight, int nStep, double* targ
 	}
 	message<<"\r\n";
 	sendMsg(message.str(),N+1,&answer);
-	*timeStamp = (double*) malloc(N * sizeof(double));
+	*timeStamp = (int*) malloc(N * sizeof(int));
 	*valuesLeft = (int*) malloc(N * sizeof(int));
 	*valuesRight = (int*) malloc(N * sizeof(int));
 	for (int i=0;i<N;i++){
 		char comma;
+		ssAnswer.clear(); // clear end of stream error flag to allow further read
 		ssAnswer.str(answer[i]);
 		ssAnswer >> (*timeStamp)[i] >> comma >> (*valuesLeft)[i] >> comma >> (*valuesRight)[i];
 	}

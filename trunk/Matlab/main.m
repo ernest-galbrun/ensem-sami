@@ -211,7 +211,8 @@ k3 = get(gcf,'userdata');
 k3.RunAcquisition('stop');
 a=get(handles.stepData,'data');
 result = k3.StepAcquisition(get(handles.stepData,'data'),...
-        [get(handles.measureTypeL,'value') get(handles.measureTypeR,'value')]);
+        [get(handles.measureTypeL,'value') get(handles.measureTypeR,'value')],...
+        get(handles.leftControlMode,'value'), get(handles.rightControlMode,'value'));
 DrawStep(handles.stepPlot,get(handles.stepData,'data'),result);
 k3.RunAcquisition('start');
 
@@ -251,7 +252,8 @@ end
 function setCurrentPosition_Callback(hObject, eventdata, handles)
 k3 = get(gcf,'userdata');
 k3.RunAcquisition('stop');
-k3.SetPosition(str2num(get(handles.currentPositionLeft,'string')),str2num(get(handles.currentPositionRight,'string')));
+k3.SetPosition(khepera3.RWtoK3(2,str2num(get(handles.currentPositionLeft,'string'))),...
+               khepera3.RWtoK3(2,str2num(get(handles.currentPositionRight,'string'))));
 k3.RunAcquisition('start');
 
 function Main_CloseRequestFcn(hObject, eventdata, handles)

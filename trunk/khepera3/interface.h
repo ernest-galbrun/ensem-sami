@@ -55,8 +55,8 @@ extern "C" {
 	__declspec(dllexport) int StopMotors(int robotID);
 
 	// Record a step for both motors
-	__declspec(dllexport) int RecordPulse(int robotID, int modeLeft, int modeRight, int nStep, double* targetLeft, double* targetRight, int* NAcquisition,
-										  double** timeStamp, int** valuesLeft, int** valuesRight); 
+	__declspec(dllexport) int RecordPulse(int robotID, int modeLeft, int modeRight, int nStep, int* targetLeft, int* targetRight, int* NAcquisition,
+										  int** timeStamp, int** valuesLeft, int** valuesRight); 
 
 	__declspec(dllexport) int StartInternalTracking(int robotID);
 	__declspec(dllexport) int StopInternalTracking(int robotID);

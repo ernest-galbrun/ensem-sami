@@ -33,7 +33,10 @@ classdef khepera3 < handle
         
         function delete(k3)
            %delete(k3.t);
-           calllib('khepera3clib', 'DeleteKhepera',k3.id);
+           if k3.id ~= 0
+            calllib('khepera3clib', 'DeleteKhepera',k3.id); %WARNING CAUSES
+           %HEAP CORRUPTION
+           end
            delete(k3.timerAcquisition);
            unloadlibrary('khepera3clib')
         end
@@ -49,7 +52,7 @@ classdef khepera3 < handle
         PID = GetPID(k3)
         SetPID(k3,PID)
         SetPoint(k3,targetLeft,targetRight)
-        record = StepAcquisition(k3,stepData,acquisitionMode)
+        record = StepAcquisition(k3,stepData,acquisitionMode, controlModeLeft, controlModeRight)
         SetPosition(k3,left,right);
         StopMotors(k3);
         StartMotors(k3);

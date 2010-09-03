@@ -49,6 +49,7 @@ public:
 	KheperaIII(int id);
 	~KheperaIII(void);
 
+	void CloseConnection();
 	boost::shared_ptr<LocalizationSystem> localizationSystem;
 	void initComm(std::string,std::string,int);
 
@@ -69,8 +70,8 @@ public:
 	int ResetPosition(int posLeft, int posright);
 	int StartMotors();
 	int StopMotors();
-	int	RecordPulse(int modeLeft, int modeRight, int nStep, double* targetLeft, double* targetRight, int* NAcquisition,
-										  double** timeStamp, int** valuesLeft, int** valuesRight);
+	int	RecordPulse(int modeLeft, int modeRight, int nStep, int* targetLeft, int* targetRight, int* NAcquisition,
+										  int** timeStamp, int** valuesLeft, int** valuesRight);
 	int StopInternalTracking();
 	int StartInternalTracking();
 
