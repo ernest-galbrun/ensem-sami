@@ -169,7 +169,7 @@ string KheperaIII::encodersMsg(int lValue, int rValue)
 	msg << "$ResetPosition,"<<lValue<<','<<rValue<<"\r\n";
 	return msg.str();
 }
-// send the msg and wait for the response, which must contain n lines, the last one 
+// send the message and wait for the response, which must contain n lines, the last one 
 // repeating the message command
 int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 {
@@ -233,7 +233,7 @@ int KheperaIII::GetMode(int* left, int* right){
 }
 
 int KheperaIII::GetPID(int (*PIDLeft)[3], int (*PIDRight)[3]){
-	stringstream message, ssAnswer;
+	stringstream message, ssAnswer, ssAnswerRight;
 	vector<string> answer;
 	char comma;
 	int modeLeft, modeRight;
@@ -245,8 +245,9 @@ int KheperaIII::GetPID(int (*PIDLeft)[3], int (*PIDRight)[3]){
 	message.str("");
 	message << "$GetPID,"<<modeRight<<",1\r\n";
 	sendMsg(message.str(),2,&answer);
-	ssAnswer.str(answer[0]);
-	ssAnswer >> (*PIDRight)[0] >> comma >> (*PIDRight)[1] >> comma >> (*PIDRight)[2];
+	ssAnswerRight.str(answer[0]);
+	//ssAnswer.seekg (0, ios::beg);
+	ssAnswerRight >> (*PIDRight)[0] >> comma >> (*PIDRight)[1] >> comma >> (*PIDRight)[2];
 	return 0;
 }
 
@@ -276,6 +277,7 @@ int KheperaIII::SetPID(int pLeft, int iLeft, int dLeft, int pRight, int iRight, 
 	GetMode(&modeLeft, &modeRight);
 	message << "$SetPID,"<<modeLeft<<",0,"<<pLeft<<','<<iLeft<<','<<dLeft<<"\r\n";
 	sendMsg(message.str(),1, &answer);
+	message.str("");
 	message << "$SetPID,"<<modeRight<<",1,"<<pRight<<','<<iRight<<','<<dRight<<"\r\n";
 	sendMsg(message.str(),1, &answer);
 	return 0;
@@ -302,6 +304,7 @@ int KheperaIII::StopMotors(){
 	vector<string> answer;
 	message << "$MotorStop,0\r\n";
 	sendMsg(message.str(),1, &answer);
+	message.str("");
 	message << "$MotorStop,1\r\n";
 	sendMsg(message.str(),1, &answer);
 	return 0;
@@ -312,6 +315,7 @@ int KheperaIII::StartMotors(){
 	vector<string> answer;
 	message << "$MotorStart,0\r\n";
 	sendMsg(message.str(),1, &answer);
+	message.str("");
 	message << "$MotorStart,1\r\n";
 	sendMsg(message.str(),1, &answer);
 	return 0;

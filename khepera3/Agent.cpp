@@ -10,6 +10,7 @@ Agent::Agent(void)
 
 Agent::~Agent(void)
 {
+	delete trackGenerator;
 }
 
 //GETS--------------------------------------------------------

@@ -14,6 +14,8 @@ for use with matlab or other third party software*/
 using namespace std;
 using namespace boost;
 
+// global variable k3 stores pointer to every robot created.
+// It is instanciated when the dll is loaded, and destructed when unloaded.
 KheperaIII* k3[10];
 
 
@@ -24,6 +26,7 @@ extern "C" __declspec(dllexport) int LaunchKhepera(int robotID){
 
 extern "C" __declspec(dllexport) int DeleteKhepera(int robotID){
 	delete(k3[robotID]);
+	k3[robotID] = NULL;
 	return 0;
 }
 
