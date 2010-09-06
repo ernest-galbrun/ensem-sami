@@ -74,6 +74,9 @@
       <Project>{1284631d-f66d-46fd-87d9-c84973d9e4ee}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Matlab\%40khepera3\khepera3clib.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

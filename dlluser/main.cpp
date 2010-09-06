@@ -1,4 +1,4 @@
-#include "interface.h"
+#include "../Matlab/@khepera3/khepera3clib.h"
 #include <iostream>
 
 using namespace std;

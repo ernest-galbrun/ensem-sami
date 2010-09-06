@@ -40,6 +40,10 @@
     <OutDir>..\Matlab\%40khepera3\</OutDir>
     <TargetName>khepera3clib</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\Matlab\%40khepera3\</OutDir>
+    <TargetName>khepera3clib</TargetName>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -75,11 +79,11 @@
     <ClCompile Include="TrackGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Matlab\%40khepera3\khepera3clib.h" />
     <ClInclude Include="Agent.h" />
     <ClInclude Include="CommunicationSystem.h" />
     <ClInclude Include="DEFINITIONS.h" />
     <ClInclude Include="EVaRT2.h" />
-    <ClInclude Include="interface.h" />
     <ClInclude Include="KheperaIII.h" />
     <ClInclude Include="LocalizationSystem.h" />
     <ClInclude Include="Object.h" />
