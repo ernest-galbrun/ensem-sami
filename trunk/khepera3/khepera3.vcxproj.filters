@@ -74,7 +74,7 @@
     <ClInclude Include="TrackGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="interface.h">
+    <ClInclude Include="..\Matlab\%40khepera3\khepera3clib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
