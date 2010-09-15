@@ -245,16 +245,33 @@ int KheperaIII::GetPID(int (*PIDLeft)[3], int (*PIDRight)[3]){
 	char comma;
 	int modeLeft, modeRight;
 	GetMode(&modeLeft, &modeRight);
-	message << "$GetPID,"<<modeLeft<<",0\r\n";
-	sendMsg(message.str(),2,&answer);
-	ssAnswer.str(answer[0]);
-	ssAnswer >> (*PIDLeft)[0] >> comma >> (*PIDLeft)[1] >> comma >> (*PIDLeft)[2];
-	message.str("");
-	message << "$GetPID,"<<modeRight<<",1\r\n";
-	sendMsg(message.str(),2,&answer);
-	ssAnswerRight.str(answer[0]);
-	//ssAnswer.seekg (0, ios::beg);
-	ssAnswerRight >> (*PIDRight)[0] >> comma >> (*PIDRight)[1] >> comma >> (*PIDRight)[2];
+	if (modeLeft!=0) {
+		modeLeft--;
+		modeLeft/=2;
+		message << "$GetPID,"<<modeLeft<<",0\r\n";
+		sendMsg(message.str(),2,&answer);
+		ssAnswer.str(answer[0]);
+		ssAnswer >> (*PIDLeft)[0] >> comma >> (*PIDLeft)[1] >> comma >> (*PIDLeft)[2];
+	}
+	else {
+		for (int i=0;i<3;i++)
+			(*PIDLeft)[i]=0;
+	}
+	if (modeRight != 0) {
+		modeRight--;
+		modeRight/=2;
+		message.str("");
+		message << "$GetPID,"<<modeRight<<",1\r\n";
+		sendMsg(message.str(),2,&answer);
+		ssAnswer.clear();
+		ssAnswerRight.str(answer[0]);
+		//ssAnswer.seekg (0, ios::beg);
+		ssAnswerRight >> (*PIDRight)[0] >> comma >> (*PIDRight)[1] >> comma >> (*PIDRight)[2];
+	}
+	else {
+		for (int i=0;i<3;i++)
+			(*PIDRight)[i]=0;
+	}
 	return 0;
 }
 
@@ -282,11 +299,19 @@ int KheperaIII::SetPID(int pLeft, int iLeft, int dLeft, int pRight, int iRight, 
 	vector<string> answer;
 	int modeLeft, modeRight;
 	GetMode(&modeLeft, &modeRight);
-	message << "$SetPID,"<<modeLeft<<",0,"<<pLeft<<','<<iLeft<<','<<dLeft<<"\r\n";
-	sendMsg(message.str(),1, &answer);
-	message.str("");
-	message << "$SetPID,"<<modeRight<<",1,"<<pRight<<','<<iRight<<','<<dRight<<"\r\n";
-	sendMsg(message.str(),1, &answer);
+	if (modeLeft !=0) {
+		modeLeft--;
+		modeLeft/=2;
+		message << "$SetPID,"<<modeLeft<<",0,"<<pLeft<<','<<iLeft<<','<<dLeft<<"\r\n";
+		sendMsg(message.str(),1, &answer);
+		message.str("");
+	}
+	if (modeRight != 0) {
+		modeRight--;
+		modeRight/=2;
+		message << "$SetPID,"<<modeRight<<",1,"<<pRight<<','<<iRight<<','<<dRight<<"\r\n";
+		sendMsg(message.str(),1, &answer);
+	}
 	return 0;
 }
 
