@@ -39,7 +39,7 @@
     <ClCompile Include="TrackGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="interface.cpp">
+    <ClCompile Include="khepera3clib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
