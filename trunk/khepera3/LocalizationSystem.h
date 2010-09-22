@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EVaRT2.h"
+#include "Cortex.h"
 class KheperaIII;
 
 /*
@@ -25,7 +25,7 @@ class LocalizationSystem
 	double previousL;
 	double previousR;
 
-	//EVaRT Parameters
+	//Cortex Parameters
 	string host;
 	string me;
 	string name;
@@ -40,7 +40,7 @@ public:
 	void init(int,int,string,string,string);
 	void atualizePosition();
 	void Close();
-	double* getOwnPosition_EVaRT(); //{Ack,X,Y,Z,theta}
+	double* getOwnPosition_Cortex(); //{Ack,X,Y,Z,theta}
 
 	int countT;
 	int countO;
