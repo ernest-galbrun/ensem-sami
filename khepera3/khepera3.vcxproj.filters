@@ -53,9 +53,6 @@
     <ClInclude Include="DEFINITIONS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EVaRT2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="KheperaIII.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -77,14 +74,20 @@
     <ClInclude Include="..\Matlab\%40khepera3\khepera3clib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cortex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="EVaComm2.dll">
+    <None Include="Cortex_SDK_x64.dll">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Cortex_SDK_x86.dll">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="EVaComm2.lib">
+    <Library Include="Cortex_SDK.lib">
       <Filter>Resource Files</Filter>
     </Library>
   </ItemGroup>

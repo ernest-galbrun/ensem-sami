@@ -9,7 +9,7 @@
 
 #include "boost/thread.hpp"
 
-#include "EVaRT2.h"
+#include "Cortex.h"
 #include "KheperaIII.h"
 #include "LocalizationSystem.h"
 
@@ -64,7 +64,7 @@ void LocalizationSystem::init(int modeArg, int autoAtualize, string myAddress, s
 	mode = modeArg;
 	enable = autoAtualize;
 	double *auxCor;
-	sHostInfo EVaRT_HostInfo;
+	sHostInfo Cortex_HostInfo;
 	
 	sBodyDefs* pBodyDefs=NULL;
 	int iBody;
@@ -87,10 +87,10 @@ void LocalizationSystem::init(int modeArg, int autoAtualize, string myAddress, s
 
 		//INITIALIZING EVaRT
 		memset(&MyCopyOfFrame, 0, sizeof(sFrameOfData));
-		EVaRT2_SetVerbosityLevel(VL_None);
+		Cortex_SetVerbosityLevel(VL_None);
 		
-		printf("Connecting to Evart Host...\n");
-		int retval = EVaRT2_Initialize((char*)me.c_str(), (char*)host.c_str());
+		printf("Connecting to Cortex Host...\n");
+		int retval = Cortex_Initialize((char*)me.c_str(), (char*)host.c_str());
 		
 		
 		if (retval != RC_Okay)
@@ -100,17 +100,17 @@ void LocalizationSystem::init(int modeArg, int autoAtualize, string myAddress, s
 		}
 		else
 		{
-			retval = EVaRT2_GetHostInfo(&EVaRT_HostInfo);
+			retval = Cortex_GetHostInfo(&Cortex_HostInfo);
     
-			if (retval != RC_Okay || !EVaRT_HostInfo.bFoundHost)
+			if (retval != RC_Okay || !Cortex_HostInfo.bFoundHost)
 			{
-				enable =0;printf("Error: Unable to find EVaRT.\n");
+				enable =0;printf("Error: Unable to find Cortex.\n");
 				exit(0);
 				
 			}
 			else
 			{
-			pBodyDefs = EVaRT2_GetBodyDefs();
+			pBodyDefs = Cortex_GetBodyDefs();
 				for (iBody=0; iBody<pBodyDefs->nBodyDefs; iBody++)
 				{
 					sBodyDef *pBody = &pBodyDefs->BodyDefs[iBody];
@@ -119,7 +119,7 @@ void LocalizationSystem::init(int modeArg, int autoAtualize, string myAddress, s
 					{
 						bodyIndex = iBody;
 						test  = 1;
-						auxCor = getOwnPosition_EVaRT();
+						auxCor = getOwnPosition_Cortex();
 						if(auxCor[0]==1)
 						{
 							robot->setPosition(auxCor[1],auxCor[2]);
@@ -188,7 +188,7 @@ void LocalizationSystem::atualizePosition()
 		}
 		if(mode==2)
 		{
-			auxCor = getOwnPosition_EVaRT();
+			auxCor = getOwnPosition_Cortex();
 			if(auxCor[0]==1)
 			{
 				countO++;
@@ -240,7 +240,7 @@ void LocalizationSystem::atualizePosition()
 
 
 
-double* LocalizationSystem::getOwnPosition_EVaRT()
+double* LocalizationSystem::getOwnPosition_Cortex()
 {
 	double* ret = new double[5];
 	double aux;
@@ -253,7 +253,7 @@ double* LocalizationSystem::getOwnPosition_EVaRT()
 
 	ack = 1;
 	
-	pFrameOfData = EVaRT2_GetCurrentFrame();
+	pFrameOfData = Cortex_GetCurrentFrame();
 	coordMiddle = (&pFrameOfData->BodyData[bodyIndex])->Markers[0];
 	coordFront = (&pFrameOfData->BodyData[bodyIndex])->Markers[2];
 
@@ -290,5 +290,5 @@ double* LocalizationSystem::getOwnPosition_EVaRT()
 
 void LocalizationSystem::Close()
 {
-	EVaRT2_Exit();
+	Cortex_Exit();
 }
