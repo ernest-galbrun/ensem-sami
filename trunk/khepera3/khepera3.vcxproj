@@ -126,7 +126,7 @@
   <ItemGroup>
     <ClCompile Include="Agent.cpp" />
     <ClCompile Include="CommunicationSystem.cpp" />
-    <ClCompile Include="interface.cpp" />
+    <ClCompile Include="khepera3clib.cpp" />
     <ClCompile Include="KheperaIII.cpp" />
     <ClCompile Include="LocalizationSystem.cpp" />
     <ClCompile Include="Object.cpp" />
