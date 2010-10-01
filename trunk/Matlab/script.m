@@ -9,7 +9,7 @@ tmax=0;
 for i=1:length(trajectory)
     t0=clock;
     tic
-    myRobot.SetVelocity(10,trajectory(i));
+    myRobot.SetVelocity(100,trajectory(i));
     % myRobot.SetVelocity(,trajectory(i));
     toc
     tic
