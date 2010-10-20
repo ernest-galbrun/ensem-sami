@@ -79,15 +79,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Cortex_SDK_x64.dll">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Cortex_SDK_x86.dll">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Library Include="Cortex_SDK.lib">
+      <Filter>Resource Files</Filter>
+    </Library>
+    <Library Include="Cortex_SDK_x86.lib">
       <Filter>Resource Files</Filter>
     </Library>
   </ItemGroup>
