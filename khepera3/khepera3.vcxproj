@@ -63,7 +63,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\Matlab\%40khepera3\</OutDir>
-    <TargetName>khepera3clib</TargetName>
+    <TargetName>khepera3clib$(Platform)</TargetName>
     <IncludePath>C:\boost_1_44_0;$(IncludePath)</IncludePath>
     <LibraryPath>C:\boost_1_44_0\stageWIN32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -74,7 +74,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\Matlab\%40khepera3\</OutDir>
-    <TargetName>khepera3clib</TargetName>
+    <TargetName>khepera3clib$(Platform)</TargetName>
     <IncludePath>C:\boost_1_44_0;$(IncludePath)</IncludePath>
     <LibraryPath>C:\boost_1_44_0\stageWIN32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>

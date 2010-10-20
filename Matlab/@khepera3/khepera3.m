@@ -24,7 +24,13 @@ classdef khepera3 < handle
             k3.timerAcquisition = timer('Period',0.5,'ExecutionMode','fixedSpacing',...
                                  'BusyMode','drop','TasksToExecute',Inf);
             if (~libisloaded('khepera3clib'))
-            loadlibrary('khepera3clib.dll','khepera3clib.h');
+                if strcmp(computer(),'PCWIN64')
+                    loadlibrary('khepera3clibWin64.dll','khepera3clib.h');
+                elseif strcmp(computer(),'PCWIN32')
+                    loadlibrary('khepera3clibWin32.dll','khepera3clib.h');
+                else
+                    error('This version of Matlab is not supported by the khepera3 dll')                    
+                end
             end
             if nargin>0
                 set(k3.timerAcquisition,'TimerFcn',{@CallBackAcquisition,k3,h_array});
