@@ -62,25 +62,25 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\Matlab\%40khepera3\</OutDir>
-    <TargetName>khepera3clib$(Platform)</TargetName>
+    <OutDir>..\Matlab\%40khepera3\dll\32bits</OutDir>
+    <TargetName>khepera3clib</TargetName>
     <IncludePath>C:\boost_1_44_0;$(IncludePath)</IncludePath>
     <LibraryPath>C:\boost_1_44_0\stageWIN32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\Matlab\%40khepera3\</OutDir>
-    <TargetName>khepera3clib$(Platform)</TargetName>
+    <OutDir>..\Matlab\%40khepera3\dll\64bits\</OutDir>
+    <TargetName>khepera3clib</TargetName>
     <IncludePath>C:\boost_1_44_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\Matlab\%40khepera3\</OutDir>
-    <TargetName>khepera3clib$(Platform)</TargetName>
+    <OutDir>..\Matlab\%40khepera3\dll\32bits</OutDir>
+    <TargetName>khepera3clib</TargetName>
     <IncludePath>C:\boost_1_44_0;$(IncludePath)</IncludePath>
     <LibraryPath>C:\boost_1_44_0\stageWIN32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\Matlab\%40khepera3\</OutDir>
-    <TargetName>khepera3clib$(Platform)</TargetName>
+    <OutDir>..\Matlab\%40khepera3\dll\64bits\</OutDir>
+    <TargetName>khepera3clib</TargetName>
     <IncludePath>C:\boost_1_44_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -155,7 +155,7 @@
     <ClInclude Include="TrackGenerator.h" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="Cortex_SDK.lib">
+    <Library Include="Cortex_SDK_x64.lib">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </Library>

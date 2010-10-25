@@ -5,6 +5,7 @@ for use with matlab or other third party software*/
 
 #include "KheperaIII.h"
 #include "LocalizationSystem.h"
+#include "../Matlab/@khepera3/khepera3clib.h"
 
 #include <iostream>
 #include <string>
