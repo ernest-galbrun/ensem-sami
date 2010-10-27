@@ -62,7 +62,7 @@ KheperaIII::KheperaIII(int id)
 	}
 	else {
 		vector<string> ans;
-		sendMsg("$SetAcquisitionFrequencyx1,1,1\r\n",1,&ans);
+		sendMsg("$SetAcquisitionFrequency1x,1,1\r\n",1,&ans);
 	}
 	vector<string> test;
 }
