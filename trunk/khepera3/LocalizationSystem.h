@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Cortex.h"
+#include "boost/array.hpp"
+#include "boost/shared_ptr.hpp"
 class KheperaIII;
 
 /*
@@ -18,12 +20,8 @@ using namespace std;
 
 class LocalizationSystem
 {
-	KheperaIII *robot;
-	int mode;
-	int enable;
-	float* previousPosition;
-	double previousL;
-	double previousR;
+	//boost::shared_ptr<KheperaIII> robot;
+	bool enable;
 
 	//Cortex Parameters
 	string host;
@@ -33,14 +31,15 @@ class LocalizationSystem
 	int bodyIndex;
 	
 public:
-	LocalizationSystem(KheperaIII*);
+	LocalizationSystem();
 	~LocalizationSystem(void);
 
 	void init(int,int);
-	void init(int,int,string,string,string);
-	void atualizePosition();
+	void init(string myAddress, string hostAddress, string bodyName,boost::array<double,2>* position, double* orientation);
+	//updates the position given in the input pointers, return false on failure
+	bool UpdatePosition(boost::array<double,2>* position, double* orientation);
 	void Close();
-	double* getOwnPosition_Cortex(); //{Ack,X,Y,Z,theta}
+	boost::array<double,5> getOwnPosition_Cortex(); //{Ack,X,Y,Z,theta}
 
 	int countT;
 	int countO;

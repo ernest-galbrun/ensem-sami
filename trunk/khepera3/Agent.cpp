@@ -1,28 +1,31 @@
 #include "Agent.h"
+#include "Object.h"
 
+#include <vector>
+
+#include "boost/thread.hpp"
 
 //CONSTRUCTOR AND DESTRUCTOR----------------------------------
-Agent::Agent(void)
+Agent::Agent(int id):
+	trackGenerator(),
+	localAddress("1.1.1.1"),
+	neighbors(vector<Object>()),
+	obstacles(vector<Object>()),
+	communicationSystem(id, "239.255.0.1", 5090)
 {
-	trackGenerator = new TrackGenerator();
-	localAddress = "1.1.1.1";
-	nNeighbors = 0;
-	neighbors = NULL;
-	obstacles = NULL;
 }
 
 Agent::~Agent(void)
 {
-	delete trackGenerator;
 }
 
 //GETS--------------------------------------------------------
-Agent* Agent::getNeighbors()
+vector<Object> Agent::getNeighbors()
 {
 	return neighbors;
 }
 
-Object* Agent::getObstacles()
+vector<Object> Agent::getObstacles()
 {
 	return obstacles;
 }
@@ -32,18 +35,13 @@ string Agent::getLocalAddress()
 	return localAddress;
 }
 
-int Agent::getnNeighbors()
-{
-	return nNeighbors;
-}
-
 //SETS--------------------------------------------------------
-void Agent::setNeighbors(Agent *neighborsArg)
+void Agent::setNeighbors(vector<Object> neighborsArg)
 {
 	neighbors = neighborsArg;
 }
 
-void Agent::setObstacles(Object *obstaclesArg)
+void Agent::setObstacles(vector<Object> obstaclesArg)
 {
 	obstacles = obstaclesArg;
 }
@@ -53,9 +51,54 @@ void Agent::setLocalAddres(string localAddressArg)
 	localAddress = localAddressArg;
 }
 
-void Agent::setnNeighbors(int nArg)
-{
-	nNeighbors = nArg;
+
+void Agent::ReorganizeNeighbors(int idArg, double xArg, double yArg)
+{	
+	if(getId() != idArg && communicationSystem.Enabled())
+	{		
+		int index = testNeighbor(idArg);			
+		if(index != -1) // neighbor already exist
+		{				
+			neighbors[index].setPosition(xArg,yArg);
+		}
+		else //new neighbor
+		{
+			Object newcomer;
+			newcomer.setId(idArg);
+			newcomer.setPosition(xArg,yArg);
+			neighbors.push_back(newcomer);
+		}
+	}
 }
 
-//FUNCTIONAL METHODS------------------------------------------
+int Agent::testNeighbor(int idArg)
+{
+	int ret = -1;
+	for(unsigned int i=0;i < neighbors.size();++i)
+	{
+		if((neighbors[i]).getId() == idArg)
+		{ret = i;}
+	}
+	return ret;
+}
+
+void Agent::SendPosition() {
+	communicationSystem.sendPosition(getId(),getPosition());
+}
+
+
+void Agent::LaunchComm()
+{
+	//boost::thread thr(boost::bind(&CommunicationSystem::run,&communicationSystem));
+	boost::thread thr(&Agent::ReceiveContinuously, this);
+}
+
+void Agent::ReceiveContinuously() {
+	while(true) {
+		int id;
+		boost::array<double,2> position;
+		if	(communicationSystem.ReceivePosition(id,position)) {
+			ReorganizeNeighbors(id,position[0],position[1]);
+		}
+	}
+}

@@ -9,9 +9,9 @@
 #include "boost/asio.hpp"
 #include "boost/shared_ptr.hpp"
 #include "boost/date_time/posix_time/posix_time.hpp"
+#include "CommunicationSystem.h"
+#include "LocalizationSystem.h"
 
-class LocalizationSystem;
-class CommunicationSystem;
 using namespace std;
 
 
@@ -20,14 +20,14 @@ class KheperaIII : public Agent
 private:
 	int nIrSensors;
 	double axis;
-	int *irValues;
-	int encoderValues[2];
+	std::vector<int> irValues;
+	boost::array<int,2> encoderValues;
+	int previousL;
+	int previousR;
+	int updatePositionMode; //0 = offline 1 = using cortex 2 = hybrid
 
 	int tick;
 	boost::shared_ptr<boost::asio::deadline_timer> timer;
-	//CSerial *serial;
-	//string serialPort;
-	//int testSerial;
 	
 	boost::asio::io_service      io_service_;
 	boost::shared_ptr<boost::asio::ip::tcp::socket> socket_;
@@ -42,21 +42,20 @@ private:
 	string speedMsg(int,int);
 	string encodersMsg(int,int);
 	int sendMsg(string msg, int n, vector<string>* answer);
-	boost::shared_ptr<CommunicationSystem> communicationSystem;	
 	void	RunIOService();
+	void UpdatePositionOffline();
+	virtual bool UpdatePosition();
 
 public:
 	KheperaIII(int id);
 	~KheperaIII(void);
 
 	void CloseConnection();
-	boost::shared_ptr<LocalizationSystem> localizationSystem;
-	void initComm(std::string,std::string,int);
 
 	void timeStep();
 	void LaunchContinuousThread();
 	void setVelocity(double,double);
-	int* getIrOutput();
+	const vector<int>& getIrOutput();
 	
 	void getEncodersValue(int* left, int* right);
 	void setEncodersValue(int,int);
@@ -76,6 +75,7 @@ public:
 	int StartInternalTracking();
 
 	int getTestSerial();
+	void SetUpdatePositionMode(int mode);
 };
 
 

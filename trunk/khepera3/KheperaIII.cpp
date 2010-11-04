@@ -24,23 +24,21 @@ using namespace boost;
 //{return testSerial;}
 
 //CONSTRUCTOR AND DESTRUCTOR----------------------------------
-KheperaIII::KheperaIII(int id)
+KheperaIII::KheperaIII(int id):
+	Agent(id),
+	axis(AXIS),
+	nIrSensors(NB_SENSORS),
+	irValues(vector<int>(nIrSensors)),
+	firstRead(true),
+	stopContinuousAcquisition(false),
+	previousL(0),
+	previousR(0)
 {
 	setId(id);
 	tick = 0;
 	timer = boost::shared_ptr<asio::deadline_timer>(new asio::deadline_timer(io_service_,posix_time::milliseconds(0)));
-	tcp_buf = boost::shared_ptr<asio::streambuf>(new asio::streambuf(100));
+	tcp_buf = boost::shared_ptr<asio::streambuf>(new asio::streambuf(100));	
 	
-	stopContinuousAcquisition = false;
-	firstRead = true;
-	nIrSensors = NB_SENSORS;
-	axis = AXIS;
-	irValues = (int*)malloc(nIrSensors*sizeof(int));
-	//serial = new CSerial();
-	
-	localizationSystem = boost::shared_ptr<LocalizationSystem> (new LocalizationSystem(this));
-	communicationSystem = boost::shared_ptr<CommunicationSystem> (new CommunicationSystem(this));
-
 	stringstream s;
 	s<<"10.10.10."<<id;
 
@@ -58,13 +56,14 @@ KheperaIII::KheperaIII(int id)
 		iter++;
 	}
 	if (ec) {
-		cout<< "ERROR: connection to the robo failed. Error code: "<<ec<<".\n";
+		cout<< "ERROR: connection to the robot failed. Error code: "<<ec<<".\n";
 	}
 	else {
 		vector<string> ans;
 		sendMsg("$SetAcquisitionFrequency1x,1,1\r\n",1,&ans);
+		getEncodersValue(&previousL, &previousR);
+		LaunchComm();
 	}
-	vector<string> test;
 }
 
 
@@ -73,14 +72,12 @@ KheperaIII::~KheperaIII()
 {
 	stopContinuousAcquisition = true;
 	continuousThread.join();
-	//continuousThread.interrupt();
 }
 
 void	KheperaIII::CloseConnection()// use instead of destructor because of heap corruption in matlab
 {
 	stopContinuousAcquisition = true;
 	continuousThread.join();
-	//continuousThread.interrupt();
 }
 
 void KheperaIII::LaunchContinuousThread(){	
@@ -111,37 +108,66 @@ void KheperaIII::setVelocity(double vSpeed, double wSpeed)
 
 void KheperaIII::timeStep()
 {	
-	this->trackGenerator->nextStep();
-	this->localizationSystem->atualizePosition();
-	this->communicationSystem->sendPosition();	
+	trackGenerator.nextStep();
+	UpdatePosition();
+	SendPosition();	
 }
 
-int* KheperaIII::getIrOutput()
+bool KheperaIII::UpdatePosition() {
+	if (updatePositionMode==0) {
+		UpdatePositionOffline();
+	}
+	else if (updatePositionMode==1) {
+		if (!this->Object::UpdatePosition()) {
+			UpdatePositionOffline();
+		}
+	}
+	return true;
+}
+
+
+void KheperaIII::UpdatePositionOffline() {
+	double dl, dr, dc, thetaAux;
+	int encoderValueLeft,encoderValueRight;
+	boost::array<double,2> position = getPosition();
+	double orientation = getOrientation();
+	getEncodersValue(&encoderValueLeft,&encoderValueRight);
+	dl = (encoderValueLeft-previousL)*K_ENCODER;
+	dr = (encoderValueRight-previousR)*K_ENCODER;
+	dc = (dl+dr)/2;
+
+	thetaAux = orientation;
+	orientation += (dr-dl)/AXIS;
+			
+	(position)[0] += dc*cos( (orientation + thetaAux)/2);
+	(position)[1] =+ dc*sin( (orientation + thetaAux)/2);
+
+	setPosition(position[0],position[1]);
+	setOrientation(orientation);
+
+	previousL = encoderValueLeft;
+	previousR = encoderValueRight;
+}
+
+const vector<int>& KheperaIII::getIrOutput()
 {
 	/*string commandMsg = "N\n";
 	string data;
 	string aux;
 	string::size_type index;
 	int i;
+	data = this->sendMsg(commandMsg);*/
 
-	data = this->sendMsg(commandMsg);
-
-	for(i=0;i<nIrSensors;i++)
+	for(unsigned int i=0;i<irValues.size();++i)
 	{
-		index = data.find(",",0);
+		/*index = data.find(",",0);
 		data = data.substr(index+1);
 		index = data.find(",",0);
-		aux = data.substr(0,index);
-		
-		irValues[i] = atoi(aux.c_str());
-	}*/
-	int		irValues[2];
-	irValues[0] = 0;
-	irValues[1] = 0;
+		aux = data.substr(0,index);*/		
+		irValues[i] = 0;
+	}
 	return irValues;
 }
-
-
 
 void KheperaIII::setEncodersValue(int lValue,int rValue)
 {
@@ -186,7 +212,7 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 	*answer = vector<string>();
 	asio::write(*socket_,asio::buffer(msg));
 	string ans;
-	int	bytesRead;
+	size_t	bytesRead;
 	system::error_code& ec = system::error_code();
 	istream is(&*tcp_buf);
 	if (!firstRead) {
@@ -215,11 +241,6 @@ void	KheperaIII::RunIOService(){
 
 void	KheperaIII::ReadLastLineHandler(const boost::system::error_code& e, std::size_t size){
 	//communicationStackCount--;
-}
-
-void KheperaIII::initComm(std::string adLoc, std::string adMult, int porMult)
-{
-	boost::thread thr(boost::bind(&CommunicationSystem::init,communicationSystem,adLoc, adMult,porMult));
 }
 
 void KheperaIII::closeSession()
@@ -389,3 +410,8 @@ int KheperaIII::StartInternalTracking(){
 	stopContinuousAcquisition = false;
 	return 0;
 }
+
+void KheperaIII::SetUpdatePositionMode(int mode){
+	updatePositionMode=mode;
+}
+

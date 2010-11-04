@@ -33,6 +33,11 @@ extern "C" __declspec(dllexport) int DeleteKhepera(int robotID){
 	return 0;
 }
 
+extern "C" __declspec(dllexport) int SendPosition(int robotID) {
+	k3[robotID]->SendPosition();
+	return 0;
+}
+
 extern "C" __declspec(dllexport) int SetSpeed(int robotID, double linear, double angular){
 	k3[robotID]->setVelocity(linear,angular);
 	return 0;
@@ -43,16 +48,15 @@ extern "C" __declspec(dllexport) int InitLocalizationSystem(int robotID, int mod
 	char buf[10];
 	int i=k3[robotID]->getId();
 	itoa(k3[robotID]->getId(),buf,10);
-
 	bodyName += buf;
-	k3[robotID]->localizationSystem->init(mode,1,string(localIP), string(cortexIP), bodyName);	
+	k3[robotID]->SetUpdatePositionMode(mode);
+	k3[robotID]->InitLocalizationSystem(string(localIP), string(cortexIP), bodyName);	
 	k3[robotID]->LaunchContinuousThread();
 	return 0;
 }
 
 extern "C" __declspec(dllexport) int GetPosition(int robotID, double *posX, double *posY) {
-	double* pos = new double[2];
-	pos = k3[robotID]->getPosition();
+	array<double,2> pos = k3[robotID]->getPosition();
 	*posX = pos[0];
 	*posY = pos[1];
 	return 0;

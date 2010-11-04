@@ -13,236 +13,115 @@
 #include "KheperaIII.h"
 #include "LocalizationSystem.h"
 
-LocalizationSystem::LocalizationSystem(KheperaIII* robotArg)
+LocalizationSystem::LocalizationSystem():
+	enable(false)
+	//robot(robotArg)
 {
-	robot = robotArg;
-	previousPosition = (float*)malloc(3*(sizeof(float)));
-	enable = 0;
+	//robot = robotArg;
+	//previousPosition = (float*)malloc(3*(sizeof(float)));
+	//enable = 0;
 }
 
 LocalizationSystem::~LocalizationSystem(void)
 {
 }
 
-void LocalizationSystem::init(int modeArg, int autoAtualize)
+void LocalizationSystem::init(string myAddress, string hostAddress, string bodyName, boost::array<double,2>* position, double* orientation)
 {
-	mode = modeArg;
-	
-	enable = autoAtualize;
-
-	previousL= X0;
-	previousR= Y0;
-	if(mode == 1)
-	{
-		robot->setPosition(X0,Y0);
-		robot->setOrientation(THETA0);
-
-		robot->setEncodersValue(0,0);
-	}
-	if(mode == 2)
-	{
-		printf("ERROR: For this mode, please use LocalizationSystem::init(int,int,string,string,string\n");
-		exit(0);
-	}
-	if(mode == 3)
-	{
-		//TODO
-	}	
-}
-
-
-
-
-void LocalizationSystem::init(int modeArg, int autoAtualize, string myAddress, string hostAddress, string bodyName)
-{
-
-	previousL= X0;
-	previousR= Y0;
 	countT = 0;
 	countO = 0;
 	int test = 0;
-	mode = modeArg;
-	enable = autoAtualize;
-	double *auxCor;
+	boost::array<double,5> auxCor;
 	sHostInfo Cortex_HostInfo;
 	
 	sBodyDefs* pBodyDefs=NULL;
 	int iBody;
+	me = myAddress;
+	host = hostAddress;
+	name = bodyName;
 
-	
-	if(mode == 1)
+	//INITIALIZING EVaRT
+	memset(&MyCopyOfFrame, 0, sizeof(sFrameOfData));
+	Cortex_SetVerbosityLevel(VL_None);		
+	printf("Connecting to Cortex Host...\n");
+	int retval = Cortex_Initialize((char*)me.c_str(), (char*)host.c_str());		
+	if (retval != RC_Okay)
 	{
-		robot->setPosition(X0,Y0);
-		robot->setOrientation(THETA0);
-
-		robot->setEncodersValue(0,0);
+		enable =false;
+		printf("Error: Unable to initialize ethernet communication.\n");
+		exit(0);
 	}
-	if(mode == 2 || mode == 3)
-	{		
-		robot->setEncodersValue(0,0);
-
-		me = myAddress;
-		host = hostAddress;
-		name = bodyName;
-
-		//INITIALIZING EVaRT
-		memset(&MyCopyOfFrame, 0, sizeof(sFrameOfData));
-		Cortex_SetVerbosityLevel(VL_None);
-		
-		printf("Connecting to Cortex Host...\n");
-		int retval = Cortex_Initialize((char*)me.c_str(), (char*)host.c_str());
-		
-		
-		if (retval != RC_Okay)
+	else
+	{
+		retval = Cortex_GetHostInfo(&Cortex_HostInfo);    
+		if (retval != RC_Okay || !Cortex_HostInfo.bFoundHost)
 		{
-			enable =0;printf("Error: Unable to initialize ethernet communication.\n");
-			exit(0);
+			enable =0;
+			printf("Error: Unable to find Cortex.\n");
+			exit(0);				
 		}
 		else
 		{
-			retval = Cortex_GetHostInfo(&Cortex_HostInfo);
-    
-			if (retval != RC_Okay || !Cortex_HostInfo.bFoundHost)
+		pBodyDefs = Cortex_GetBodyDefs();
+			for (iBody=0; iBody<pBodyDefs->nBodyDefs; iBody++)
 			{
-				enable =0;printf("Error: Unable to find Cortex.\n");
-				exit(0);
-				
-			}
-			else
-			{
-			pBodyDefs = Cortex_GetBodyDefs();
-				for (iBody=0; iBody<pBodyDefs->nBodyDefs; iBody++)
+				sBodyDef *pBody = &pBodyDefs->BodyDefs[iBody];
+				char* aux = pBody->szName;
+				if(strncmp (aux,name.c_str(),strlen(aux))==0)
 				{
-					sBodyDef *pBody = &pBodyDefs->BodyDefs[iBody];
-					char* aux = pBody->szName;
-					if(strncmp (aux,name.c_str(),strlen(aux))==0)
+					bodyIndex = iBody;
+					test  = 1;
+					auxCor = getOwnPosition_Cortex();
+					if(auxCor[0]==1)
 					{
-						bodyIndex = iBody;
-						test  = 1;
-						auxCor = getOwnPosition_Cortex();
-						if(auxCor[0]==1)
-						{
-							robot->setPosition(auxCor[1],auxCor[2]);
-							robot->setOrientation(auxCor[4]);
-							printf("Done!!!\n");
+						(*position)[0] = auxCor[1];
+						(*position)[1] = auxCor[2];
+						*orientation = auxCor[4];
+						printf("Done!!!\n");
 							
-						}
-						else
-						{
-							enable =0;printf("Error: In the first iteration ALL markers of the must be valid.\n");
-							exit(0);
-							
-						}
 					}
+					else
+					{
+						enable =0;printf("Error: In the first iteration ALL markers of the must be valid.\n");
+						exit(0);							
+					}
+				}
 					
-				}
-				if(test==0)
-				{enable =0;printf("Error: Unable to find body with provided name.\n");exit(0);}
 			}
-		}
-	}	
-}
-
-
-void LocalizationSystem::atualizePosition()
-{
-	countT++;
-
-	double* auxCor;
-
-	if(enable == 1)
-	{
-		
-		if(mode==1)
-		{
-			double dl, dr, dc, thetaAux, xAux, yAux;
-			int left,right;
-			robot->getEncodersValue(&left, &right);
-			dl = (left-previousL)*K_ENCODER;
-			dr = (right-previousR)*K_ENCODER;
-			dc = (dl+dr)/2;
-			thetaAux = robot->getOrientation();
-
-			robot->setOrientation(robot->getOrientation() + (dr-dl)/AXIS);
-
-			
-			xAux = robot->getPosition()[0] + dc*cos( (robot->getOrientation() + thetaAux)/2);
-			yAux = robot->getPosition()[1] + dc*sin( (robot->getOrientation() + thetaAux)/2);
-			robot->setPosition(xAux,yAux);
-
-			if(robot->getOrientation() < 0)
+			if(test==0)
 			{
-				robot->setOrientation(2*PI + robot->getOrientation());
+				enable =0;
+				printf("Error: Unable to find body with provided name.\n");
+				exit(0);
 			}
-			if(robot->getOrientation() > 2*PI)
-			{
-				robot->setOrientation(robot->getOrientation() - 2*PI);
-			}
-			
-						
-			
-			previousL= left;
-			previousR= right;
-			//robot->setEncodersValue(0,0);
-
-		}
-		if(mode==2)
-		{
-			auxCor = getOwnPosition_Cortex();
-			if(auxCor[0]==1)
-			{
-				countO++;
-				int left,right;
-				//printf("Ct: %d Co: %d\n",countT, countO);
-				robot->setPosition(auxCor[1],auxCor[2]);
-				robot->setOrientation(auxCor[4]);
-
-				robot->getEncodersValue(&left,&right);
-				previousL= left;
-				previousR= right;
-			}
-			else
-			{
-				//printf("MARKER LOSS\n");
-				double dl, dr, dc, thetaAux, xAux, yAux;
-				int left,right;
-				robot->getEncodersValue(&left,&right);
-				dl = (left-previousL)*K_ENCODER;
-				dr = (right-previousR)*K_ENCODER;
-				dc = (dl+dr)/2;
-				thetaAux = robot->getOrientation();
-
-				robot->setOrientation(robot->getOrientation() + (dr-dl)/AXIS);
-
-				if(robot->getOrientation() < 0)
-				{
-					robot->setOrientation(2*PI + robot->getOrientation());
-				}
-				if(robot->getOrientation() > 2*PI)
-				{
-					robot->setOrientation(robot->getOrientation() - 2*PI);
-				}
-				
-				xAux = robot->getPosition()[0] + dc*cos( (robot->getOrientation() + thetaAux)/2);
-				yAux = robot->getPosition()[1] + dc*sin( (robot->getOrientation() + thetaAux)/2);
-							
-				robot->setPosition(xAux,yAux);
-				
-				previousL= left;
-				previousR= right;
-			}
-		}
-		if(mode==3)
-		{
 		}
 	}
 }
 
 
-
-double* LocalizationSystem::getOwnPosition_Cortex()
+bool LocalizationSystem::UpdatePosition(boost::array<double,2>* position, double* orientation)
 {
-	double* ret = new double[5];
+	countT++;
+	boost::array<double,5> auxCor;
+	auxCor = getOwnPosition_Cortex();
+	if(auxCor[0]==1)
+	{
+		countO++;
+		//printf("Ct: %d Co: %d\n",countT, countO);
+		(*position)[0] = auxCor[1];
+		(*position)[1] = auxCor[2];
+		*orientation = auxCor[4];
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+	
+boost::array<double,5> LocalizationSystem::getOwnPosition_Cortex()
+{
+	boost::array<double,5> ret = { { 0,0,0,0,0 } };
 	double aux;
 	sFrameOfData* pFrameOfData=NULL;
 	float* coordFront;

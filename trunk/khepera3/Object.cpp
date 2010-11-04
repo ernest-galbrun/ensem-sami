@@ -1,16 +1,25 @@
 
 #include "Object.h"
 
-Object::Object(void)
-{
-	position = (double *)malloc(2);
+using namespace boost;
+
+Object::Object(void):
+	position(array<double,2>()),
+	orientation(0)
+{	
+	for (int i=0;i<(int)position.size();++i)
+		position[i] = 0;
 }
 
 Object::~Object(void)
 {
 }
 
-int Object::getId()
+void Object::InitLocalizationSystem(string myAddress, string hostAddress, string bodyName){
+	localizationSystem.init(myAddress, hostAddress, bodyName, &position, &orientation);
+}
+
+int Object::getId() const
 {
 	return id;
 }
@@ -20,7 +29,7 @@ void Object::setId(int idArg)
 	id = idArg;
 }
 
-double* Object::getPosition()
+array<double,2> Object::getPosition()
 {
 	return position;
 }
@@ -40,4 +49,8 @@ double Object::getOrientation()
 void Object::setOrientation(double orientationArg)
 {
 	orientation = orientationArg;
+}
+
+bool Object::UpdatePosition() {
+	return localizationSystem.UpdatePosition(&position, &orientation);
 }
