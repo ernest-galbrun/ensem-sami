@@ -63,16 +63,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir)\khepera3;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Documents and Settings\Ernest Galbrun\Mes documents\Lucas\ensem-sami\khepera3;C:\Documents and Settings\Ernest Galbrun\Mes documents\Lucas\ensem-sami\khepera3\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>..\Matlab\%40khepera3\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)\khepera3;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Documents and Settings\Ernest Galbrun\Mes documents\Lucas\ensem-sami\khepera3;C:\Documents and Settings\Ernest Galbrun\Mes documents\Lucas\ensem-sami\khepera3\Debug;$(LibraryPath)</LibraryPath>
     <OutDir>..\Matlab\%40khepera3\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir)\khepera3;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)\khepera3;$(IncludePath)</IncludePath>

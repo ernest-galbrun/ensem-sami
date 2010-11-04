@@ -6,10 +6,12 @@
 #include <boost/asio.hpp>
 #include "boost/bind.hpp"
 #include "boost/date_time/posix_time/posix_time_types.hpp"
+#include "boost/array.hpp"
 
 
 class Sender
 {
+	boost::asio::io_service io_service_sender;
 	boost::asio::ip::udp::endpoint endpoint_;
 	boost::asio::ip::udp::socket socket_;
 	boost::asio::deadline_timer timer_;
@@ -17,9 +19,9 @@ class Sender
 	std::string message_;
 
 public:
-	Sender(boost::asio::io_service&, const boost::asio::ip::address&,int);
+	Sender(const boost::asio::ip::address&,int);
 
 	~Sender(void);
-	void sendPosition(int,double,double);
+	void sendPosition(int id,const boost::array<double,2>& position);
 	void handler_sender(const boost::system::error_code&);
 };

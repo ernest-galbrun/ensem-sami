@@ -1,31 +1,36 @@
-#include <string>
-#include "Object.h"
-#include "TrackGenerator.h"
-
 #pragma once
 
-using namespace std;
+#include <string>
+#include <vector>
+#include "Object.h"
+#include "TrackGenerator.h"
+#include "CommunicationSystem.h"
 
-class Agent : public Object
+class Agent : public Object,boost::noncopyable
 {
 private:
-	Agent* neighbors;
-	int nNeighbors;
-	Object* obstacles;
-	string localAddress;
+	std::vector<Object> neighbors;
+	std::vector<Object> obstacles;
+	std::string localAddress;
+	CommunicationSystem communicationSystem;	
+
+	int testNeighbor(int idArg);
+	void ReceiveContinuously();
+protected:
+	void LaunchComm();
 public:
-	Agent(void);
+	Agent(int id);
 	~Agent(void);
 
-	TrackGenerator* trackGenerator;
+	TrackGenerator trackGenerator;
 
-	Agent* getNeighbors();
-	Object* getObstacles();
-	string getLocalAddress();
-	int getnNeighbors();
+	void ReorganizeNeighbors(int idArg, double xArg, double yArg);
+	std::vector<Object> getNeighbors();
+	std::vector<Object> getObstacles();
+	std::string getLocalAddress();
+	void SendPosition();
 
-	void setnNeighbors(int);
-	void setNeighbors(Agent*);
-	void setObstacles(Object*);
-	void setLocalAddres(string);
+	void setNeighbors(vector<Object>);
+	void setObstacles(vector<Object>);
+	void setLocalAddres(std::string);
 };

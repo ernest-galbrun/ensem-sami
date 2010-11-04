@@ -8,6 +8,8 @@ extern "C" {
 	// Delete robot
 	__declspec(dllexport) int DeleteKhepera(int robotID);
 
+	__declspec(dllexport) int SendPosition(int robotID);
+
 	// Set speed for both motor (this changes the operating mode at every call, maybe
 	// use SetMode then SetPoint for more efficient use)
 	__declspec(dllexport) int SetSpeed(int robotID, double linear, double angular);

@@ -7,9 +7,13 @@ int main(int argc, char* argv[])
 
 {
 	void* p;
-
+	LaunchKhepera(5);
 	LaunchKhepera(2);
-	DeleteKhepera(2);
+	while(true) {
+		SendPosition(2);
+		SendPosition(5);
+	}
+	//DeleteKhepera(2);
 	//SetSpeed(p,0,2);
 	InitLocalizationSystem(2,1,"193.49.136.176","193.49.136.176");
 	double x,y,t;

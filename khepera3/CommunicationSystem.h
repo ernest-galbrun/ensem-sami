@@ -6,32 +6,30 @@
 //#include <windows.h>
 #include <iostream>
 
-#include <boost/asio.hpp>
+#include "Receiver.h"
+#include "Sender.h"
 
-class Receiver;
-class Sender;
-class KheperaIII;
-class Agent;
-class CommunicationSystem
+#include <boost/asio.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/array.hpp>
+#include <boost/utility.hpp>
+
+class CommunicationSystem:boost::noncopyable
 {
-	Receiver *receiver;
-	Sender *sender;
+	Receiver receiver;
+	Sender sender;
 	std::string multicastAddress;
 	std::string localAddress;
 	int multicastPort;
-	int enable;
-	boost::asio::io_service io_service;
-	boost::asio::io_service io_service2;
-	KheperaIII *robot;
-	int testNeighbor(int);
-	void copyNeighbors(Agent*);
-
+	bool enable;
+	//boost::shared_ptr<KheperaIII> robot;
 public:
-	CommunicationSystem(KheperaIII *);
+	CommunicationSystem(int id, std::string adMult, int porMult);
 	~CommunicationSystem(void);
 
-	void init(std::string,std::string,int);
+	//void run();
 	void reorganizeNeighbors(int,double,double);
-	void sendPosition();
-	
+	void sendPosition(int id,const boost::array<double,2>& position);
+	bool ReceivePosition(int& id, boost::array<double,2>& position);
+	bool Enabled();	
 };
