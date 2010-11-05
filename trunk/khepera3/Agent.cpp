@@ -22,12 +22,33 @@ Agent::~Agent(void)
 {
 	stopListening = true;
   	listeningThread.join();
+	free (posX_);
+	free (posY_);
+	free (id_);
 }
 
 //GETS--------------------------------------------------------
 vector<Object> Agent::getNeighbors()
 {
 	return neighbors;
+}
+
+void	Agent::getNeighbors(int* numberOfNeighbors, int** id, double** x, double** y){
+	*numberOfNeighbors=neighbors.size();
+
+	posX_ = (double*) malloc(*numberOfNeighbors * sizeof(double));
+	posY_ = (double*) malloc(*numberOfNeighbors * sizeof(double));
+	id_ = (int*) malloc(*numberOfNeighbors * sizeof(int));
+	array<double,2> position;
+	for (unsigned int i=0;i<neighbors.size();i++) {
+		position = neighbors[i].getPosition();
+		id_[i] = neighbors[i].getId();
+		posX_[i] = position[0];
+		posY_[i] = position[1];
+	}
+	*id= id_;
+	*x = posX_;
+	*y = posY_;
 }
 
 vector<Object> Agent::getObstacles()

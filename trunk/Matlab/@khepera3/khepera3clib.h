@@ -63,6 +63,8 @@ extern "C" {
 	__declspec(dllexport) int StartInternalTracking(int robotID);
 	__declspec(dllexport) int StopInternalTracking(int robotID);
 
+	__declspec(dllexport) int GetNeighbors(int robotID, int* numberOfNeighbors, int** id, double** x, double** y);
+
 
 #ifdef __cplusplus
 }

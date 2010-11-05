@@ -5,6 +5,7 @@ for use with matlab or other third party software*/
 
 #include "KheperaIII.h"
 #include "LocalizationSystem.h"
+#include "Object.h"
 #include "../Matlab/@khepera3/khepera3clib.h"
 
 #include <iostream>
@@ -129,4 +130,9 @@ extern "C" __declspec(dllexport) int StartInternalTracking(int robotID){
 }
 extern "C" __declspec(dllexport) int StopInternalTracking(int robotID){
 	return k3[robotID]->StopInternalTracking();
+}
+
+extern "C" __declspec(dllexport) int GetNeighbors(int robotID, int* numberOfNeighbors, int** id, double** x, double** y) {
+	k3[robotID]->getNeighbors(numberOfNeighbors,id,x,y);
+	return 0;
 }

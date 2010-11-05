@@ -69,7 +69,7 @@ bool Receiver::ReceivePosition(int& id, boost::array<double,2>& position) {
     }
 	newDataArrived = n==0?false:true;
 	if (newDataArrived) {
-		id = receivedId;
+		id = receivedId; 
 		position = receivedPosition;
 	}
 	return newDataArrived;
