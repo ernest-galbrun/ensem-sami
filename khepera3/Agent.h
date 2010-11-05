@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include "boost/thread.hpp"
 #include "Object.h"
 #include "TrackGenerator.h"
 #include "CommunicationSystem.h"
@@ -16,6 +17,8 @@ private:
 
 	int testNeighbor(int idArg);
 	void ReceiveContinuously();
+	bool stopListening;
+	boost::thread listeningThread;
 protected:
 	void LaunchComm();
 public:

@@ -7,8 +7,9 @@ int main(int argc, char* argv[])
 
 {
 	void* p;
-	LaunchKhepera(5);
-	LaunchKhepera(2);
+	LaunchKhepera(5,true);
+	DeleteKhepera(5);
+	LaunchKhepera(2,false);
 	while(true) {
 		SendPosition(2);
 		SendPosition(5);

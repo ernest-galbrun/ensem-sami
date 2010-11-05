@@ -5,18 +5,23 @@
 
 #include "boost/thread.hpp"
 
+using namespace boost;
+
 //CONSTRUCTOR AND DESTRUCTOR----------------------------------
 Agent::Agent(int id):
 	trackGenerator(),
 	localAddress("1.1.1.1"),
 	neighbors(vector<Object>()),
 	obstacles(vector<Object>()),
-	communicationSystem(id, "239.255.0.1", 5090)
+	communicationSystem(id, "239.255.0.1", 5090),
+	stopListening(false)
 {
 }
 
 Agent::~Agent(void)
 {
+	stopListening = true;
+  	listeningThread.join();
 }
 
 //GETS--------------------------------------------------------
@@ -90,15 +95,15 @@ void Agent::SendPosition() {
 void Agent::LaunchComm()
 {
 	//boost::thread thr(boost::bind(&CommunicationSystem::run,&communicationSystem));
-	boost::thread thr(&Agent::ReceiveContinuously, this);
+	listeningThread = thread(&Agent::ReceiveContinuously, this);
 }
 
 void Agent::ReceiveContinuously() {
-	while(true) {
+	while(!stopListening) {
 		int id;
 		boost::array<double,2> position;
 		if	(communicationSystem.ReceivePosition(id,position)) {
 			ReorganizeNeighbors(id,position[0],position[1]);
-		}
+		} 		
 	}
 }

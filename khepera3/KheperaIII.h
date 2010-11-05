@@ -18,6 +18,9 @@ using namespace std;
 class KheperaIII : public Agent
 {
 private:
+	boost::posix_time::ptime lastStepTime;
+	bool isVirtual_; // set to true if we arre dealing with a virtual robot
+	double linearSpeed_, angularSpeed_;
 	int nIrSensors;
 	double axis;
 	std::vector<int> irValues;
@@ -47,7 +50,7 @@ private:
 	virtual bool UpdatePosition();
 
 public:
-	KheperaIII(int id);
+	KheperaIII(int id, bool isVirtual=false);
 	~KheperaIII(void);
 
 	void CloseConnection();

@@ -8,9 +8,7 @@ classdef khepera3 < handle
     end
     
     properties (Access = private) %t : handle to the tcpip object
-        %p = libpointer('voidPtr');
-        %t = tcpip('0.0.0.0',
-        %14,'terminator','CR/LF','inputbuffersize',1000000);
+        isVirtual
         busy
         timerAcquisition
     end
@@ -59,7 +57,7 @@ classdef khepera3 < handle
         % h_array is an array of handles to the screen display
         % mode = {'start'|'stop'}
         RunAcquisition(k3, mode)
-        error = Connect(k3,Id,localIP,h_message)   
+        error = Connect(k3,Id,localIP,virtual,h_message)   
         Disconnect(k3)
         SetMode(k3,modeLeft,modeRight)
         modes = GetMode(k3)
