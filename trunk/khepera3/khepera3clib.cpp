@@ -20,16 +20,16 @@ using namespace boost;
 KheperaIII* k3[10];
 
 
-extern "C" __declspec(dllexport) int LaunchKhepera(int robotID){
-	k3[robotID] = new KheperaIII(robotID);
+extern "C" __declspec(dllexport) int LaunchKhepera(int robotID, int isVirtual){
+	k3[robotID] = new KheperaIII(robotID, (bool) isVirtual);
 	return 0;
 }
 
 extern "C" __declspec(dllexport) int DeleteKhepera(int robotID){
-	//delete(k3[robotID]);
-	k3[robotID]->CloseConnection();
-	k3[robotID]->closeSession();
-	k3[robotID] = NULL;
+	delete(k3[robotID]);
+	//k3[robotID]->CloseConnection();
+	//k3[robotID]->closeSession();
+	//k3[robotID] = NULL;
 	return 0;
 }
 
@@ -50,7 +50,8 @@ extern "C" __declspec(dllexport) int InitLocalizationSystem(int robotID, int mod
 	itoa(k3[robotID]->getId(),buf,10);
 	bodyName += buf;
 	k3[robotID]->SetUpdatePositionMode(mode);
-	k3[robotID]->InitLocalizationSystem(string(localIP), string(cortexIP), bodyName);	
+	if (mode)
+		k3[robotID]->InitLocalizationSystem(string(localIP), string(cortexIP), bodyName);	
 	k3[robotID]->LaunchContinuousThread();
 	return 0;
 }

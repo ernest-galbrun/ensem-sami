@@ -8,10 +8,12 @@
 #include <cstdlib>
 #include <tchar.h>
 #include <sstream>
+#include <stdexcept>
 
 #include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
+#include <boost/date_time.hpp>
 
 #include "LocalizationSystem.h"
 #include "KheperaIII.h"
@@ -24,7 +26,10 @@ using namespace boost;
 //{return testSerial;}
 
 //CONSTRUCTOR AND DESTRUCTOR----------------------------------
-KheperaIII::KheperaIII(int id):
+KheperaIII::KheperaIII(int id, bool isVirtual):
+	isVirtual_(isVirtual),
+	angularSpeed_(0),
+	linearSpeed_(0),
 	Agent(id),
 	axis(AXIS),
 	nIrSensors(NB_SENSORS),
@@ -32,36 +37,41 @@ KheperaIII::KheperaIII(int id):
 	firstRead(true),
 	stopContinuousAcquisition(false),
 	previousL(0),
-	previousR(0)
-{
+	previousR(0){
 	setId(id);
 	tick = 0;
 	timer = boost::shared_ptr<asio::deadline_timer>(new asio::deadline_timer(io_service_,posix_time::milliseconds(0)));
 	tcp_buf = boost::shared_ptr<asio::streambuf>(new asio::streambuf(100));	
 	
-	stringstream s;
-	s<<"10.10.10."<<id;
-
-	asio::ip::tcp::resolver resolver(io_service_);
-	asio::ip::tcp::resolver::query query(s.str(),"14");
-	asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
-	asio::ip::tcp::resolver::iterator end;
-	socket_ = boost::shared_ptr<boost::asio::ip::tcp::socket>(new asio::ip::tcp::socket(io_service_));
-	cout << "Establishing connection with the Robot..." << endl;
-	boost::system::error_code& ec = boost::system::error_code();
-	while (iter != end) {
-		socket_->connect(*iter,ec);
-		if (ec == false)
-			break;
-		iter++;
-	}
-	if (ec) {
-		cout<< "ERROR: connection to the robot failed. Error code: "<<ec<<".\n";
+	if (!isVirtual_){
+		stringstream s;
+		s<<"10.10.10."<<id;
+		asio::ip::tcp::resolver resolver(io_service_);
+		asio::ip::tcp::resolver::query query(s.str(),"14");
+		asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
+		asio::ip::tcp::resolver::iterator end;
+		socket_ = boost::shared_ptr<boost::asio::ip::tcp::socket>(new asio::ip::tcp::socket(io_service_));
+		cout << "Establishing connection with the Robot..." << endl;
+		boost::system::error_code& ec = boost::system::error_code();
+		while (iter != end) {
+			socket_->connect(*iter,ec);
+			if (ec == false)
+				break;
+			iter++;
+		}
+		if (ec) {
+			cout<< "ERROR: connection to the robot failed. Error code: "<<ec<<".\n";
+		}
+		else {
+			vector<string> ans;
+			sendMsg("$SetAcquisitionFrequency1x,1,1\r\n",1,&ans);
+			getEncodersValue(&previousL, &previousR);
+			LaunchComm();
+		}
 	}
 	else {
-		vector<string> ans;
-		sendMsg("$SetAcquisitionFrequency1x,1,1\r\n",1,&ans);
-		getEncodersValue(&previousL, &previousR);
+		encoderValues[0] = 0;
+		encoderValues[1] = 0;
 		LaunchComm();
 	}
 }
@@ -72,6 +82,7 @@ KheperaIII::~KheperaIII()
 {
 	stopContinuousAcquisition = true;
 	continuousThread.join();
+	closeSession();
 }
 
 void	KheperaIII::CloseConnection()// use instead of destructor because of heap corruption in matlab
@@ -85,10 +96,9 @@ void KheperaIII::LaunchContinuousThread(){
 }
 
 void KheperaIII::ContinuousChecks(){
-	//io_service_.run();
 	while (!stopContinuousAcquisition){
-		timer->expires_from_now(posix_time::milliseconds(TIME_STEP));
-		timer->wait();
+		lastStepTime = posix_time::microsec_clock::local_time();
+		this_thread::sleep(boost::posix_time::milliseconds(TIME_STEP));
 		timeStep();
 	}
 }
@@ -96,18 +106,24 @@ void KheperaIII::ContinuousChecks(){
 //vSpeed: cm/s		wSpeed: rad/s positive->clockwise
 void KheperaIII::setVelocity(double vSpeed, double wSpeed)
 {
+	if (isVirtual_) {
+		linearSpeed_ = vSpeed;
+		angularSpeed_ = wSpeed;
+	}
+	else {
 	double rSpeed;
-	double lSpeed;
-	
+	double lSpeed;	
 	lSpeed = K_SPEED*(vSpeed - wSpeed*axis/2);
 	rSpeed = K_SPEED*(vSpeed + wSpeed*axis/2);
 	string msg = this->speedMsg((int)lSpeed,(int)rSpeed);
 	vector<string> ans;
 	this->sendMsg(msg,1,&ans);
+	}
 }
 
 void KheperaIII::timeStep()
 {	
+
 	trackGenerator.nextStep();
 	UpdatePosition();
 	SendPosition();	
@@ -131,39 +147,42 @@ void KheperaIII::UpdatePositionOffline() {
 	int encoderValueLeft,encoderValueRight;
 	boost::array<double,2> position = getPosition();
 	double orientation = getOrientation();
+	posix_time::time_duration timeStepDuration = posix_time::microsec_clock::local_time() - lastStepTime;
+	if (isVirtual_){
+		orientation += angularSpeed_ * timeStepDuration.total_microseconds() / 1000000. / 2;
+		position[0] += cos(orientation) * linearSpeed_ * timeStepDuration.total_microseconds() / 1000000.;
+		position[1] += sin(orientation) * linearSpeed_ * timeStepDuration.total_microseconds() / 1000000.;
+		orientation += angularSpeed_ * timeStepDuration.total_microseconds() / 1000000. / 2;
+		setPosition(position[0],position[1]);
+		setOrientation(orientation);
+	}
+	else {
 	getEncodersValue(&encoderValueLeft,&encoderValueRight);
 	dl = (encoderValueLeft-previousL)*K_ENCODER;
 	dr = (encoderValueRight-previousR)*K_ENCODER;
 	dc = (dl+dr)/2;
-
 	thetaAux = orientation;
-	orientation += (dr-dl)/AXIS;
-			
+	orientation += (dr-dl)/AXIS;			
 	(position)[0] += dc*cos( (orientation + thetaAux)/2);
 	(position)[1] =+ dc*sin( (orientation + thetaAux)/2);
-
 	setPosition(position[0],position[1]);
 	setOrientation(orientation);
-
 	previousL = encoderValueLeft;
 	previousR = encoderValueRight;
+	}
 }
 
 const vector<int>& KheperaIII::getIrOutput()
 {
-	/*string commandMsg = "N\n";
-	string data;
-	string aux;
-	string::size_type index;
-	int i;
-	data = this->sendMsg(commandMsg);*/
+	if (isVirtual_){
+		for(unsigned int i=0;i<irValues.size();++i)
+		{
+			irValues[i] = 0;
+		}	
+	}
 
 	for(unsigned int i=0;i<irValues.size();++i)
 	{
-		/*index = data.find(",",0);
-		data = data.substr(index+1);
-		index = data.find(",",0);
-		aux = data.substr(0,index);*/		
 		irValues[i] = 0;
 	}
 	return irValues;
@@ -171,22 +190,31 @@ const vector<int>& KheperaIII::getIrOutput()
 
 void KheperaIII::setEncodersValue(int lValue,int rValue)
 {
+	if (isVirtual_) {
+		return;
+	}
 	string msg = this->encodersMsg(lValue,rValue);
 	vector<string> ans;
 	this->sendMsg(msg,1,&ans);
 }
 void KheperaIII::getEncodersValue(int *left, int* right)
-{
-	int* ret = (int*)malloc(2*sizeof(int));
-	vector<string> ans;
-	stringstream ss;
-	char comma;
-	if(!sendMsg("$GetPosition\r\n",2,&ans)) {
-		ss.str(ans[0]);
-		ss>>encoderValues[0]>>comma>>encoderValues[1];
+{	
+	if (isVirtual_) {
+		*left = 0;
+		*right = 0;
+		return;
 	}
-	*left = encoderValues[0];
-	*right = encoderValues[1];
+	else {
+		vector<string> ans;
+		stringstream ss;
+		char comma;
+		if(!sendMsg("$GetPosition\r\n",2,&ans)) {
+			ss.str(ans[0]);
+			ss>>encoderValues[0]>>comma>>encoderValues[1];
+		}
+		*left = encoderValues[0];
+		*right = encoderValues[1];
+	}
 }
 //AUXILIAR METHODS--------------------------------------------
 string KheperaIII::speedMsg(int lSpeed, int rSpeed)
@@ -206,6 +234,9 @@ string KheperaIII::encodersMsg(int lValue, int rValue)
 // repeating the message command
 int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 {
+	if (isVirtual_) {
+		throw (logic_error("Invalid call to \"sendMsg\" with virtual robot."));
+	}
 	tcpLock.lock();
 	
 	char buf[1000];
@@ -246,10 +277,16 @@ void	KheperaIII::ReadLastLineHandler(const boost::system::error_code& e, std::si
 void KheperaIII::closeSession()
 {
 	this->setVelocity(0,0);
-	socket_->close();
+	if (!isVirtual_)
+		socket_->close();
 }
 
 int KheperaIII::GetMode(int* left, int* right){
+	if (isVirtual_) {
+		*left = 0;
+		*right = 0;
+		return 0;
+	}
 	stringstream message, ssAnswer;
 	vector<string> answer;
 	char comma;
@@ -261,6 +298,13 @@ int KheperaIII::GetMode(int* left, int* right){
 }
 
 int KheperaIII::GetPID(int (*PIDLeft)[3], int (*PIDRight)[3]){
+	if (isVirtual_) {
+		for (int i=0;i<3;i++)
+			(*PIDLeft)[i]=0;
+		for (int i=0;i<3;i++)
+			(*PIDRight)[i]=0;
+		return 0;
+	}
 	stringstream message, ssAnswer, ssAnswerRight;
 	vector<string> answer;
 	char comma;
@@ -297,6 +341,11 @@ int KheperaIII::GetPID(int (*PIDLeft)[3], int (*PIDRight)[3]){
 }
 
 int KheperaIII::GetSpeed(int* left, int* right){	
+	if (isVirtual_) {
+		*left = 0;
+		*right = 0;
+		return 0;
+	}
 	stringstream message, ssAnswer;
 	vector<string> answer;
 	char comma;
@@ -308,6 +357,8 @@ int KheperaIII::GetSpeed(int* left, int* right){
 }
 
 int KheperaIII::SetMode(int left, int right){
+	if (isVirtual_)
+		return 0;
 	stringstream message, ssAnswer;
 	vector<string> answer;
 	message << "$SetMode,"<<left<<','<<right<<"\r\n";
@@ -316,6 +367,8 @@ int KheperaIII::SetMode(int left, int right){
 }
 
 int KheperaIII::SetPID(int pLeft, int iLeft, int dLeft, int pRight, int iRight, int dRight){	
+	if (isVirtual_)
+		return 0;
 	stringstream message, ssAnswer;
 	vector<string> answer;
 	int modeLeft, modeRight;
@@ -337,6 +390,8 @@ int KheperaIII::SetPID(int pLeft, int iLeft, int dLeft, int pRight, int iRight, 
 }
 
 int KheperaIII::SetTargetPoint(int targetLeft, int targetRight){
+	if (isVirtual_)
+		return 0;
 	stringstream message, ssAnswer;
 	vector<string> answer;
 	message << "$SetPoint,"<<targetLeft<<','<<targetRight<<"\r\n";
@@ -345,6 +400,8 @@ int KheperaIII::SetTargetPoint(int targetLeft, int targetRight){
 }
 
 int KheperaIII::ResetPosition(int posLeft, int posRight){
+	if (isVirtual_)
+		return 0;
 	stringstream message, ssAnswer;
 	vector<string> answer;
 	message << "$ResetPosition,"<<posLeft<<','<<posRight<<"\r\n";
@@ -353,6 +410,8 @@ int KheperaIII::ResetPosition(int posLeft, int posRight){
 }
 
 int KheperaIII::StopMotors(){
+	if (isVirtual_)
+		return 0;
 	stringstream message, ssAnswer;
 	vector<string> answer;
 	message << "$MotorStop,0\r\n";
@@ -364,6 +423,8 @@ int KheperaIII::StopMotors(){
 }
 
 int KheperaIII::StartMotors(){
+	if (isVirtual_)
+		return 0;
 	stringstream message, ssAnswer;
 	vector<string> answer;
 	message << "$MotorStart,0\r\n";
@@ -385,15 +446,28 @@ int	KheperaIII::RecordPulse(int modeLeft, int modeRight, int nStep, int* targetL
 		N+=NAcquisition[i];
 	}
 	message<<"\r\n";
-	sendMsg(message.str(),N+1,&answer);
-	*timeStamp = (int*) malloc(N * sizeof(int));
-	*valuesLeft = (int*) malloc(N * sizeof(int));
-	*valuesRight = (int*) malloc(N * sizeof(int));
-	for (int i=0;i<N;i++){
-		char comma;
-		ssAnswer.clear(); // clear end of stream error flag to allow further read
-		ssAnswer.str(answer[i]);
-		ssAnswer >> (*timeStamp)[i] >> comma >> (*valuesLeft)[i] >> comma >> (*valuesRight)[i];
+	if (isVirtual_) {
+		*timeStamp = (int*) malloc(N * sizeof(int));
+		*valuesLeft = (int*) malloc(N * sizeof(int));
+		*valuesRight = (int*) malloc(N * sizeof(int));
+		for (int i=0;i<N;i++){
+			(*timeStamp)[i] = i;
+			(*valuesLeft)[i] = 0;
+			(*valuesRight)[i] = 0;
+		}
+	}
+	else {
+		
+		sendMsg(message.str(),N+1,&answer);
+		*timeStamp = (int*) malloc(N * sizeof(int));
+		*valuesLeft = (int*) malloc(N * sizeof(int));
+		*valuesRight = (int*) malloc(N * sizeof(int));
+		for (int i=0;i<N;i++){
+			char comma;
+			ssAnswer.clear(); // clear end of stream error flag to allow further read
+			ssAnswer.str(answer[i]);
+			ssAnswer >> (*timeStamp)[i] >> comma >> (*valuesLeft)[i] >> comma >> (*valuesRight)[i];
+		}
 	}
 	return 0;
 }
@@ -404,7 +478,7 @@ int KheperaIII::StopInternalTracking(){
 }
 
 int KheperaIII::StartInternalTracking(){
-	if (stopContinuousAcquisition == true) {
+	if (stopContinuousAcquisition) {
 		LaunchContinuousThread();
 	}
 	stopContinuousAcquisition = false;

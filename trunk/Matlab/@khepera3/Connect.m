@@ -1,6 +1,7 @@
-function error = Connect(k3,Id,localIP,varargin)
+function error = Connect(k3,Id,localIP,virtual,varargin)
     % varargin{1} = handle to message string
-    if nargin > 3
+    isVirtual = virtual;
+    if nargin > 4
         h_message = varargin{1};
         set(h_message,'string','Trying to connect...');
     end
@@ -14,10 +15,10 @@ function error = Connect(k3,Id,localIP,varargin)
     try
         %pp = libpointer('voidPtrPtr');
         Id=str2num(Id);
-        calllib('khepera3clib','LaunchKhepera',Id);
+        calllib('khepera3clib','LaunchKhepera',Id,isVirtual);
         k3.id = Id;
         %k3.p = get(pp,'value');
-        calllib('khepera3clib','InitLocalizationSystem',Id,1,localIP,'193.49.136.176');
+        calllib('khepera3clib','InitLocalizationSystem',Id,0,localIP,'193.49.136.176');
         message = {'Connection established'};
         %fopen(k3.t);
         %if k3.lock(5)==0
@@ -36,7 +37,7 @@ function error = Connect(k3,Id,localIP,varargin)
         message = 'Connection failed';
         error = 1;
     end
-    if nargin>3
+    if nargin>4
         set(h_message,'string',message);
     end
 end

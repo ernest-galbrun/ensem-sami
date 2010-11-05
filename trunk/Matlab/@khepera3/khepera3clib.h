@@ -3,7 +3,7 @@ extern "C" {
 #endif 
 	// Connects to the robot 10.10.10.N
 	//Creates KheperaIII object, returns a pointer to it
-	__declspec(dllexport) int LaunchKhepera(int robotID);
+	__declspec(dllexport) int LaunchKhepera(int robotID, int isVirtual);
 
 	// Delete robot
 	__declspec(dllexport) int DeleteKhepera(int robotID);

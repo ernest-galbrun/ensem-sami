@@ -4,6 +4,7 @@
 #include "Receiver.h"
 #include "boost/asio.hpp"
 #include "boost/bind.hpp"
+#include "boost/thread.hpp"
 
 using namespace boost;
 using namespace std;
@@ -54,15 +55,17 @@ bool Receiver::ReceivePosition(int& id, boost::array<double,2>& position) {
     timer.expires_from_now(posix_time::milliseconds(100)); 
 	timer.async_wait(boost::bind(&Receiver::Handler_AsyncTimer,this,asio::placeholders::error)); 
 	bool newDataArrived;
-	int n = io_service_receiver.poll_one();
+	size_t n = io_service_receiver.poll_one();
     while (n==0)
     { 
-	  if (io_error_) 
-        timer.cancel(); 
-      else if (timer_error_) 
-        socket_.cancel(); 
-	  else
-		  n=io_service_receiver.poll_one();
+		this_thread::sleep(boost::posix_time::milliseconds(1));
+		io_service_timer.poll();
+		if (io_error_) 
+		timer.cancel(); 
+		else if (timer_error_) 
+		socket_.cancel(); 
+		else
+		n=io_service_receiver.poll_one();
     }
 	newDataArrived = n==0?false:true;
 	if (newDataArrived) {
