@@ -50,7 +50,7 @@ classdef khepera3 < handle
            %HEAP CORRUPTION
            end
            delete(k3.timerAcquisition);
-           unloadlibrary('khepera3clib')
+          % unloadlibrary('khepera3clib')
         end
         
         % Start or stop continuous acquisition of position and speed
