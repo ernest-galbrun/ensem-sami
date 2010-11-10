@@ -3,20 +3,20 @@
 #define PI 3.14159265
 
 //TRACK DEFINITIONS
-#define KX 7 // cm/s
-#define KY 7 // cm/s
-#define OSX 0 // cm
-#define OSY 0 // cm
+#define KX 0.7 // mm/s
+#define KY 0.7 // mm/s
+#define OSX 0 // mm
+#define OSY 0 // mm
 
 //ROBOT DEFINITIONS
 #define NB_SENSORS 9
-#define AXIS 8.9 //cm
-#define K_SPEED 360.0025//1440.1 (value if x4 is used
-#define K_ENCODER 0.018634 //0.0047 (value if x4 used) // cm/pulse
+#define AXIS 89 //mm
+#define K_SPEED 138.9 // 555.6//138.9 (value if x4 is used
+#define K_ENCODER 0.047 // 0.18634 //0.047 (value if x4 used) // mm/pulse
 
 //INITIAL POSITION 
-#define X0 0 //cm
-#define Y0 0 //cm
+#define X0 0 //mm
+#define Y0 0 //mm
 #define THETA0 0 //rad
 
 //TRACK CONTROL
