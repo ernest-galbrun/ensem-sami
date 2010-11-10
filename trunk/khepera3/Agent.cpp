@@ -14,7 +14,10 @@ Agent::Agent(int id):
 	neighbors(vector<Object>()),
 	obstacles(vector<Object>()),
 	communicationSystem(id, "239.255.0.1", 5090),
-	stopListening(false)
+	stopListening(false),
+	posX_(NULL),
+	posY_(NULL),
+	id_(NULL)
 {
 }
 

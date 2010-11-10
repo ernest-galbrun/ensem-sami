@@ -17,6 +17,7 @@ class Receiver
 	std::string data_;
 	boost::system::error_code io_error_;
 	boost::system::error_code timer_error_;
+	bool timedOut;
 
 	int receivedId;
 	boost::array<double,2> receivedPosition;

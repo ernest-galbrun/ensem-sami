@@ -14,6 +14,7 @@ private:
 	std::vector<Object> neighbors;
 	std::vector<Object> obstacles;
 	std::string localAddress;
+	// posX_, posY_ and id_ are c array holding values for every neighbors
 	double * posX_;
 	double * posY_;
 	int* id_;

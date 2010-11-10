@@ -10,6 +10,7 @@ for use with matlab or other third party software*/
 
 #include <iostream>
 #include <string>
+#include <sstream>
 
 #include "boost/array.hpp"
 
@@ -45,14 +46,18 @@ extern "C" __declspec(dllexport) int SetSpeed(int robotID, double linear, double
 }
 
 extern "C" __declspec(dllexport) int InitLocalizationSystem(int robotID, int mode, const char* localIP, const char* cortexIP){
-	string bodyName("khe");
-	char buf[10];
-	int i=k3[robotID]->getId();
-	itoa(k3[robotID]->getId(),buf,10);
-	bodyName += buf;
+	stringstream bodyName("markerset_robot");
+	bodyName << robotID;
 	k3[robotID]->SetUpdatePositionMode(mode);
-	if (mode)
-		k3[robotID]->InitLocalizationSystem(string(localIP), string(cortexIP), bodyName);	
+	if (mode) {
+		try {
+			k3[robotID]->InitLocalizationSystem(string(localIP), string(cortexIP), bodyName.str());	
+		}
+		catch (ios_base::failure e) {
+			k3[robotID]->SetUpdatePositionMode(0);
+			cout<<e.what();
+		}
+	}
 	k3[robotID]->LaunchContinuousThread();
 	return 0;
 }

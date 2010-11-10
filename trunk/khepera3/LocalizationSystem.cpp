@@ -30,7 +30,7 @@ void LocalizationSystem::init(string myAddress, string hostAddress, string bodyN
 {
 	countT = 0;
 	countO = 0;
-	int test = 0;
+	bool bodyNameFound = false;
 	boost::array<double,5> auxCor;
 	sHostInfo Cortex_HostInfo;
 	
@@ -48,8 +48,7 @@ void LocalizationSystem::init(string myAddress, string hostAddress, string bodyN
 	if (retval != RC_Okay)
 	{
 		enable =false;
-		printf("Error: Unable to initialize ethernet communication.\n");
-		exit(0);
+		throw (ios_base::failure("Unable to initialize ethernet communication."));
 	}
 	else
 	{
@@ -57,8 +56,7 @@ void LocalizationSystem::init(string myAddress, string hostAddress, string bodyN
 		if (retval != RC_Okay || !Cortex_HostInfo.bFoundHost)
 		{
 			enable =0;
-			printf("Error: Unable to find Cortex.\n");
-			exit(0);				
+			throw (ios_base::failure("Unable to find Cortex dll runing."));
 		}
 		else
 		{
@@ -70,7 +68,7 @@ void LocalizationSystem::init(string myAddress, string hostAddress, string bodyN
 				if(strncmp (aux,name.c_str(),strlen(aux))==0)
 				{
 					bodyIndex = iBody;
-					test  = 1;
+					bodyNameFound = true;
 					auxCor = getOwnPosition_Cortex();
 					if(auxCor[0]==1)
 					{
@@ -82,17 +80,16 @@ void LocalizationSystem::init(string myAddress, string hostAddress, string bodyN
 					}
 					else
 					{
-						enable =0;printf("Error: In the first iteration ALL markers of the must be valid.\n");
-						exit(0);							
+						enable =0;
+						throw (ios_base::failure("In the first iteration ALL markers of the template must be valid."));
 					}
 				}
 					
 			}
-			if(test==0)
+			if(!bodyNameFound)
 			{
 				enable =0;
-				printf("Error: Unable to find body with provided name.\n");
-				exit(0);
+				throw (ios_base::failure("Unable to find body with provided name."));
 			}
 		}
 	}

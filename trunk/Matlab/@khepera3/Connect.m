@@ -18,7 +18,7 @@ function error = Connect(k3,Id,localIP,virtual,varargin)
         calllib('khepera3clib','LaunchKhepera',Id,isVirtual);
         k3.id = Id;
         %k3.p = get(pp,'value');
-        calllib('khepera3clib','InitLocalizationSystem',Id,0,localIP,'193.49.136.176');
+        calllib('khepera3clib','InitLocalizationSystem',Id,1,localIP,'193.49.136.176');
         message = {'Connection established'};
         %fopen(k3.t);
         %if k3.lock(5)==0
