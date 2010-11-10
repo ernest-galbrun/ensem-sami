@@ -28,6 +28,7 @@ using namespace boost;
 //CONSTRUCTOR AND DESTRUCTOR----------------------------------
 KheperaIII::KheperaIII(int id, bool isVirtual):
 	isVirtual_(isVirtual),
+	initSuccessful(false),
 	updatePositionMode(0),
 	angularSpeed_(0),
 	linearSpeed_(0),
@@ -38,32 +39,37 @@ KheperaIII::KheperaIII(int id, bool isVirtual):
 	firstRead(true),
 	stopContinuousAcquisition(false),
 	previousL(0),
-	previousR(0){
+	previousR(0),
+	io_service_(),
+	timer(io_service_,posix_time::milliseconds(0)),
+	socket_(io_service_),
+	tcp_buf(100){
 	setId(id);
-	tick = 0;
-	timer = boost::shared_ptr<asio::deadline_timer>(new asio::deadline_timer(io_service_,posix_time::milliseconds(0)));
-	tcp_buf = boost::shared_ptr<asio::streambuf>(new asio::streambuf(100));	
+}
 	
+void KheperaIII::Init(){
+	initSuccessful = false;
+	tick = 0;	
 	if (!isVirtual_){
 		stringstream s;
-		s<<"10.10.10."<<id;
+		s<<"10.10.10."<<getId();
 		asio::ip::tcp::resolver resolver(io_service_);
 		asio::ip::tcp::resolver::query query(s.str(),"14");
 		asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
 		asio::ip::tcp::resolver::iterator end;
-		socket_ = boost::shared_ptr<boost::asio::ip::tcp::socket>(new asio::ip::tcp::socket(io_service_));
 		cout << "Establishing connection with the Robot..." << endl;
 		boost::system::error_code& ec = boost::system::error_code();
 		while (iter != end) {
-			socket_->connect(*iter,ec);
+			socket_.connect(*iter,ec);
 			if (ec == false)
 				break;
 			iter++;
 		}
 		if (ec) {
-			cout<< "ERROR: connection to the robot failed. Error code: "<<ec<<".\n";
+			throw(ios_base::failure(ec.message()));
 		}
 		else {
+			initSuccessful = true;
 			vector<string> ans;
 			sendMsg("$SetAcquisitionFrequency1x,0,1\r\n",1,&ans);
 			sendMsg("$SetAcquisitionFrequency1x,1,1\r\n",1,&ans);
@@ -77,8 +83,6 @@ KheperaIII::KheperaIII(int id, bool isVirtual):
 		LaunchComm();
 	}
 }
-
-
 
 KheperaIII::~KheperaIII()
 {
@@ -243,20 +247,20 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 	
 	char buf[1000];
 	*answer = vector<string>();
-	asio::write(*socket_,asio::buffer(msg));
+	asio::write(socket_,asio::buffer(msg));
 	string ans;
 	size_t	bytesRead;
 	system::error_code& ec = system::error_code();
-	istream is(&*tcp_buf);
+	istream is(&tcp_buf);
 	if (!firstRead) {
-		asio::read_until(*socket_,*tcp_buf,"\r\n",ec);
+		asio::read_until(socket_,tcp_buf,"\r\n",ec);
 		is.getline(buf,1000,'\r');
 		is.ignore(1);
 	}
 	else
 		firstRead = false;
 	for (int i=0;i<n-1;i++){
-		bytesRead = asio::read_until(*socket_,*tcp_buf,"\r\n",ec);
+		bytesRead = asio::read_until(socket_,tcp_buf,"\r\n",ec);
 		is.getline(buf,1000,'\r');
 		is.ignore(1);
 		ans = string(buf);
@@ -277,10 +281,12 @@ void	KheperaIII::ReadLastLineHandler(const boost::system::error_code& e, std::si
 }
 
 void KheperaIII::closeSession()
-{
-	this->setVelocity(0,0);
-	if (!isVirtual_)
-		socket_->close();
+{	
+	if (!isVirtual_){
+		if (initSuccessful)
+			this->setVelocity(0,0);
+		socket_.close();
+	}
 }
 
 int KheperaIII::GetMode(int* left, int* right){

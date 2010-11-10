@@ -20,6 +20,7 @@ class KheperaIII : public Agent
 private:
 	boost::posix_time::ptime lastStepTime;
 	bool isVirtual_; // set to true if we arre dealing with a virtual robot
+	bool initSuccessful;
 	double linearSpeed_, angularSpeed_;
 	int nIrSensors;
 	double axis;
@@ -30,12 +31,11 @@ private:
 	int updatePositionMode; //0 = offline 1 = using cortex 2 = hybrid
 
 	int tick;
-	boost::shared_ptr<boost::asio::deadline_timer> timer;
-	
 	boost::asio::io_service      io_service_;
-	boost::shared_ptr<boost::asio::ip::tcp::socket> socket_;
+	boost::asio::deadline_timer timer;	
+	boost::asio::ip::tcp::socket socket_;
 	boost::mutex tcpLock;
-	boost::shared_ptr<boost::asio::streambuf> tcp_buf;
+	boost::asio::streambuf tcp_buf;
 	boost::thread	continuousThread;
 	void ContinuousChecks();
 
@@ -79,6 +79,7 @@ public:
 
 	int getTestSerial();
 	void SetUpdatePositionMode(int mode);
+	void Init();
 };
 
 

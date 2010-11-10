@@ -1,3 +1,11 @@
+enum K3ErrorCode{
+	K3_NOERROR = 0,
+	K3_CONNECTIONFAILURE,
+	K3_OFFLINELOCALIZATION,
+	K3_BADROBOTID
+};
+
+
 #ifdef __cplusplus 
 extern "C" {
 #endif 

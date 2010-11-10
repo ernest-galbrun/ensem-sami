@@ -12,7 +12,6 @@ using namespace boost;
 int main(int argc, char* argv[])
 
 {
-	void* p;
 	ofstream log("log.txt");
 	cout.rdbuf(log.rdbuf());
 	LaunchKhepera(21,true);
