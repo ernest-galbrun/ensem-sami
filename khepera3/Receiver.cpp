@@ -10,6 +10,7 @@ using namespace boost;
 using namespace std;
 
 Receiver::Receiver(const boost::asio::ip::address& listen_address, const boost::asio::ip::address& multicast_address,int multicast_port) : 
+	timedOut(false),
 	io_service_receiver(),
 	socket_(io_service_receiver)
 {	
@@ -53,6 +54,7 @@ bool Receiver::ReceivePosition(int& id, boost::array<double,2>& position) {
 	socket_.async_receive_from(asio::buffer(data_), sender_endpoint_,boost::bind(boost::mem_fn(&Receiver::handler_receiver), this, boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));	
     asio::deadline_timer timer(io_service_timer); 
     timer.expires_from_now(posix_time::milliseconds(100)); 
+	timedOut = false;
 	timer.async_wait(boost::bind(&Receiver::Handler_AsyncTimer,this,asio::placeholders::error)); 
 	bool newDataArrived;
 	size_t n = io_service_receiver.poll_one();
@@ -60,10 +62,14 @@ bool Receiver::ReceivePosition(int& id, boost::array<double,2>& position) {
     { 
 		this_thread::sleep(boost::posix_time::milliseconds(1));
 		io_service_timer.poll();
-		if (io_error_) 
-		timer.cancel(); 
-		else if (timer_error_) 
-		socket_.cancel(); 
+		if (io_error_) {
+			timer.cancel(); 
+			break;
+		}
+		else if (timedOut || timer_error_)  {
+			socket_.cancel(); 
+			break;
+		}
 		else
 		n=io_service_receiver.poll_one();
     }
@@ -75,6 +81,8 @@ bool Receiver::ReceivePosition(int& id, boost::array<double,2>& position) {
 	return newDataArrived;
 }
 
-void Receiver::Handler_AsyncTimer( const boost::system::error_code& error){
+void Receiver::Handler_AsyncTimer( const system::error_code& error){
+	if (!error)
+		timedOut = true;
 	timer_error_ = error;
 } 

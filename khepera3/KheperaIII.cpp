@@ -28,6 +28,7 @@ using namespace boost;
 //CONSTRUCTOR AND DESTRUCTOR----------------------------------
 KheperaIII::KheperaIII(int id, bool isVirtual):
 	isVirtual_(isVirtual),
+	updatePositionMode(0),
 	angularSpeed_(0),
 	linearSpeed_(0),
 	Agent(id),
@@ -64,6 +65,7 @@ KheperaIII::KheperaIII(int id, bool isVirtual):
 		}
 		else {
 			vector<string> ans;
+			sendMsg("$SetAcquisitionFrequency1x,0,1\r\n",1,&ans);
 			sendMsg("$SetAcquisitionFrequency1x,1,1\r\n",1,&ans);
 			getEncodersValue(&previousL, &previousR);
 			LaunchComm();

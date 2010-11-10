@@ -39,8 +39,8 @@ bool CommunicationSystem::Enabled(){
 
 
 bool CommunicationSystem::ReceivePosition(int& id, boost::array<double,2>& position){
-	bool result = receiver.ReceivePosition(id, position);
+	bool result = receiver.ReceivePosition(id, position);/*
 	cout<<result<<"\r\n";
-	cout<<"position received : "<<id<<"\r\n";
+	cout<<"position received : "<<id<<"\r\n";*/
 	return result;
 }
