@@ -46,17 +46,19 @@ void Receiver::handler_receiver(const boost::system::error_code& error, std::siz
 		stringstream msg(data_);
 		msg>>receivedId>>comma>>receivedPosition[0]>>comma>>receivedPosition[1];
 	}
+	else
+		io_error_ = error;
 }
 
 
 bool Receiver::ReceivePosition(int& id, boost::array<double,2>& position) {
-	
 	socket_.async_receive_from(asio::buffer(data_), sender_endpoint_,boost::bind(boost::mem_fn(&Receiver::handler_receiver), this, boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));	
     asio::deadline_timer timer(io_service_timer); 
     timer.expires_from_now(posix_time::milliseconds(100)); 
 	timedOut = false;
+	io_error_ = system::error_code();
 	timer.async_wait(boost::bind(&Receiver::Handler_AsyncTimer,this,asio::placeholders::error)); 
-	bool newDataArrived;
+	bool newDataArrived = false;
 	size_t n = io_service_receiver.poll_one();
     while (n==0)
     { 
@@ -73,7 +75,8 @@ bool Receiver::ReceivePosition(int& id, boost::array<double,2>& position) {
 		else
 		n=io_service_receiver.poll_one();
     }
-	newDataArrived = n==0?false:true;
+	if (n!=0 && !io_error_)
+		newDataArrived = true;
 	if (newDataArrived) {
 		id = receivedId; 
 		position = receivedPosition;

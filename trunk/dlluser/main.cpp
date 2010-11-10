@@ -15,12 +15,18 @@ int main(int argc, char* argv[])
 	void* p;
 	ofstream log("log.txt");
 	cout.rdbuf(log.rdbuf());
-	LaunchKhepera(1,false);
+	LaunchKhepera(21,true);
+	//LaunchKhepera(22,true);
 	//posix_time::time_duration timeStamp;
 	//posix_time::ptime begin(posix_time::microsec_clock::local_time());
 
-	InitLocalizationSystem(1,1,"193.49.136.186","193.49.136.176");
-	SetSpeed(1,0,0);
+	InitLocalizationSystem(21,1,"193.49.136.186","193.49.136.176");
+	//InitLocalizationSystem(22,1,"193.49.136.186","193.49.136.176");
+	int n;
+	int* id;
+	double* x;
+	double* y;
+	GetNeighbors(21, &n, &id, &x, &y);
 	//DeleteKhepera(1);
 	//double x,y,t,lastx, lasty;
 	//x=0;
