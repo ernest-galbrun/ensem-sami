@@ -20,7 +20,8 @@ int main(int argc, char* argv[])
 	//posix_time::ptime begin(posix_time::microsec_clock::local_time());
 
 	InitLocalizationSystem(1,1,"193.49.136.186","193.49.136.176");
-	DeleteKhepera(1);
+	SetSpeed(1,0,0);
+	//DeleteKhepera(1);
 	//double x,y,t,lastx, lasty;
 	//x=0;
 	//y=0;

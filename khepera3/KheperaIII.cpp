@@ -105,7 +105,7 @@ void KheperaIII::ContinuousChecks(){
 	}
 }
 //FUNCTIONAL METHODS------------------------------------------
-//vSpeed: cm/s		wSpeed: rad/s positive->clockwise
+//vSpeed: mm/s		wSpeed: rad/s positive->clockwise
 void KheperaIII::setVelocity(double vSpeed, double wSpeed)
 {
 	if (isVirtual_) {
