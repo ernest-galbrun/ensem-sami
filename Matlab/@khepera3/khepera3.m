@@ -74,6 +74,7 @@ classdef khepera3 < handle
         posXY = GetXYPosition(k3);
         orientation = GetOrientation(k3);
         SetVelocity(k3,lineraVelocity, angularVelocity);
+        neighbors = GetNeighbors(k3);
     end
     
     methods (Access = private)
