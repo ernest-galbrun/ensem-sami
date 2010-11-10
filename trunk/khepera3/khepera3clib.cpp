@@ -19,7 +19,7 @@ using namespace boost;
 
 // global variable k3 stores pointer to every robot created.
 // It is instanciated when the dll is loaded, and destructed when unloaded.
-KheperaIII* k3[10];
+KheperaIII* k3[1000];
 
 
 extern "C" __declspec(dllexport) int LaunchKhepera(int robotID, int isVirtual){
