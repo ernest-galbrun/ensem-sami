@@ -168,9 +168,9 @@ void KheperaIII::UpdatePositionOffline() {
 	dr = (encoderValueRight-previousR)*K_ENCODER;
 	dc = (dl+dr)/2;
 	thetaAux = orientation;
-	orientation += (dr-dl)/AXIS;			
-	(position)[0] += dc*cos( (orientation + thetaAux)/2);
-	(position)[1] =+ dc*sin( (orientation + thetaAux)/2);
+	orientation += asin((dr-dl)/AXIS);			
+	(position)[0] += dc*cos( (orientation + thetaAux) / 2);
+	(position)[1] =+ dc*sin( (orientation + thetaAux) / 2);
 	setPosition(position[0],position[1]);
 	setOrientation(orientation);
 	previousL = encoderValueLeft;
