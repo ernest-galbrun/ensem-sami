@@ -170,7 +170,7 @@ void KheperaIII::UpdatePositionOffline() {
 	thetaAux = orientation;
 	orientation += asin((dr-dl)/AXIS);			
 	(position)[0] += dc*cos( (orientation + thetaAux) / 2);
-	(position)[1] =+ dc*sin( (orientation + thetaAux) / 2);
+	(position)[1] += dc*sin( (orientation + thetaAux) / 2);
 	setPosition(position[0],position[1]);
 	setOrientation(orientation);
 	previousL = encoderValueLeft;
