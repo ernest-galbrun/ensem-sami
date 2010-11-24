@@ -7,10 +7,10 @@ function RWvalue = K3toRW(mode, K3value)
             % Wheel circumference = 128.8 mm
             % 691.2 measures are made for each wheel revolution
             % (we use mode encoder resolution x1)
-            RWvalue = double(K3value) / 691.2 * 128.8;
+            RWvalue = double(K3value) * 0.097;
         case {4,5}  %speed
             % see manual p. 14
-            RWvalue = double(K3value) / 144.01 / 4;
+            RWvalue = double(K3value) / 70;
         case 6
             RWvalue = double(K3value);
     end
