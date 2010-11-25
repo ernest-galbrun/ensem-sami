@@ -43,7 +43,10 @@ KheperaIII::KheperaIII(int id, bool isVirtual):
 	io_service_(),
 	timer(io_service_,posix_time::milliseconds(0)),
 	socket_(io_service_),
-	tcp_buf(100){
+	tcp_buf(1000),
+	irAmbientValues(11),
+	irProximityValues(11),
+	ultrasound(50){
 	setId(id);
 }
 	
@@ -497,3 +500,47 @@ void KheperaIII::SetUpdatePositionMode(int mode){
 	updatePositionMode=mode;
 }
 
+void KheperaIII::GetAmbientIR(int* timestamp, int** values){
+	stringstream message, ssAnswer;
+	vector<string> answer;
+	char comma;	
+	message << "$GetInfraredAmbient\r\n";
+	sendMsg(message.str(), 2, &answer);
+	ssAnswer.str(answer[0]);
+	ssAnswer>>*timestamp;
+	for (unsigned int i=0;i<irAmbientValues.size();++i){
+		ssAnswer >> comma >> irAmbientValues[i];
+	}
+	*values = &irAmbientValues[0];
+}
+
+
+void KheperaIII::GetProximityIR(int* timestamp, int** values){
+	stringstream message, ssAnswer;
+	vector<string> answer;
+	char comma;	
+	message << "$GetInfraredProximity\r\n";
+	sendMsg(message.str(), 2, &answer);
+	ssAnswer.str(answer[0]);
+	ssAnswer >>*timestamp;
+	for (unsigned int i=0;i<irProximityValues.size();++i){
+		ssAnswer >>comma >> irProximityValues[i];
+	}
+	*values = &irProximityValues[0];
+}
+
+
+void KheperaIII::GetUltrasound(int** values){
+	stringstream message, ssAnswer;
+	vector<string> answer;
+	char comma;	
+	message << "$GetUltrasound\r\n";
+	sendMsg(message.str(), 2, &answer);
+	ssAnswer.str(answer[0]);
+	for (unsigned int i=0;i<ultrasound.size();++i){
+		ssAnswer >> ultrasound[i];
+		if (i!=ultrasound.size())
+			ssAnswer >> comma;
+	}
+	*values = &ultrasound[0];
+}

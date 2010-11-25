@@ -73,6 +73,10 @@ extern "C" {
 
 	__declspec(dllexport) int GetNeighbors(int robotID, int* numberOfNeighbors, int** id, double** x, double** y);
 
+	__declspec(dllexport) int GetAmbientIR(int robotID,int* timestamp, int** values);
+	__declspec(dllexport) int GetProximityIR(int robotID,int* timestamp, int** values);
+	__declspec(dllexport) int GetUltrasound(int robotID, int** values);
+
 
 #ifdef __cplusplus
 }

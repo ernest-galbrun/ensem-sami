@@ -48,6 +48,10 @@ private:
 	void	RunIOService();
 	void UpdatePositionOffline();
 	virtual bool UpdatePosition();
+	vector<int> irAmbientValues;
+	vector<int> irProximityValues;
+	vector<int> ultrasound;
+
 
 public:
 	KheperaIII(int id, bool isVirtual=false);
@@ -80,6 +84,9 @@ public:
 	int getTestSerial();
 	void SetUpdatePositionMode(int mode);
 	void Init();
+	void GetAmbientIR(int* timestamp, int** values);
+	void GetProximityIR(int* timestamp, int** values);
+	void GetUltrasound(int** values);
 };
 
 

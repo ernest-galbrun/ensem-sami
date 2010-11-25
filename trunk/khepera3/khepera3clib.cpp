@@ -211,3 +211,24 @@ extern "C" __declspec(dllexport) int GetNeighbors(int robotID, int* numberOfNeig
 	k3[robotID]->getNeighbors(numberOfNeighbors,id,x,y);
 	return K3_NOERROR;
 }
+
+extern "C" __declspec(dllexport) int GetAmbientIR(int robotID, int* timestamp, int** values){
+	if (robotID>=maxRobotNumber || !exists[robotID])
+		return K3_BADROBOTID;
+	k3[robotID]->GetAmbientIR(timestamp, values);
+	return K3_NOERROR;
+}
+
+extern "C" __declspec(dllexport) int GetProximityIR(int robotID, int* timestamp, int** values){
+	if (robotID>=maxRobotNumber || !exists[robotID])
+		return K3_BADROBOTID;
+	k3[robotID]->GetProximityIR(timestamp, values);
+	return K3_NOERROR;
+}
+
+extern "C" __declspec(dllexport) int GetUltrasound(int robotID, int** values){
+	if (robotID>=maxRobotNumber || !exists[robotID])
+		return K3_BADROBOTID;
+	k3[robotID]->GetUltrasound(values);
+	return K3_NOERROR;
+}
