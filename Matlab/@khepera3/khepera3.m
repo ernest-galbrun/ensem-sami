@@ -75,6 +75,9 @@ classdef khepera3 < handle
         orientation = GetOrientation(k3);
         SetVelocity(k3,lineraVelocity, angularVelocity);
         neighbors = GetNeighbors(k3);
+        [values timestamp] = GetIRProximity(k3);
+        [values timestamp]= GetIRAmbient(k3);
+        values = GetUltrasound(k3);
     end
     
     methods (Access = private)
