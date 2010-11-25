@@ -501,6 +501,12 @@ void KheperaIII::SetUpdatePositionMode(int mode){
 }
 
 void KheperaIII::GetAmbientIR(int* timestamp, int** values){
+	
+	if (isVirtual_){
+		*timestamp = 0;
+		*values = &irAmbientValues[0];
+		return;
+	}
 	stringstream message, ssAnswer;
 	vector<string> answer;
 	char comma;	
@@ -516,6 +522,11 @@ void KheperaIII::GetAmbientIR(int* timestamp, int** values){
 
 
 void KheperaIII::GetProximityIR(int* timestamp, int** values){
+	if (isVirtual_){
+		*timestamp = 0;
+		*values = &irProximityValues[0];
+		return;
+	}
 	stringstream message, ssAnswer;
 	vector<string> answer;
 	char comma;	
@@ -531,6 +542,10 @@ void KheperaIII::GetProximityIR(int* timestamp, int** values){
 
 
 void KheperaIII::GetUltrasound(int** values){
+	if (isVirtual_){
+		*values = &ultrasound[0];
+		return;
+	}
 	stringstream message, ssAnswer;
 	vector<string> answer;
 	char comma;	
