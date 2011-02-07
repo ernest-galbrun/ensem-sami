@@ -130,15 +130,15 @@ boost::array<double,5> LocalizationSystem::getOwnPosition_Cortex()
 	ack = 1;
 	
 	pFrameOfData = Cortex_GetCurrentFrame();
-	coordMiddle = (&pFrameOfData->BodyData[bodyIndex])->Markers[0];
-	coordFront = (&pFrameOfData->BodyData[bodyIndex])->Markers[2];
+	coordMiddle = (&pFrameOfData->BodyData[bodyIndex])->Markers[7];
+	coordFront = (&pFrameOfData->BodyData[bodyIndex])->Markers[6];
 
-	off1 = (&pFrameOfData->BodyData[bodyIndex])->Markers[1];
-	off2 = (&pFrameOfData->BodyData[bodyIndex])->Markers[3];
+	//off1 = (&pFrameOfData->BodyData[bodyIndex])->Markers[1];
+	//off2 = (&pFrameOfData->BodyData[bodyIndex])->Markers[3];
 
 	//printf("Xm: %f Xf: %f\n",coordMiddle[0],coordFront[0]);
 	//Verify th integrity of the markers
-	if(coordMiddle[0] == 9999999 || coordFront[0] == 9999999 || off1[0] == 9999999 || off2[0] == 9999999)
+	if(coordMiddle[0] == 9999999 || coordFront[0] == 9999999)// || off1[0] == 9999999 || off2[0] == 9999999)
 	{
 		ack =0;
 	}
@@ -150,14 +150,14 @@ boost::array<double,5> LocalizationSystem::getOwnPosition_Cortex()
 	 
 	
 	ret[0] = ack;
-	ret[1] = (double)coordMiddle[0]*.1;
-	ret[2] = (double)coordMiddle[1]*.1;
-	ret[3] = (double)coordMiddle[2]*.1;
+	ret[1] = (double)coordMiddle[0];//*.1;
+	ret[2] = (double)coordMiddle[1];//*.1;
+	ret[3] = (double)coordMiddle[2];//*.1;
 	aux = atan2((double)(coordFront[1]- coordMiddle[1]),(double)(coordFront[0]- coordMiddle[0]));
-	if(aux<0)
+	/*if(aux<0)
 	{
 		aux = aux+ 2*PI; 
-	}
+	}*/
 	ret[4] = aux;
 	
 	//printf("Ack: %f x: %f y: %f z: %f t: %f\n",ret[0],ret[1],ret[2],ret[3],ret[4]);

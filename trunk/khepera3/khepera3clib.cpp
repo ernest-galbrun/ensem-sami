@@ -74,8 +74,8 @@ extern "C" __declspec(dllexport) int InitLocalizationSystem(int robotID, int mod
 	K3ErrorCode ret = K3_NOERROR;
 	if (robotID>=maxRobotNumber || !exists[robotID])
 		return K3_BADROBOTID;
-	stringstream bodyName("markerset_robot");
-	bodyName << robotID;
+	stringstream bodyName;
+	bodyName << "markerset_robot"<< robotID;
 	k3[robotID]->SetUpdatePositionMode(mode);
 	if (mode) {
 		try {
