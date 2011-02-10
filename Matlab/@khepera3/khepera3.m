@@ -57,7 +57,7 @@ classdef khepera3 < handle
         % h_array is an array of handles to the screen display
         % mode = {'start'|'stop'}
         RunAcquisition(k3, mode)
-        error = Connect(k3,Id,localIP,virtual,h_message)   
+        error = Connect(k3,Id,localIP,virtual,initialPosition, initialOirentation,h_message)   
         Disconnect(k3)
         SetMode(k3,modeLeft,modeRight)
         modes = GetMode(k3)

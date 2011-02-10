@@ -8,7 +8,8 @@
 using namespace boost;
 
 //CONSTRUCTOR AND DESTRUCTOR----------------------------------
-Agent::Agent(int id):
+Agent::Agent(int id, vector<double> initialPosition, double initialOrientation):
+	Object(initialPosition, initialOrientation),
 	trackGenerator(),
 	localAddress("1.1.1.1"),
 	neighbors(vector<Object>()),

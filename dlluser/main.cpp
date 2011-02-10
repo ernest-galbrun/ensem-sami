@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 {
 	ofstream log("log.txt");
 	cout.rdbuf(log.rdbuf());
-	LaunchKhepera(6,false);
+	LaunchKhepera(6,false,0,0,0);
 	//LaunchKhepera(22,true);
 	//posix_time::time_duration timeStamp;
 	//posix_time::ptime begin(posix_time::microsec_clock::local_time());

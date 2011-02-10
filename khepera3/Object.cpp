@@ -11,6 +11,14 @@ Object::Object(void):
 		position[i] = 0;
 }
 
+Object::Object(vector<double> p, double orientation):
+position(array<double,2>()),
+orientation(orientation)
+{	
+	for (int i=0;i<(int)position.size();++i)
+		position[i] = p[i];
+}
+
 Object::~Object(void)
 {
 }

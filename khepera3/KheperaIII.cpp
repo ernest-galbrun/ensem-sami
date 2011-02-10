@@ -26,13 +26,13 @@ using namespace boost;
 //{return testSerial;}
 
 //CONSTRUCTOR AND DESTRUCTOR----------------------------------
-KheperaIII::KheperaIII(int id, bool isVirtual):
+KheperaIII::KheperaIII(int id, bool isVirtual, vector<double> initialPosition, double initialOrientation):
+	Agent(id, initialPosition, initialOrientation),
 	isVirtual_(isVirtual),
 	initSuccessful(false),
 	updatePositionMode(0),
 	angularSpeed_(0),
 	linearSpeed_(0),
-	Agent(id),
 	axis(AXIS),
 	nIrSensors(NB_SENSORS),
 	irValues(vector<int>(nIrSensors)),

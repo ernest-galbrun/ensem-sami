@@ -54,7 +54,7 @@ private:
 
 
 public:
-	KheperaIII(int id, bool isVirtual=false);
+	KheperaIII(int id, bool isVirtual=false, vector<double> initialPosition = vector<double>(2,0), double initialOrientation=0);
 	~KheperaIII(void);
 
 	void CloseConnection();
