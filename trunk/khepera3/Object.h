@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <vector>
 #include <boost/array.hpp>
 
 #include "LocalizationSystem.h"
@@ -18,6 +19,7 @@ protected:
 public:
 	void setPosition(double,double);
 	void setOrientation(double);
+	Object::Object(std::vector<double> p, double orientation);
 	Object(void);
 	~Object(void);
 	void setId(int);

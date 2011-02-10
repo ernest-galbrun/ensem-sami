@@ -27,7 +27,7 @@ private:
 protected:
 	void LaunchComm();
 public:
-	Agent(int id);
+	Agent(int id, vector<double> initialPosition=vector<double>(2,0), double initialOrientation=0);
 	~Agent(void);
 
 	TrackGenerator trackGenerator;

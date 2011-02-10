@@ -27,12 +27,15 @@ KheperaIII* k3[maxRobotNumber];
 vector<bool>	exists(maxRobotNumber,false);
 
 
-extern "C" __declspec(dllexport) int LaunchKhepera(int robotID, int isVirtual){
+extern "C" __declspec(dllexport) int LaunchKhepera(int robotID, int isVirtual,double x0,double y0,double theta0){
 	if (robotID>=maxRobotNumber)
 		return K3_BADROBOTID;
 	if (exists[robotID])
 		delete(k3[robotID]);
-	k3[robotID] = new KheperaIII(robotID, (bool) isVirtual);
+	vector<double> initialPosition(2,0);
+	initialPosition[0] = x0;
+	initialPosition[1] = y0;
+	k3[robotID] = new KheperaIII(robotID, (bool) isVirtual, initialPosition, theta0);
 	try {
 		k3[robotID]->Init();
 	}
