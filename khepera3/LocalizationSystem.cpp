@@ -24,6 +24,7 @@ LocalizationSystem::LocalizationSystem():
 
 LocalizationSystem::~LocalizationSystem(void)
 {
+	Cortex_Exit();
 }
 
 void LocalizationSystem::init(string myAddress, string hostAddress, string bodyName, boost::array<double,2>* position, double* orientation)
