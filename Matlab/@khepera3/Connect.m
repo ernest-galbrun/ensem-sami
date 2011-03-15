@@ -15,11 +15,21 @@ function error = Connect(k3,Id,localIP,virtual,initialPosition, initialOrientati
     try
         %pp = libpointer('voidPtrPtr');
         Id=str2num(Id);
-        calllib('khepera3clib','LaunchKhepera',Id,isVirtual,...
+        error = calllib('khepera3clib','LaunchKhepera',Id,isVirtual,...
             initialPosition(1),initialPosition(2),initialOrientation(1));
+        if error~=0
+            message = {'Connection failed'};
+            return
+        end
         k3.id = Id;
         %k3.p = get(pp,'value');
-        calllib('khepera3clib','InitLocalizationSystem',Id,1,localIP,'193.49.136.176');
+        error = calllib('khepera3clib','InitLocalizationSystem',Id,1,localIP,'193.49.136.176');
+        if error == 2
+            message = {'Offline mode'};
+        else if error~=0
+            message = {'Connection failed'};
+            return
+        end
         message = {'Connection established'};
         %fopen(k3.t);
         %if k3.lock(5)==0
@@ -33,7 +43,7 @@ function error = Connect(k3,Id,localIP,virtual,initialPosition, initialOrientati
         %    k3.unlock();
         %else
         %    message = 'Connection failed';
-        %end
+    end
     catch ME
         message = 'Connection failed';
         error = 1;
