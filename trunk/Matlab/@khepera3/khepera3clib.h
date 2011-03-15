@@ -9,6 +9,9 @@ enum K3ErrorCode{
 #ifdef __cplusplus 
 extern "C" {
 #endif 
+
+	
+	__declspec(dllexport) int GetWandPosition(double* X, double* Y);
 	// Connects to the robot 10.10.10.N
 	//Creates KheperaIII object, returns a pointer to it
 	__declspec(dllexport) int LaunchKhepera(int robotID, int isVirtual,double x0,double y0,double theta0);
