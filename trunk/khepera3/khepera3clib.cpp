@@ -6,6 +6,7 @@ for use with matlab or other third party software*/
 #include "KheperaIII.h"
 #include "LocalizationSystem.h"
 #include "Object.h"
+#include "Wand.h" 
 #include "../Matlab/@khepera3/khepera3clib.h"
 #include <errno.h>
 
@@ -25,6 +26,24 @@ const int maxRobotNumber = 1000;
 // It is instanciated when the dll is loaded, and destructed when unloaded.
 KheperaIII* k3[maxRobotNumber];
 vector<bool>	exists(maxRobotNumber,false);
+
+
+extern "C" __declspec(dllexport) int GetWandPosition(double* X, double* Y, const char* ownIP){
+	static bool firstCall=true;
+	static Wand wand;
+	array<double,2> position;
+	double orientation;
+	if (firstCall){
+		wand.init(ownIP,"193.49.136.176","Wand500",&position, &orientation);
+		firstCall=false;
+	}
+	else {
+		wand.UpdatePosition(&position, &orientation);
+	}
+	*X = position[0];
+	*Y = position[1];
+	return K3_NOERROR;
+}
 
 
 extern "C" __declspec(dllexport) int LaunchKhepera(int robotID, int isVirtual,double x0,double y0,double theta0){

@@ -42,6 +42,9 @@
     <ClCompile Include="khepera3clib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Wand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Agent.h">
@@ -75,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Cortex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Wand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

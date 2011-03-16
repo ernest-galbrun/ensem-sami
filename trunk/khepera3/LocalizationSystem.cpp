@@ -13,10 +13,13 @@
 #include "KheperaIII.h"
 #include "LocalizationSystem.h"
 
+int LocalizationSystem::instanceCount = 0;
+
 LocalizationSystem::LocalizationSystem():
 	enable(false)
 	//robot(robotArg)
 {
+	instanceCount++;
 	//robot = robotArg;
 	//previousPosition = (float*)malloc(3*(sizeof(float)));
 	//enable = 0;
@@ -24,7 +27,10 @@ LocalizationSystem::LocalizationSystem():
 
 LocalizationSystem::~LocalizationSystem(void)
 {
-	Cortex_Exit();
+	instanceCount--;
+	if(instanceCount==0) {
+		Cortex_Exit();
+	}
 }
 
 void LocalizationSystem::init(string myAddress, string hostAddress, string bodyName, boost::array<double,2>* position, double* orientation)
@@ -45,7 +51,13 @@ void LocalizationSystem::init(string myAddress, string hostAddress, string bodyN
 	memset(&MyCopyOfFrame, 0, sizeof(sFrameOfData));
 	Cortex_SetVerbosityLevel(VL_None);		
 	printf("Connecting to Cortex Host...\n");
-	int retval = Cortex_Initialize((char*)me.c_str(), (char*)host.c_str());		
+	int retval;
+	if (instanceCount==1) {
+		retval = Cortex_Initialize((char*)me.c_str(), (char*)host.c_str());		
+	}
+	else {
+		retval = enable?RC_Okay:RC_GeneralError;
+	}
 	if (retval != RC_Okay)
 	{
 		enable =false;

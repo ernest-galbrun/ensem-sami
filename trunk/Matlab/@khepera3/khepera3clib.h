@@ -11,7 +11,7 @@ extern "C" {
 #endif 
 
 	
-	__declspec(dllexport) int GetWandPosition(double* X, double* Y);
+	__declspec(dllexport) int GetWandPosition(double* X, double* Y,const char* localIP);
 	// Connects to the robot 10.10.10.N
 	//Creates KheperaIII object, returns a pointer to it
 	__declspec(dllexport) int LaunchKhepera(int robotID, int isVirtual,double x0,double y0,double theta0);

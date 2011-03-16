@@ -15,8 +15,8 @@ private:
 	boost::array<double,2> position;
 	double orientation;
 protected:
-	virtual bool UpdatePosition();
 public:
+	virtual bool UpdatePosition();
 	void setPosition(double,double);
 	void setOrientation(double);
 	Object::Object(std::vector<double> p, double orientation);
