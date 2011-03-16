@@ -21,6 +21,7 @@ using namespace std;
 class LocalizationSystem
 {
 	//boost::shared_ptr<KheperaIII> robot;
+protected:	
 	bool enable;
 
 	//Cortex Parameters
@@ -29,15 +30,16 @@ class LocalizationSystem
 	string name;
 	sFrameOfData  MyCopyOfFrame;
 	int bodyIndex;
-	
+	static int instanceCount;
+
 public:
 	LocalizationSystem();
 	~LocalizationSystem(void);
 
 	void init(int,int);
-	void init(string myAddress, string hostAddress, string bodyName,boost::array<double,2>* position, double* orientation);
+	virtual void init(string myAddress, string hostAddress, string bodyName,boost::array<double,2>* position, double* orientation);
 	//updates the position given in the input pointers, return false on failure
-	bool UpdatePosition(boost::array<double,2>* position, double* orientation);
+	virtual bool UpdatePosition(boost::array<double,2>* position, double* orientation);
 	void Close();
 	boost::array<double,5> getOwnPosition_Cortex(); //{Ack,X,Y,Z,theta}
 

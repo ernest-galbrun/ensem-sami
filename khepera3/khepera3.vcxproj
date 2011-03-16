@@ -140,6 +140,7 @@
     <ClCompile Include="Receiver.cpp" />
     <ClCompile Include="Sender.cpp" />
     <ClCompile Include="TrackGenerator.cpp" />
+    <ClCompile Include="Wand.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Matlab\%40khepera3\khepera3clib.h" />
@@ -153,6 +154,7 @@
     <ClInclude Include="Receiver.h" />
     <ClInclude Include="Sender.h" />
     <ClInclude Include="TrackGenerator.h" />
+    <ClInclude Include="Wand.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Cortex_SDK_x64.lib">
