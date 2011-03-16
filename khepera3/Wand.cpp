@@ -3,28 +3,28 @@
 
 
 bool Wand::UpdatePosition(boost::array<double,2>* position, double* orientation) {
+	*orientation = 0; //unimplemented
 	countT++;
-	boost::array<double,5> auxCor;
-	auxCor = getOwnPosition_Cortex();
-	if(auxCor[0]==1)
-	{
-		countO++;
-		//printf("Ct: %d Co: %d\n",countT, countO);
-		(*position)[0] = auxCor[1];
-		(*position)[1] = auxCor[2];
-		*orientation = auxCor[4];
-		return true;
-	}
-	else
-	{
-		return false;
+	sFrameOfData* pFrameOfData=NULL;
+	float* A;
+	float* B;
+	pFrameOfData = Cortex_GetCurrentFrame();
+	if ((&pFrameOfData->BodyData[bodyIndex])->nMarkers == 3) {
+		A = (&pFrameOfData->BodyData[bodyIndex])->Markers[0];
+		B = (&pFrameOfData->BodyData[bodyIndex])->Markers[2];
+		(*position)[0] = A[0] +  A[2]* (B[0]-A[0]) / (A[2]-B[2]);
+		(*position)[1] = A[1] +  A[2]* (B[1]-A[1]) / (A[2]-B[2]);
+	}				
+	else {
+		throw (ios_base::failure("One or more marker missing."));
 	}
 }
 
 void Wand::init(string myAddress, string hostAddress, string bodyName,boost::array<double,2>* position, double* orientation){
+	*orientation = 0; //unimplemented
 	sFrameOfData* pFrameOfData=NULL;
-	float* coordFront;
-	float* coordBack;
+	float* A;
+	float* B;
 	countT = 0;
 	countO = 0;
 	bool bodyNameFound = false;
@@ -73,21 +73,14 @@ void Wand::init(string myAddress, string hostAddress, string bodyName,boost::arr
 					bodyIndex = iBody;
 					bodyNameFound = true;
 					pFrameOfData = Cortex_GetCurrentFrame();
-					coordBack = (&pFrameOfData->BodyData[bodyIndex])->Markers[0];
-					coordFront = (&pFrameOfData->BodyData[bodyIndex])->Markers[2];
-					//auxCor = getOwnPosition_Cortex();
-					if(auxCor[0]==1)
-					{
-						(*position)[0] = auxCor[1];
-						(*position)[1] = auxCor[2];
-						*orientation = auxCor[4];
-						printf("Done!!!\n");
-							
-					}
-					else
-					{
-						enable =0;
-						throw (ios_base::failure("In the first iteration ALL markers of the template must be valid."));
+					if ((&pFrameOfData->BodyData[bodyIndex])->nMarkers == 3) {
+					A = (&pFrameOfData->BodyData[bodyIndex])->Markers[0];
+					B = (&pFrameOfData->BodyData[bodyIndex])->Markers[2];
+					(*position)[0] = A[0] +  A[2]* (B[0]-A[0]) / (A[2]-B[2]);
+					(*position)[1] = A[1] +  A[2]* (B[1]-A[1]) / (A[2]-B[2]);
+					}				
+					else {
+						throw (ios_base::failure("One or more marker missing."));
 					}
 				}
 					

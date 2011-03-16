@@ -14,7 +14,10 @@ int main(int argc, char* argv[])
 {
 	double X;
 	double Y;
-	GetWandPosition(&X, &Y, "193.49.136.186");
+	GetWandPosition(&X, &Y, "193.49.136.189");
+	GetWandPosition(&X, &Y, "193.49.136.189");
+	GetWandPosition(&X, &Y, "193.49.136.189");
+	GetWandPosition(&X, &Y, "193.49.136.189");
 	ofstream log("log.txt");
 	cout.rdbuf(log.rdbuf());
 	LaunchKhepera(6,false,0,0,0);
