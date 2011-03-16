@@ -27,24 +27,29 @@ const int maxRobotNumber = 1000;
 KheperaIII* k3[maxRobotNumber];
 vector<bool>	exists(maxRobotNumber,false);
 
-
 extern "C" __declspec(dllexport) int GetWandPosition(double* X, double* Y, const char* ownIP){
 	static bool firstCall=true;
 	static Wand wand;
 	array<double,2> position;
 	double orientation;
-	if (firstCall){
-		wand.init(ownIP,"193.49.136.176","Wand500",&position, &orientation);
-		firstCall=false;
+	try {
+		if (firstCall){
+			wand.init(ownIP,"193.49.136.176","Wand500",&position, &orientation);
+			firstCall=false;
+		}
+		else {
+			wand.UpdatePosition(&position, &orientation);
+		}
 	}
-	else {
-		wand.UpdatePosition(&position, &orientation);
+	catch (ios_base::failure e) {
+		delete(k3[robotID]);	
+		cout<<e.what();
+		return K3_CONNECTIONFAILURE;
 	}
 	*X = position[0];
 	*Y = position[1];
-	return K3_NOERROR;
+	return K3_CORTEXFAILURE;
 }
-
 
 extern "C" __declspec(dllexport) int LaunchKhepera(int robotID, int isVirtual,double x0,double y0,double theta0){
 	if (robotID>=maxRobotNumber)
