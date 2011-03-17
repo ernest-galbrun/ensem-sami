@@ -11,8 +11,9 @@ enum K3ErrorCode{
 extern "C" {
 #endif 
 
-	
-	__declspec(dllexport) int GetWandPosition(double* X, double* Y,const char* localIP);
+	__declspec(dllexport) int OpenCortex(const char* ownIP);
+	__declspec(dllexport) int CloseCortex();
+	__declspec(dllexport) int GetWandPosition(double* X, double* Y);
 	// Connects to the robot 10.10.10.N
 	//Creates KheperaIII object, returns a pointer to it
 	__declspec(dllexport) int LaunchKhepera(int robotID, int isVirtual,double x0,double y0,double theta0);
@@ -27,7 +28,7 @@ extern "C" {
 	__declspec(dllexport) int SetSpeed(int robotID, double linear, double angular);
 
 	// Launch the localization system in hybrid mode
-	__declspec(dllexport) int InitLocalizationSystem(int robotID, int mode, const char* localIP, const char* cortexIP);
+	__declspec(dllexport) int InitLocalizationSystem(int robotID, int mode);
 
 	// Get the position of the robot in cm, real coordinates
 	__declspec(dllexport) int GetPosition(int robotID, double* posX, double* posY);
