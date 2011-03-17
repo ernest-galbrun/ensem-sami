@@ -26,5 +26,5 @@ public:
 	int getId() const;
 	boost::array<double,2> getPosition();
 	double getOrientation();
-	void InitLocalizationSystem(string myAddress, string hostAddress, string bodyName);
+	void InitLocalizationSystem(string bodyName);
 };

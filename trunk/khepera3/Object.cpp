@@ -23,8 +23,8 @@ Object::~Object(void)
 {
 }
 
-void Object::InitLocalizationSystem(string myAddress, string hostAddress, string bodyName){
-	localizationSystem.init(myAddress, hostAddress, bodyName, &position, &orientation);
+void Object::InitLocalizationSystem(string bodyName){
+	localizationSystem.FindBodyIndex(bodyName);
 }
 
 int Object::getId() const

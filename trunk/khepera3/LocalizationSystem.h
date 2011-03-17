@@ -25,23 +25,26 @@ protected:
 	bool enable;
 
 	//Cortex Parameters
-	string host;
-	string me;
+	static string host;
+	static string me;
+	static bool cortexIsConnected;
 	string name;
-	sFrameOfData  MyCopyOfFrame;
+	//sFrameOfData  MyCopyOfFrame;
 	int bodyIndex;
-	static int instanceCount;
+//	static int instanceCount;
 
 public:
 	LocalizationSystem();
 	~LocalizationSystem(void);
 
+	int GetBodyIndex();
 	void init(int,int);
-	virtual void init(string myAddress, string hostAddress, string bodyName,boost::array<double,2>* position, double* orientation);
+	void FindBodyIndex(string bodyName);
 	//updates the position given in the input pointers, return false on failure
-	virtual bool UpdatePosition(boost::array<double,2>* position, double* orientation);
-	void Close();
-	boost::array<double,5> getOwnPosition_Cortex(); //{Ack,X,Y,Z,theta}
+	bool UpdatePosition(boost::array<double,2>* position, double* orientation);
+	static void Close();
+	static void Open(string myAddress, string hostAddress);
+	virtual boost::array<double,5> GetOwnPosition_Cortex(); //{Ack,X,Y,Z,theta}
 
 	int countT;
 	int countO;

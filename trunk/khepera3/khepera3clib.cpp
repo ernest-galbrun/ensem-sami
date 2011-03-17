@@ -24,31 +24,42 @@ const int maxRobotNumber = 1000;
 
 // global variable k3 stores pointer to every robot created.
 // It is instanciated when the dll is loaded, and destructed when unloaded.
+// instanceCount is the count of LocalizationSystem instances
 KheperaIII* k3[maxRobotNumber];
 vector<bool>	exists(maxRobotNumber,false);
+int instanceCount = 0;
+//Wand wand;
+//bool firstCall=true;
 
-extern "C" __declspec(dllexport) int GetWandPosition(double* X, double* Y, const char* ownIP){
+extern "C" __declspec(dllexport) int OpenCortex(const char* ownIP){
+	LocalizationSystem::Open(ownIP, "193.49.136.176");
+	return K3_NOERROR;
+}
+
+extern "C" __declspec(dllexport) int CloseCortex(){
+	LocalizationSystem::Close();
+	return K3_NOERROR;
+}
+
+extern "C" __declspec(dllexport) int GetWandPosition(double* X, double* Y){
 	static bool firstCall=true;
 	static Wand wand;
 	array<double,2> position;
 	double orientation;
 	try {
-		if (firstCall){
-			wand.init(ownIP,"193.49.136.176","Wand500",&position, &orientation);
+		if (firstCall) {
 			firstCall=false;
+			wand.FindBodyIndex("Wand500");
 		}
-		else {
-			wand.UpdatePosition(&position, &orientation);
-		}
+		wand.UpdatePosition(&position, &orientation);
 	}
 	catch (ios_base::failure e) {
-		delete(k3[robotID]);	
 		cout<<e.what();
-		return K3_CONNECTIONFAILURE;
+		return K3_CORTEXFAILURE;
 	}
 	*X = position[0];
 	*Y = position[1];
-	return K3_CORTEXFAILURE;
+	return K3_NOERROR;
 }
 
 extern "C" __declspec(dllexport) int LaunchKhepera(int robotID, int isVirtual,double x0,double y0,double theta0){
@@ -97,7 +108,7 @@ extern "C" __declspec(dllexport) int SetSpeed(int robotID, double linear, double
 	return K3_NOERROR;
 }
 
-extern "C" __declspec(dllexport) int InitLocalizationSystem(int robotID, int mode, const char* localIP, const char* cortexIP){
+extern "C" __declspec(dllexport) int InitLocalizationSystem(int robotID, int mode) {
 	K3ErrorCode ret = K3_NOERROR;
 	if (robotID>=maxRobotNumber || !exists[robotID])
 		return K3_BADROBOTID;
@@ -106,7 +117,7 @@ extern "C" __declspec(dllexport) int InitLocalizationSystem(int robotID, int mod
 	k3[robotID]->SetUpdatePositionMode(mode);
 	if (mode) {
 		try {
-			k3[robotID]->InitLocalizationSystem(string(localIP), string(cortexIP), bodyName.str());	
+			k3[robotID]->InitLocalizationSystem(bodyName.str());	
 		}
 		catch (ios_base::failure e) {
 			k3[robotID]->SetUpdatePositionMode(0);
@@ -258,4 +269,35 @@ extern "C" __declspec(dllexport) int GetUltrasound(int robotID, int** values){
 		return K3_BADROBOTID;
 	k3[robotID]->GetUltrasound(values);
 	return K3_NOERROR;
+}
+
+BOOL WINAPI DllMain(
+    HINSTANCE hinstDLL,  // handle to DLL module
+    DWORD fdwReason,     // reason for calling function
+    LPVOID lpReserved )  // reserved
+{
+    // Perform actions based on the reason for calling.
+    switch( fdwReason ) 
+    { 
+		int a;
+        case DLL_PROCESS_ATTACH:
+			a=0;
+         // Initialize once for each new process.
+         // Return FALSE to fail DLL load.
+            break;
+
+        case DLL_THREAD_ATTACH:
+         // Do thread-specific initialization.
+            break;
+
+        case DLL_THREAD_DETACH:
+         // Do thread-specific cleanup.
+            break;
+
+        case DLL_PROCESS_DETACH:
+			CloseCortex();
+         // Perform any necessary cleanup.
+            break;
+    }
+    return TRUE;  // Successful DLL_PROCESS_ATTACH.
 }

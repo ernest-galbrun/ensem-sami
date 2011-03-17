@@ -14,10 +14,12 @@ int main(int argc, char* argv[])
 {
 	double X;
 	double Y;
-	GetWandPosition(&X, &Y, "193.49.136.189");
-	GetWandPosition(&X, &Y, "193.49.136.189");
-	GetWandPosition(&X, &Y, "193.49.136.189");
-	GetWandPosition(&X, &Y, "193.49.136.189");
+	OpenCortex("193.49.136.186");
+	GetWandPosition(&X, &Y);
+	GetWandPosition(&X, &Y);
+	GetWandPosition(&X, &Y);
+	GetWandPosition(&X, &Y);
+	CloseCortex();
 	ofstream log("log.txt");
 	cout.rdbuf(log.rdbuf());
 	LaunchKhepera(6,false,0,0,0);
@@ -25,7 +27,7 @@ int main(int argc, char* argv[])
 	//posix_time::time_duration timeStamp;
 	//posix_time::ptime begin(posix_time::microsec_clock::local_time());
 
-	InitLocalizationSystem(6,1,"193.49.136.186","193.49.136.176");
+	InitLocalizationSystem(6,1);
 	//InitLocalizationSystem(22,1,"193.49.136.186","193.49.136.176");
 	int n;
 	int* id;
