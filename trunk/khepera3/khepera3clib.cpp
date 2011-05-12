@@ -32,7 +32,12 @@ int instanceCount = 0;
 //bool firstCall=true;
 
 extern "C" __declspec(dllexport) int OpenCortex(const char* ownIP){
-	LocalizationSystem::Open(ownIP, "193.49.136.176");
+	try {
+		LocalizationSystem::Open(ownIP, "193.49.136.176");
+	}
+	catch (ios_base::failure) {
+		return K3_OFFLINELOCALIZATION;
+	}
 	return K3_NOERROR;
 }
 
