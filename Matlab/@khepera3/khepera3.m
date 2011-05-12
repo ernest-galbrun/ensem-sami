@@ -38,8 +38,8 @@ classdef khepera3 < handle
                     loadlibrary('khepera3clib.dll','khepera3clib.h');
                 else
                     error('This version of Matlab is not supported by the khepera3 dll')                    
-                end                
-                calllib('khepera3clib', 'OpenCortex', k3.ownIP);
+                end   
+                calllib('khepera3clib', 'OpenCortex', k3.ownIP); 
             end
             if nargin>1
                 set(k3.timerAcquisition,'TimerFcn',{@CallBackAcquisition,k3,h_array});
