@@ -1,6 +1,6 @@
 function error = Connect(k3,Id,virtual,initialPosition, initialOrientation,varargin)
     % varargin{1} = handle to message string
-    if nargin > 6
+    if nargin >= 6
         h_message = varargin{1};
         set(h_message,'string','Trying to connect...');
     end
@@ -34,7 +34,7 @@ function error = Connect(k3,Id,virtual,initialPosition, initialOrientation,varar
         k3.id = Id;
         %k3.p = get(pp,'value');
         %CONNECTION MODE OFFLINE
-        error = calllib('khepera3clib','InitLocalizationSystem',Id,1);
+        error = calllib('khepera3clib','InitLocalizationSystem',Id,0);
         if error == 2
             message = {'Offline mode'};
         elseif error~=0
