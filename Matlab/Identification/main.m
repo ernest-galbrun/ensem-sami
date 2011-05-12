@@ -59,7 +59,7 @@ handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
 
-k3 = khepera3('193.49.136.186',[handles.leftPosition handles.rightPosition handles.leftSpeed handles.rightSpeed]);
+k3 = khepera3('1.1.1.1',[handles.leftPosition handles.rightPosition handles.leftSpeed handles.rightSpeed]);
 set(gcf,'userdata',k3);
 
 % UIWAIT makes main wait for user response (see UIRESUME)
