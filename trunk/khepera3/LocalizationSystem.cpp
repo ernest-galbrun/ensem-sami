@@ -95,6 +95,7 @@ boost::array<double,5> LocalizationSystem::GetOwnPosition_Cortex()
 	float* off2;
 	int ack;
 	ack = 1;	
+	FindBodyIndex(name);
 	pFrameOfData = Cortex_GetCurrentFrame();
 	coordMiddle = (&pFrameOfData->BodyData[bodyIndex])->Markers[7];
 	coordFront = (&pFrameOfData->BodyData[bodyIndex])->Markers[6];
