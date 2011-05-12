@@ -146,6 +146,12 @@ bool KheperaIII::UpdatePosition() {
 		if (!this->Object::UpdatePosition()) {
 			UpdatePositionOffline();
 		}
+		else {
+			int encoderValueLeft,encoderValueRight;
+			getEncodersValue(&encoderValueLeft,&encoderValueRight);
+			previousL = encoderValueLeft;
+			previousR = encoderValueRight;
+		}
 	}
 	return true;
 }
