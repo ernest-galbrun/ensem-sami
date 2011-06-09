@@ -14,7 +14,7 @@ class Receiver
 
 	boost::asio::ip::udp::socket socket_;
 	boost::asio::ip::udp::endpoint sender_endpoint_;
-	std::string data_;
+	char data_[512];
 	boost::system::error_code io_error_;
 	boost::system::error_code timer_error_;
 	bool timedOut;

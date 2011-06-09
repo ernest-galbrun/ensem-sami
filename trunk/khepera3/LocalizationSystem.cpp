@@ -47,13 +47,12 @@ void LocalizationSystem::FindBodyIndex(string bodyName)
 	
 	sBodyDefs* pBodyDefs=NULL;
 	int iBody;
-	name = bodyName;
 	if (cortexIsConnected) {
 	pBodyDefs = Cortex_GetBodyDefs();
 		for (iBody=0; iBody<pBodyDefs->nBodyDefs; iBody++) {
 			sBodyDef *pBody = &pBodyDefs->BodyDefs[iBody];
 			char* aux = pBody->szName;
-			if(strncmp (aux,name.c_str(),strlen(aux))==0) {
+			if(strncmp (aux,bodyName.c_str(),strlen(aux))==0) {
 				bodyIndex = iBody;
 				bodyNameFound = true;
 			}					
