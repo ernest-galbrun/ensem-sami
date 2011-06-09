@@ -7,7 +7,7 @@ for use with matlab or other third party software*/
 #include "LocalizationSystem.h"
 #include "Object.h"
 #include "Wand.h" 
-#include "../Matlab/@khepera3/khepera3clib.h"
+//#include "../Matlab/@khepera3/khepera3clib.h"
 #include <errno.h>
 
 #include <iostream>
@@ -16,6 +16,15 @@ for use with matlab or other third party software*/
 #include <vector>
 
 #include "boost/array.hpp"
+
+enum K3ErrorCode{
+	K3_NOERROR = 0,
+	K3_CONNECTIONFAILURE,
+	K3_OFFLINELOCALIZATION,
+	K3_BADROBOTID,
+	K3_CORTEXFAILURE
+};
+
 
 using namespace std;
 using namespace boost;
@@ -30,6 +39,10 @@ vector<bool>	exists(maxRobotNumber,false);
 int instanceCount = 0;
 //Wand wand;
 //bool firstCall=true;
+
+extern "C" const __declspec(dllexport) char*  PrintHello(){
+	return "Hellooo\0";
+}
 
 extern "C" __declspec(dllexport) int OpenCortex(const char* ownIP){
 	try {
