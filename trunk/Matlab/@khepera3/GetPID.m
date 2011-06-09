@@ -14,5 +14,6 @@ function PID = GetPID(k3)
     PID(2,1) = get(pRight,'value');
     PID(2,2) = get(iRight,'value');
     PID(2,3) = get(dRight,'value');
+    PID = PID/30800;
 end
 
