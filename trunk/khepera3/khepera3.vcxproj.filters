@@ -45,6 +45,9 @@
     <ClCompile Include="Wand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Parrot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Agent.h">
@@ -81,6 +84,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Wand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Parrot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

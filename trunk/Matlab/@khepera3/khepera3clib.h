@@ -25,6 +25,8 @@ extern "C" {
 
 	// Get the position of the robot in cm, real coordinates
 	__declspec(dllexport) int GetPosition(int robotID, double* posX, double* posY);
+	
+	__declspec(dllexport) int GetDronePosition(double * frontX, double* frontY, double* frontZ, double* backX, double * backY, double* backZ);
 
 	// Get Absolute orientation
 	__declspec(dllexport) int GetOrientation(int robotID, double* orientation);
