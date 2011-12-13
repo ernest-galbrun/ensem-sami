@@ -139,6 +139,7 @@
     <ClCompile Include="KheperaIII.cpp" />
     <ClCompile Include="LocalizationSystem.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Parrot.cpp" />
     <ClCompile Include="Receiver.cpp" />
     <ClCompile Include="Sender.cpp" />
     <ClCompile Include="TrackGenerator.cpp" />
@@ -153,6 +154,7 @@
     <ClInclude Include="KheperaIII.h" />
     <ClInclude Include="LocalizationSystem.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="Parrot.h" />
     <ClInclude Include="Receiver.h" />
     <ClInclude Include="Sender.h" />
     <ClInclude Include="TrackGenerator.h" />

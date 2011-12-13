@@ -7,6 +7,7 @@ for use with matlab or other third party software*/
 #include "LocalizationSystem.h"
 #include "Object.h"
 #include "Wand.h" 
+#include "Parrot.h"
 //#include "../Matlab/@khepera3/khepera3clib.h"
 #include <errno.h>
 
@@ -42,6 +43,24 @@ int instanceCount = 0;
 
 extern "C" const __declspec(dllexport) char*  PrintHello(){
 	return "Hellooo\0";
+}
+
+
+extern "C" __declspec(dllexport) int GetDronePosition(double * frontX, double* frontY, double* frontZ, double* backX, double * backY, double* backZ){
+	static bool firstCall=true;
+	static Parrot parrot;
+	try {
+		if (firstCall) {
+			firstCall=false;
+			parrot.FindBodyIndex("parrot1");
+		}
+		parrot.UpdatePosition(frontX, frontY, frontZ, backX, backY, backZ);
+	}
+	catch (ios_base::failure e) {
+		cout<<e.what();
+		return K3_CORTEXFAILURE;
+	}	
+	return K3_NOERROR;
 }
 
 extern "C" __declspec(dllexport) int OpenCortex(const char* ownIP){
