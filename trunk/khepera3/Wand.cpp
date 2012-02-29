@@ -1,13 +1,18 @@
 #include "Wand.h"
-#include "boost/array.hpp"
+#include <array>
+//#include "boost/array.hpp"
 
 extern int instanceCount;
 
-boost::array<double,5> Wand::GetOwnPosition_Cortex() {//{Ack,X,Y,Z,theta}
+Wand::Wand(){
+	SetName("Wand500");
+}
+
+std::array<double,5> Wand::GetOwnPosition_Cortex() {//{Ack,X,Y,Z,theta}
 	//*orientation = 0; //unimplemented
 	//countT++;
 	int i = GetBodyIndex();
-	boost::array<double,5> ret = { { 0,0,0,0,0 } };
+	std::array<double,5> ret = { { 0,0,0,0,0 } };
 	sFrameOfData* pFrameOfData=NULL;
 	float* A;
 	float* B;

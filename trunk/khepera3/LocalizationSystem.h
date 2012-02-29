@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Cortex.h"
-#include "boost/array.hpp"
+//#include "boost/array.hpp"
 #include "boost/shared_ptr.hpp"
+
+#include <array>
 class KheperaIII;
 
 /*
@@ -39,12 +41,13 @@ public:
 
 	int GetBodyIndex();
 	void init(int,int);
-	void FindBodyIndex(string bodyName);
+	void FindBodyIndex();
+	void SetName(string bodyName) {name=bodyName;};
 	//updates the position given in the input pointers, return false on failure
-	bool UpdatePosition(boost::array<double,2>* position, double* orientation);
+	void UpdatePosition(std::array<double,2>* position, double* orientation);
 	static void Close();
 	static void Open(string myAddress, string hostAddress);
-	virtual boost::array<double,5> GetOwnPosition_Cortex(); //{Ack,X,Y,Z,theta}
+	virtual std::array<double,5> GetOwnPosition_Cortex(); //{Ack,X,Y,Z,theta}
 
 	int countT;
 	int countO;

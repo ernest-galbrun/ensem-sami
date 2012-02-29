@@ -5,13 +5,14 @@
 #include <stdio.h>
 //#include <windows.h>
 #include <iostream>
+#include <array>
 
 #include "Receiver.h"
 #include "Sender.h"
 
 #include <boost/asio.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/array.hpp>
+//#include <boost/array.hpp>
 #include <boost/utility.hpp>
 
 class CommunicationSystem:boost::noncopyable
@@ -29,7 +30,7 @@ public:
 
 	//void run();
 	void reorganizeNeighbors(int,double,double);
-	void sendPosition(int id,const boost::array<double,2>& position);
-	bool ReceivePosition(int& id, boost::array<double,2>& position);
+	void sendPosition(int id,const std::tr1::array<double,2>& position);
+	bool ReceivePosition(int& id, std::tr1::array<double,2>& position);
 	bool Enabled();	
 };

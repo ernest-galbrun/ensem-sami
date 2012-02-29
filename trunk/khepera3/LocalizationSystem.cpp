@@ -6,6 +6,7 @@
 //#include <windows.h>
 #include <sstream>
 #include <math.h>
+#include <array>
 
 #include "boost/thread.hpp"
 
@@ -38,12 +39,12 @@ LocalizationSystem::~LocalizationSystem(void)
 	//}
 }
 
-void LocalizationSystem::FindBodyIndex(string bodyName)
+void LocalizationSystem::FindBodyIndex()
 {
 	countT = 0;
 	countO = 0;
 	bool bodyNameFound = false;
-	boost::array<double,5> auxCor;
+	std::array<double,5> auxCor;
 	
 	sBodyDefs* pBodyDefs=NULL;
 	int iBody;
@@ -52,7 +53,7 @@ void LocalizationSystem::FindBodyIndex(string bodyName)
 		for (iBody=0; iBody<pBodyDefs->nBodyDefs; iBody++) {
 			sBodyDef *pBody = &pBodyDefs->BodyDefs[iBody];
 			char* aux = pBody->szName;
-			if(strncmp (aux,bodyName.c_str(),strlen(aux))==0) {
+			if(strncmp (aux,name.c_str(),strlen(aux))==0) {
 				bodyIndex = iBody;
 				bodyNameFound = true;
 			}					
@@ -65,27 +66,20 @@ void LocalizationSystem::FindBodyIndex(string bodyName)
 }
 
 
-bool LocalizationSystem::UpdatePosition(boost::array<double,2>* position, double* orientation)
+void LocalizationSystem::UpdatePosition(std::array<double,2>* position, double* orientation)
 {
 	countT++;
-	boost::array<double,5> auxCor;
+	std::array<double,5> auxCor;
 	auxCor = GetOwnPosition_Cortex();
-	if(auxCor[0]==1) {
-		countO++;
-		//printf("Ct: %d Co: %d\n",countT, countO);
-		(*position)[0] = auxCor[1];
-		(*position)[1] = auxCor[2];
-		*orientation = auxCor[4];
-		return true;
-	}
-	else {
-		return false;
-	}
+	countO++;
+	(*position)[0] = auxCor[1];
+	(*position)[1] = auxCor[2];
+	*orientation = auxCor[4];
 }
 	
-boost::array<double,5> LocalizationSystem::GetOwnPosition_Cortex()
+std::array<double,5> LocalizationSystem::GetOwnPosition_Cortex()
 {
-	boost::array<double,5> ret = { { 0,0,0,0,0 } };
+	std::array<double,5> ret = { { 0,0,0,0,0 } };
 	double aux;
 	sFrameOfData* pFrameOfData=NULL;
 	float* coordFront;
@@ -94,17 +88,16 @@ boost::array<double,5> LocalizationSystem::GetOwnPosition_Cortex()
 	float* off2;
 	int ack;
 	ack = 1;	
-	FindBodyIndex(name);
+	FindBodyIndex();
 	pFrameOfData = Cortex_GetCurrentFrame();
+	if (!pFrameOfData) 
+		throw(ios_base::failure("Bad data from Cortex"));
 	coordMiddle = (&pFrameOfData->BodyData[bodyIndex])->Markers[7];
 	coordFront = (&pFrameOfData->BodyData[bodyIndex])->Markers[6];
 	if(coordMiddle[0] == 9999999 || coordFront[0] == 9999999) {// || off1[0] == 9999999 || off2[0] == 9999999)
-		ack =0;
+		throw(ios_base::failure("Bad data from Cortex"));
 	}
-	else {
-		ack = 1;
-	}	
-	ret[0] = ack;
+	ret[0] = 1;
 	ret[1] = (double)coordMiddle[0];//*.1;
 	ret[2] = (double)coordMiddle[1];//*.1;
 	ret[3] = (double)coordMiddle[2];//*.1;

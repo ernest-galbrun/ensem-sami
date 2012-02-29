@@ -1,13 +1,18 @@
 #include "Parrot.h"
-#include "boost/array.hpp"
+#include <array>
+//#include "boost/array.hpp"
 
 extern int instanceCount;
 
-boost::array<double,5> Parrot::GetOwnPosition_Cortex() {//{Ack,X,Y,Z,theta}
+Parrot::Parrot() {
+	SetName("Parrot1");
+}
+
+std::array<double,5> Parrot::GetOwnPosition_Cortex() {//{Ack,X,Y,Z,theta}
 	//*orientation = 0; //unimplemented
 	//countT++;
 	int i = GetBodyIndex();
-	boost::array<double,5> ret = { { 0,0,0,0,0 } };
+	std::array<double,5> ret = { { 0,0,0,0,0 } };
 	sFrameOfData* pFrameOfData=NULL;
 	float* A;
 	float* B;
@@ -28,7 +33,7 @@ boost::array<double,5> Parrot::GetOwnPosition_Cortex() {//{Ack,X,Y,Z,theta}
 bool Parrot::UpdatePosition(double * frontX, double* frontY, double* frontZ, double* backX, double * backY, double* backZ)
 {
 	
-	boost::array<double,5> ret = { { 0,0,0,0,0 } };
+	std::array<double,5> ret = { { 0,0,0,0,0 } };
 	double aux;
 	sFrameOfData* pFrameOfData=NULL;
 	float* coordFront;
@@ -37,7 +42,7 @@ bool Parrot::UpdatePosition(double * frontX, double* frontY, double* frontZ, dou
 	float* off2;
 	int ack;
 	ack = 1;	
-	FindBodyIndex("parrot1");
+	FindBodyIndex();
 	pFrameOfData = Cortex_GetCurrentFrame();
 	coordMiddle = (&pFrameOfData->BodyData[bodyIndex])->Markers[5];
 	coordFront = (&pFrameOfData->BodyData[bodyIndex])->Markers[6];

@@ -20,7 +20,7 @@ Sender::~Sender(void)
 {
 }
 
-void Sender::sendPosition(int id,const boost::array<double,2>& position)
+void Sender::sendPosition(int id,const std::array<double,2>& position)
 {
 	std::ostringstream os;
     os << id <<","<<position[0]<<","<<position[1];

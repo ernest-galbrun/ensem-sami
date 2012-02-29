@@ -5,6 +5,8 @@
 //#include "Serial.h"
 #include "Agent.h"
 
+#include <array>
+
 #include "boost/thread.hpp"
 #include "boost/asio.hpp"
 #include "boost/shared_ptr.hpp"
@@ -25,7 +27,7 @@ private:
 	int nIrSensors;
 	double axis;
 	std::vector<int> irValues;
-	boost::array<int,2> encoderValues;
+	std::tr1::array<int,2> encoderValues;
 	int previousL;
 	int previousR;
 	int updatePositionMode; //0 = offline 1 = using cortex 2 = hybrid
@@ -47,7 +49,7 @@ private:
 	int sendMsg(string msg, int n, vector<string>* answer);
 	void	RunIOService();
 	void UpdatePositionOffline();
-	virtual bool UpdatePosition();
+	virtual void UpdatePosition();
 	vector<int> irAmbientValues;
 	vector<int> irProximityValues;
 	vector<int> ultrasound;

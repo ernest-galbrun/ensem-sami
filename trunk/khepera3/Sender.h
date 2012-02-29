@@ -3,10 +3,11 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <array>
 #include <boost/asio.hpp>
 #include "boost/bind.hpp"
 #include "boost/date_time/posix_time/posix_time_types.hpp"
-#include "boost/array.hpp"
+//#include "boost/array.hpp"
 
 
 class Sender
@@ -22,6 +23,6 @@ public:
 	Sender(const boost::asio::ip::address&,int);
 
 	~Sender(void);
-	void sendPosition(int id,const boost::array<double,2>& position);
+	void sendPosition(int id,const std::array<double,2>& position);
 	void handler_sender(const boost::system::error_code&);
 };
