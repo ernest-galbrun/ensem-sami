@@ -10,10 +10,13 @@
 #include <sstream>
 #include <stdexcept>
 
+#include <ctime>
+
 #include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
 #include <boost/date_time.hpp>
+#include <boost/chrono.hpp>
 
 #include "LocalizationSystem.h"
 #include "KheperaIII.h"
@@ -138,29 +141,31 @@ void KheperaIII::timeStep()
 	SendPosition();	
 }
 
-bool KheperaIII::UpdatePosition() {
+void KheperaIII::UpdatePosition() {
 	if (updatePositionMode==0) {
 		UpdatePositionOffline();
 	}
 	else if (updatePositionMode==1) {
-		if (!this->Object::UpdatePosition()) {
-			UpdatePositionOffline();
-		}
-		else {
+		try {
+			this->Object::UpdatePosition();
 			int encoderValueLeft,encoderValueRight;
-			getEncodersValue(&encoderValueLeft,&encoderValueRight);
+			//getEncodersValue(&encoderValueLeft,&encoderValueRight);
+			encoderValueLeft = 0;
+			encoderValueRight = 0;
 			previousL = encoderValueLeft;
 			previousR = encoderValueRight;
 		}
+		catch(ios_base::failure e){
+			UpdatePositionOffline();
+		}			
 	}
-	return true;
 }
 
 
 void KheperaIII::UpdatePositionOffline() {
 	double dl, dr, dc, thetaAux;
 	int encoderValueLeft,encoderValueRight;
-	boost::array<double,2> position = getPosition();
+	std::array<double,2> position = getPosition();
 	double orientation = getOrientation();
 	posix_time::time_duration timeStepDuration = posix_time::microsec_clock::local_time() - lastStepTime;
 	if (isVirtual_){
@@ -223,10 +228,15 @@ void KheperaIII::getEncodersValue(int *left, int* right)
 		vector<string> ans;
 		stringstream ss;
 		char comma;
+		clock_t t1,t2;
+		t1 = clock();
+		
 		if(!sendMsg("$GetPosition\r\n",2,&ans)) {
 			ss.str(ans[0]);
 			ss>>encoderValues[0]>>comma>>encoderValues[1];
 		}
+		t2 = clock() - t1;
+		t2 = t2;
 		*left = encoderValues[0];
 		*right = encoderValues[1];
 	}
@@ -249,6 +259,8 @@ string KheperaIII::encodersMsg(int lValue, int rValue)
 // repeating the message command
 int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 {
+	
+	boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
 	if (isVirtual_) {
 		throw (logic_error("Invalid call to \"sendMsg\" with virtual robot."));
 	}
@@ -269,13 +281,21 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 	else
 		firstRead = false;
 	for (int i=0;i<n-1;i++){
+		clock_t t1,t2;
+		t1 = clock();
 		bytesRead = asio::read_until(socket_,tcp_buf,"\r\n",ec);
+		t2 = clock() - t1;
+		t2 = t2;
 		is.getline(buf,1000,'\r');
 		is.ignore(1);
 		ans = string(buf);
 		answer->push_back(ans);
 	}
+	boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
+	double test  = sec.count();
+    std::cout << "took " << sec.count() << " seconds\n";
 	tcpLock.unlock();
+	
 	return 0;	
 }
 

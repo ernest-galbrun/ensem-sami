@@ -15,8 +15,9 @@ for use with matlab or other third party software*/
 #include <string>
 #include <sstream>
 #include <vector>
+#include <array>
 
-#include "boost/array.hpp"
+//#include "boost/array.hpp"
 
 enum K3ErrorCode{
 	K3_NOERROR = 0,
@@ -28,6 +29,7 @@ enum K3ErrorCode{
 
 
 using namespace std;
+using namespace std::tr1;
 using namespace boost;
 
 const int maxRobotNumber = 1000;
@@ -52,7 +54,7 @@ extern "C" __declspec(dllexport) int GetDronePosition(double * frontX, double* f
 	try {
 		if (firstCall) {
 			firstCall=false;
-			parrot.FindBodyIndex("parrot1");
+			parrot.FindBodyIndex();
 		}
 		parrot.UpdatePosition(frontX, frontY, frontZ, backX, backY, backZ);
 	}
@@ -81,12 +83,12 @@ extern "C" __declspec(dllexport) int CloseCortex(){
 extern "C" __declspec(dllexport) int GetWandPosition(double* X, double* Y){
 	static bool firstCall=true;
 	static Wand wand;
-	array<double,2> position;
+	std::array<double,2> position;
 	double orientation;
 	try {
 		if (firstCall) {
 			firstCall=false;
-			wand.FindBodyIndex("Wand500");
+			wand.FindBodyIndex();
 		}
 		wand.UpdatePosition(&position, &orientation);
 	}
@@ -169,7 +171,7 @@ extern "C" __declspec(dllexport) int InitLocalizationSystem(int robotID, int mod
 extern "C" __declspec(dllexport) int GetPosition(int robotID, double *posX, double *posY) {
 	if (robotID>=maxRobotNumber || !exists[robotID])
 		return K3_BADROBOTID;
-	array<double,2> pos = k3[robotID]->getPosition();
+	std::array<double,2> pos = k3[robotID]->getPosition();
 	*posX = pos[0];
 	*posY = pos[1];
 	return K3_NOERROR;

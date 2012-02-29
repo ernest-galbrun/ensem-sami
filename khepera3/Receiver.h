@@ -6,6 +6,7 @@
 #define WIN32_LEAN_AND_MEAN 
 #include "boost/asio.hpp"
 #include "boost/bind.hpp"
+//#include "boost/array.hpp"
 
 class Receiver
 {
@@ -20,7 +21,7 @@ class Receiver
 	bool timedOut;
 
 	int receivedId;
-	boost::array<double,2> receivedPosition;
+	std::array<double,2> receivedPosition;
 
 public:
 	Receiver(const boost::asio::ip::address&, const boost::asio::ip::address&,int);
@@ -30,5 +31,5 @@ public:
 	void handler_receiver(const boost::system::error_code&, std::size_t);
 	void Handler_AsyncTimer( const boost::system::error_code& error);
 	// ReceivePosition returns true if a new value was received
-	bool ReceivePosition(int& id, boost::array<double,2>& position);
+	bool ReceivePosition(int& id, std::array<double,2>& position);
 };

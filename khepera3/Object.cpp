@@ -24,7 +24,8 @@ Object::~Object(void)
 }
 
 void Object::InitLocalizationSystem(string bodyName){
-	localizationSystem.FindBodyIndex(bodyName);
+	localizationSystem.SetName(bodyName);
+	localizationSystem.FindBodyIndex();
 }
 
 int Object::getId() const
@@ -59,6 +60,6 @@ void Object::setOrientation(double orientationArg)
 	orientation = orientationArg;
 }
 
-bool Object::UpdatePosition() {
-	return localizationSystem.UpdatePosition(&position, &orientation);
+void Object::UpdatePosition() {
+	localizationSystem.UpdatePosition(&position, &orientation);
 }

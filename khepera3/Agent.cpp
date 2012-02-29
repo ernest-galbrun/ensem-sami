@@ -2,10 +2,12 @@
 #include "Object.h"
 
 #include <vector>
+#include <array>
 
 #include "boost/thread.hpp"
 
 using namespace boost;
+using namespace std::tr1;
 
 //CONSTRUCTOR AND DESTRUCTOR----------------------------------
 Agent::Agent(int id, vector<double> initialPosition, double initialOrientation):
@@ -43,7 +45,7 @@ void	Agent::getNeighbors(int* numberOfNeighbors, int** id, double** x, double** 
 	posX_ = (double*) malloc(*numberOfNeighbors * sizeof(double));
 	posY_ = (double*) malloc(*numberOfNeighbors * sizeof(double));
 	id_ = (int*) malloc(*numberOfNeighbors * sizeof(int));
-	array<double,2> position;
+	std::tr1::array<double,2> position;
 	for (unsigned int i=0;i<neighbors.size();i++) {
 		position = neighbors[i].getPosition();
 		id_[i] = neighbors[i].getId();
@@ -126,7 +128,7 @@ void Agent::LaunchComm()
 void Agent::ReceiveContinuously() {
 	while(!stopListening) {
 		int id;
-		boost::array<double,2> position;
+		std::array<double,2> position;
 		if	(communicationSystem.ReceivePosition(id,position)) {
 			ReorganizeNeighbors(id,position[0],position[1]);
 		} 		

@@ -51,7 +51,7 @@ void Receiver::handler_receiver(const boost::system::error_code& error, std::siz
 }
 
 
-bool Receiver::ReceivePosition(int& id, boost::array<double,2>& position) {
+bool Receiver::ReceivePosition(int& id, std::array<double,2>& position) {
 	socket_.async_receive_from(asio::buffer(data_, strlen(data_)), sender_endpoint_,boost::bind(boost::mem_fn(&Receiver::handler_receiver), this, boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred));	
     asio::deadline_timer timer(io_service_timer); 
     timer.expires_from_now(posix_time::milliseconds(100)); 

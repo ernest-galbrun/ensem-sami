@@ -1,5 +1,6 @@
 #include <sstream>
 #include <string>
+#include <array>
 #include "CommunicationSystem.h"
 #include "Receiver.h"
 #include "Sender.h"
@@ -7,6 +8,7 @@
 
 //#include <windows.h>
 using namespace std;
+using namespace std::tr1;
 
 CommunicationSystem::CommunicationSystem(int id, std::string adMult, int porMult):
 	receiver(boost::asio::ip::address::from_string("0.0.0.0"),boost::asio::ip::address::from_string(adMult),porMult),
@@ -25,7 +27,7 @@ CommunicationSystem::~CommunicationSystem()
 }
 
 
-void CommunicationSystem::sendPosition(int id,const boost::array<double,2>& position)
+void CommunicationSystem::sendPosition(int id,const std::array<double,2>& position)
 {
 	if(enable)
 	{
@@ -38,7 +40,7 @@ bool CommunicationSystem::Enabled(){
 }
 
 
-bool CommunicationSystem::ReceivePosition(int& id, boost::array<double,2>& position){
+bool CommunicationSystem::ReceivePosition(int& id, array<double,2>& position){
 	bool result = receiver.ReceivePosition(id, position);/*
 	cout<<result<<"\r\n";
 	cout<<"position received : "<<id<<"\r\n";*/
