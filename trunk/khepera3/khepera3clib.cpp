@@ -340,3 +340,10 @@ BOOL WINAPI DllMain(
     }
     return TRUE;  // Successful DLL_PROCESS_ATTACH.
 }
+
+extern "C" __declspec(dllexport)  int FollowLine(int robotID, bool on, int aggressivity, int speed){
+	if (robotID>=maxRobotNumber || !exists[robotID])
+		return K3_BADROBOTID;
+	k3[robotID]->FollowLine(on,aggressivity,speed);
+	return K3_NOERROR;
+}

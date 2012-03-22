@@ -114,6 +114,20 @@ void KheperaIII::ContinuousChecks(){
 		timeStep();
 	}
 }
+
+void KheperaIII::FollowLine(bool on,int aggressivity,int speed){
+ if (!isVirtual_){
+	stringstream msg;
+	if (on)
+		msg << "$FollowLine,"<<"1,"<<aggressivity<<','<<speed<<"\r\n";
+	else
+		msg << "$FollowLine,0,0,0\r\n";
+	vector<string> ans;
+	this->sendMsg(msg.str(),1,&ans);
+ }
+
+}
+
 //FUNCTIONAL METHODS------------------------------------------
 //vSpeed: mm/s		wSpeed: rad/s positive->clockwise
 void KheperaIII::setVelocity(double vSpeed, double wSpeed)

@@ -89,6 +89,7 @@ public:
 	void GetAmbientIR(int* timestamp, int** values);
 	void GetProximityIR(int* timestamp, int** values);
 	void GetUltrasound(int** values);
+	void FollowLine(bool on,int aggressivity,int speed);
 };
 
 
