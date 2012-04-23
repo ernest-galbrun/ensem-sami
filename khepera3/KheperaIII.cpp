@@ -156,16 +156,21 @@ void KheperaIII::timeStep()
 }
 
 void KheperaIII::UpdatePosition() {
-	if (updatePositionMode==0) {
+	static bool firstCall = true;
+	if (updatePositionMode==0 || !firstCall) {
 		UpdatePositionOffline();
 	}
-	else if (updatePositionMode==1) {
+	else if (updatePositionMode==1 || firstCall) {
+		firstCall = false;
 		try {
 			this->Object::UpdatePosition();
 			int encoderValueLeft,encoderValueRight;
-			//getEncodersValue(&encoderValueLeft,&encoderValueRight);
-			encoderValueLeft = 0;
-			encoderValueRight = 0;
+			if (updatePositionMode==2)	{
+				getEncodersValue(&encoderValueLeft,&encoderValueRight);
+			} else {
+				encoderValueLeft = 0;
+				encoderValueRight = 0;
+			}
 			previousL = encoderValueLeft;
 			previousR = encoderValueRight;
 		}

@@ -4,6 +4,7 @@
 #include <vector>
 #include "boost/thread.hpp"
 #include "boost/shared_ptr.hpp"
+#include "boost/asio.hpp"
 #include "Object.h"
 #include "TrackGenerator.h"
 #include "CommunicationSystem.h"
@@ -24,6 +25,19 @@ private:
 	void ReceiveContinuously();
 	bool stopListening;
 	boost::thread listeningThread;
+
+
+	//from receiver :
+	boost::asio::io_service io_service_receiver;
+	boost::asio::ip::udp::socket socket_receiver;
+	boost::asio::ip::udp::endpoint receiver_endpoint;
+	char data_[512];
+	boost::system::error_code io_error_;
+
+	int receivedId;
+	std::array<double,2> receivedPosition;
+	//async handler for incoming data
+	void ReadIncomingData(const boost::system::error_code& error, std::size_t bytes_recvd);
 protected:
 	void LaunchComm();
 public:

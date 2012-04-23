@@ -141,7 +141,6 @@
     <ClCompile Include="LocalizationSystem.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Parrot.cpp" />
-    <ClCompile Include="Receiver.cpp" />
     <ClCompile Include="Sender.cpp" />
     <ClCompile Include="TrackGenerator.cpp" />
     <ClCompile Include="Wand.cpp" />
@@ -156,7 +155,6 @@
     <ClInclude Include="LocalizationSystem.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Parrot.h" />
-    <ClInclude Include="Receiver.h" />
     <ClInclude Include="Sender.h" />
     <ClInclude Include="TrackGenerator.h" />
     <ClInclude Include="Wand.h" />

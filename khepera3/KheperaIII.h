@@ -30,7 +30,8 @@ private:
 	std::tr1::array<int,2> encoderValues;
 	int previousL;
 	int previousR;
-	int updatePositionMode; //0 = offline 1 = using cortex 2 = hybrid
+	int updatePositionMode; //0 = offline 1 = using cortex 2 = using cortex only for initial position
+
 
 	int tick;
 	boost::asio::io_service      io_service_;

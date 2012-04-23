@@ -20,14 +20,24 @@ Agent::Agent(int id, vector<double> initialPosition, double initialOrientation):
 	stopListening(false),
 	posX_(NULL),
 	posY_(NULL),
-	id_(NULL)
+	id_(NULL),	
+	io_service_receiver(),
+	socket_receiver(io_service_receiver)
 {
+	// Create the socket so that multiple may be bound to the same address.
+    boost::asio::ip::udp::endpoint listen_endpoint(boost::asio::ip::address::from_string("0.0.0.0"), 5090);
+    socket_receiver.open(listen_endpoint.protocol());
+    socket_receiver.set_option(boost::asio::ip::udp::socket::reuse_address(true));
+    socket_receiver.bind(listen_endpoint);
+    // Join the multicast group.
+    socket_receiver.set_option(boost::asio::ip::multicast::join_group(boost::asio::ip::address::from_string("239.255.0.1")));
 }
 
 Agent::~Agent(void)
 {
-	stopListening = true;
-  	listeningThread.join();
+	//stopListening = true;
+  	//listeningThread.join();
+	io_service_receiver.stop();
 	free (posX_);
 	free (posY_);
 	free (id_);
@@ -123,14 +133,25 @@ void Agent::LaunchComm()
 {
 	//boost::thread thr(boost::bind(&CommunicationSystem::run,&communicationSystem));
 	listeningThread = thread(&Agent::ReceiveContinuously, this);
+	socket_receiver.async_receive_from(asio::buffer(data_, strlen(data_)), receiver_endpoint,boost::bind(boost::mem_fn(&Agent::ReadIncomingData), 
+								this, asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
+
+}
+
+void Agent::ReadIncomingData(const system::error_code& error, size_t bytes_recvd){
+	if (!error) {
+		char comma;
+		stringstream msg(data_);
+		msg>>receivedId>>comma>>receivedPosition[0]>>comma>>receivedPosition[1];
+		ReorganizeNeighbors(receivedId,receivedPosition[0],receivedPosition[1]);
+		socket_receiver.async_receive_from(asio::buffer(data_, strlen(data_)), receiver_endpoint,boost::bind(boost::mem_fn(&Agent::ReadIncomingData), 
+								this, asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
+	}
 }
 
 void Agent::ReceiveContinuously() {
 	while(!stopListening) {
-		int id;
-		std::array<double,2> position;
-		if	(communicationSystem.ReceivePosition(id,position)) {
-			ReorganizeNeighbors(id,position[0],position[1]);
-		} 		
+		io_service_receiver.run();
+		this_thread::sleep(boost::posix_time::milliseconds(10));
 	}
 }
