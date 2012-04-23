@@ -2,7 +2,6 @@
 #include <string>
 #include <array>
 #include "CommunicationSystem.h"
-#include "Receiver.h"
 #include "Sender.h"
 #define WIN32_LEAN_AND_MEAN 
 
@@ -11,7 +10,6 @@ using namespace std;
 using namespace std::tr1;
 
 CommunicationSystem::CommunicationSystem(int id, std::string adMult, int porMult):
-	receiver(boost::asio::ip::address::from_string("0.0.0.0"),boost::asio::ip::address::from_string(adMult),porMult),
 	sender(boost::asio::ip::address::from_string(adMult),porMult),
 	multicastAddress(adMult),
 	multicastPort(porMult),
@@ -40,9 +38,9 @@ bool CommunicationSystem::Enabled(){
 }
 
 
-bool CommunicationSystem::ReceivePosition(int& id, array<double,2>& position){
-	bool result = receiver.ReceivePosition(id, position);/*
-	cout<<result<<"\r\n";
-	cout<<"position received : "<<id<<"\r\n";*/
-	return result;
-}
+//bool CommunicationSystem::ReceivePosition(int& id, array<double,2>& position){
+//	bool result = receiver.ReceivePosition(id, position);/*
+//	cout<<result<<"\r\n";
+//	cout<<"position received : "<<id<<"\r\n";*/
+//	return result;
+//}

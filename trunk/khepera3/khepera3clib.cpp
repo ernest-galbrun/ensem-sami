@@ -147,6 +147,8 @@ extern "C" __declspec(dllexport) int SetSpeed(int robotID, double linear, double
 	return K3_NOERROR;
 }
 
+
+//mode : 0 offline; 1 online ; 2 online only for initial position
 extern "C" __declspec(dllexport) int InitLocalizationSystem(int robotID, int mode) {
 	K3ErrorCode ret = K3_NOERROR;
 	if (robotID>=maxRobotNumber || !exists[robotID])
@@ -154,7 +156,7 @@ extern "C" __declspec(dllexport) int InitLocalizationSystem(int robotID, int mod
 	stringstream bodyName;
 	bodyName << "markerset_robot"<< robotID;
 	k3[robotID]->SetUpdatePositionMode(mode);
-	if (mode) {
+	if (mode!=0) {
 		try {
 			k3[robotID]->InitLocalizationSystem(bodyName.str());	
 		}
