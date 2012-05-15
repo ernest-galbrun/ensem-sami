@@ -111,7 +111,7 @@ function connect_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 k3 = get(gcf,'userdata');
-if k3.Connect(get(handles.ip,'String'),0,[0 0],0,handles.connectionStatus)==0
+if k3.Connect(str2num(get(handles.ip,'String')),0,[0 0],0,handles.connectionStatus)==0
     modes = k3.GetMode();
     PID = k3.GetPID();
     set(handles.leftControlMode,'Value',modes(1));
