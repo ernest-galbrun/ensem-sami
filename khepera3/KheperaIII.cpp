@@ -75,6 +75,8 @@ void KheperaIII::Init(){
 			throw(ios_base::failure(ec.message()));
 		}
 		else {
+			boost::asio::ip::tcp::no_delay option(true);
+			socket_.set_option(option);
 			initSuccessful = true;
 			vector<string> ans;
 			sendMsg("$SetAcquisitionFrequency1x,0,1\r\n",1,&ans);
