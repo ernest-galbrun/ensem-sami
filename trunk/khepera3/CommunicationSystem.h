@@ -24,6 +24,6 @@ public:
 
 	//void run();
 	void reorganizeNeighbors(int,double,double);
-	void sendPosition(int id,const std::tr1::array<double,2>& position);
+	void sendPosition(int id,const std::tr1::array<double,2>& position, const double& orientation);
 	bool Enabled();	
 };

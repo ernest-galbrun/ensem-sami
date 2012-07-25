@@ -10,7 +10,7 @@ using namespace std;
 using namespace std::tr1;
 
 CommunicationSystem::CommunicationSystem(int id, std::string adMult, int porMult):
-	sender(boost::asio::ip::address::from_string(adMult),porMult),
+	sender(boost::asio::ip::address::from_string("10.10.10.105"/*adMult*/),porMult),
 	multicastAddress(adMult),
 	multicastPort(porMult),
 	enable(true)
@@ -25,13 +25,13 @@ CommunicationSystem::~CommunicationSystem()
 }
 
 
-void CommunicationSystem::sendPosition(int id,const std::array<double,2>& position)
+void CommunicationSystem::sendPosition(int id,const std::array<double,2>& position, const double& orientation)
 {
 	if(enable)
 	{
-	sender.sendPosition(id,position);
+	sender.sendPosition(id,position,orientation);
 	}
-}
+ }
 
 bool CommunicationSystem::Enabled(){
 	return enable;

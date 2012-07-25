@@ -23,6 +23,6 @@ public:
 	Sender(const boost::asio::ip::address&,int);
 
 	~Sender(void);
-	void sendPosition(int id,const std::array<double,2>& position);
+	void sendPosition(int id,const std::array<double,2>& position, const double & orientation);
 	void handler_sender(const boost::system::error_code&);
 };
