@@ -21,6 +21,7 @@ Agent::Agent(int id, vector<double> initialPosition, double initialOrientation):
 	posX_(NULL),
 	posY_(NULL),
 	id_(NULL),	
+	orientation_(NULL),
 	io_service_receiver(),
 	socket_receiver(io_service_receiver)
 {
@@ -40,6 +41,7 @@ Agent::~Agent(void)
 	io_service_receiver.stop();
 	free (posX_);
 	free (posY_);
+	free (orientation_);
 	free (id_);
 }
 
@@ -54,13 +56,17 @@ void	Agent::getNeighbors(int* numberOfNeighbors, int** id, double** x, double** 
 
 	posX_ = (double*) malloc(*numberOfNeighbors * sizeof(double));
 	posY_ = (double*) malloc(*numberOfNeighbors * sizeof(double));
+	//orientation_ = (double*) malloc(*numberOfNeighbors * sizeof(double));
 	id_ = (int*) malloc(*numberOfNeighbors * sizeof(int));
 	std::tr1::array<double,2> position;
+	//double orientation;
 	for (unsigned int i=0;i<neighbors.size();i++) {
 		position = neighbors[i].getPosition();
+		//orientation = neighbors[i].getOrientation();
 		id_[i] = neighbors[i].getId();
 		posX_[i] = position[0];
 		posY_[i] = position[1];
+		//orientation_[i] = orientation;
 	}
 	*id= id_;
 	*x = posX_;
@@ -94,7 +100,7 @@ void Agent::setLocalAddres(string localAddressArg)
 }
 
 
-void Agent::ReorganizeNeighbors(int idArg, double xArg, double yArg)
+void Agent::ReorganizeNeighbors(int idArg, double xArg, double yArg, double orientationArg)
 {	
 	if(getId() != idArg && communicationSystem.Enabled())
 	{		
@@ -102,12 +108,14 @@ void Agent::ReorganizeNeighbors(int idArg, double xArg, double yArg)
 		if(index != -1) // neighbor already exist
 		{				
 			neighbors[index].setPosition(xArg,yArg);
+			neighbors[index].setOrientation(orientationArg);
 		}
 		else //new neighbor
 		{
 			Object newcomer;
 			newcomer.setId(idArg);
 			newcomer.setPosition(xArg,yArg);
+			newcomer.setOrientation(orientationArg);
 			neighbors.push_back(newcomer);
 		}
 	}
@@ -125,7 +133,7 @@ int Agent::testNeighbor(int idArg)
 }
 
 void Agent::SendPosition() {
-	communicationSystem.sendPosition(getId(),getPosition());
+	communicationSystem.sendPosition(getId(),getPosition(),getOrientation());
 }
 
 
@@ -142,8 +150,8 @@ void Agent::ReadIncomingData(const system::error_code& error, size_t bytes_recvd
 	if (!error) {
 		char comma;
 		stringstream msg(data_);
-		msg>>receivedId>>comma>>receivedPosition[0]>>comma>>receivedPosition[1];
-		ReorganizeNeighbors(receivedId,receivedPosition[0],receivedPosition[1]);
+		msg>>receivedId>>comma>>receivedPosition[0]>>comma>>receivedPosition[1]>>comma>>receivedOrientation;
+		ReorganizeNeighbors(receivedId,receivedPosition[0],receivedPosition[1],receivedOrientation);
 		socket_receiver.async_receive_from(asio::buffer(data_, strlen(data_)), receiver_endpoint,boost::bind(boost::mem_fn(&Agent::ReadIncomingData), 
 								this, asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
 	}

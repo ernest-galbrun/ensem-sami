@@ -20,10 +20,10 @@ Sender::~Sender(void)
 {
 }
 
-void Sender::sendPosition(int id,const std::array<double,2>& position)
+void Sender::sendPosition(int id,const std::array<double,2>& position, const double & orientation)
 {
 	std::ostringstream os;
-    os << id <<","<<position[0]<<","<<position[1];
+    os << id <<","<<position[0]<<","<<position[1]<<","<<orientation;
 	std::string message_ = os.str();
 	socket_./*async_*/send_to(boost::asio::buffer(message_), endpoint_/*, boost::bind(&Sender::handler_sender, this, boost::asio::placeholders::error)*/);
 }

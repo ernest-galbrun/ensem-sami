@@ -18,6 +18,7 @@ private:
 	// posX_, posY_ and id_ are c array holding values for every neighbors
 	double * posX_;
 	double * posY_;
+	double * orientation_;
 	int* id_;
 	CommunicationSystem communicationSystem;	
 
@@ -36,6 +37,7 @@ private:
 
 	int receivedId;
 	std::array<double,2> receivedPosition;
+	double receivedOrientation;
 	//async handler for incoming data
 	void ReadIncomingData(const boost::system::error_code& error, std::size_t bytes_recvd);
 protected:
@@ -46,7 +48,7 @@ public:
 
 	TrackGenerator trackGenerator;
 
-	void ReorganizeNeighbors(int idArg, double xArg, double yArg);
+	void ReorganizeNeighbors(int idArg, double xArg, double yArg,double posArg);
 	std::vector<Object> getNeighbors();
 	// c friendly getNeighbors function
 	void	getNeighbors(int* numberOfNeighbors, int** id, double** x, double** y);
