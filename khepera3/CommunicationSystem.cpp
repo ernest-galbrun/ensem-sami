@@ -10,7 +10,7 @@ using namespace std;
 using namespace std::tr1;
 
 CommunicationSystem::CommunicationSystem(int id, std::string adMult, int porMult):
-	sender(boost::asio::ip::address::from_string("10.10.10.105"/*adMult*/),porMult),
+	sender(boost::asio::ip::address::from_string(/*"10.10.10.105"*/adMult),porMult),
 	multicastAddress(adMult),
 	multicastPort(porMult),
 	enable(true)
