@@ -37,8 +37,8 @@ Agent::Agent(int id, vector<double> initialPosition, double initialOrientation):
 Agent::~Agent(void)
 {
 	stopListening = true;
-  	//listeningThread.join();
 	io_service_receiver.stop();
+  	listeningThread.join();
 	free (posX_);
 	free (posY_);
 	free (orientation_);
