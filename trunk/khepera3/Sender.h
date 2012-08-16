@@ -14,6 +14,7 @@ class Sender
 {
 	boost::asio::io_service io_service_sender;
 	boost::asio::ip::udp::endpoint endpoint_;
+	boost::asio::ip::udp::endpoint endpoint_bis;
 	boost::asio::ip::udp::socket socket_;
 	boost::asio::deadline_timer timer_;
 	int message_count_;
