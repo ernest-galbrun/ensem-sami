@@ -29,7 +29,7 @@ Sender::Sender(const boost::asio::ip::address& multicast_address,int multicast_p
     {
         boost::asio::ip::address addr=(it++)->endpoint().address();
        
-		if (addr.to_string().substr(3)=="10.")
+		if (addr.to_string().substr(0,3)=="10.")
 			wifi_addr = addr;
 
     }
