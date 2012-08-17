@@ -24,28 +24,16 @@ Sender::Sender(const boost::asio::ip::address& multicast_address,int multicast_p
     asio::ip::tcp::resolver resolver(io_service);
     asio::ip::tcp::resolver::query query(boost::asio::ip::host_name(),"");
     asio::ip::tcp::resolver::iterator it=resolver.resolve(query);
-
-	stringstream sout;
-	boost::asio::ip::address thisone;
+	asio::ip::address wifi_addr;
     while(it!=asio::ip::tcp::resolver::iterator())
     {
         boost::asio::ip::address addr=(it++)->endpoint().address();
-        if(addr.is_v6())
-        {
-            sout<<"ipv6 address: ";
-        }
-        else
-            sout<<"ipv4 address: ";
-
-        sout<<addr.to_string()<<std::endl;
-		if (addr.to_string()=="10.10.10.105")
-			thisone = addr;
+       
+		if (addr.to_string().substr(3)=="10.")
+			wifi_addr = addr;
 
     }
-	string test(sout.str());
-	
-    boost::asio::ip::address_v4 local_interface=boost::asio::ip::address_v4::from_string("10.10.10.105");
-	boost::asio::ip::multicast::outbound_interface option(thisone.to_v4());
+	boost::asio::ip::multicast::outbound_interface option(wifi_addr.to_v4());
 	//const ip::address ifAddr( asio::ip::udp::endpoint( *interfaceIP ).address( )); 
 	socket_.open(endpoint_.protocol());
 	socket_.set_option(option);
