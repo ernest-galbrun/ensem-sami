@@ -25,13 +25,23 @@ Agent::Agent(int id, vector<double> initialPosition, double initialOrientation):
 	io_service_receiver(),
 	socket_receiver(io_service_receiver)
 {
+	asio::ip::tcp::resolver resolver(io_service_receiver);
+    asio::ip::tcp::resolver::query query(boost::asio::ip::host_name(),"");
+    asio::ip::tcp::resolver::iterator it=resolver.resolve(query);
+	asio::ip::address wifi_addr;
+    while(it!=asio::ip::tcp::resolver::iterator())
+    {
+        boost::asio::ip::address addr=(it++)->endpoint().address();       
+		if (addr.to_string().substr(0,3)=="10.")
+			wifi_addr = addr;
+    }
 	// Create the socket so that multiple may be bound to the same address.
-    boost::asio::ip::udp::endpoint listen_endpoint(boost::asio::ip::address::from_string("0.0.0.0"), 5090);
+    boost::asio::ip::udp::endpoint listen_endpoint(wifi_addr, 5090);
     socket_receiver.open(listen_endpoint.protocol());
     socket_receiver.set_option(boost::asio::ip::udp::socket::reuse_address(true));
     socket_receiver.bind(listen_endpoint);
     // Join the multicast group.
-    socket_receiver.set_option(boost::asio::ip::multicast::join_group(boost::asio::ip::address::from_string("239.255.0.1")));
+	socket_receiver.set_option(boost::asio::ip::multicast::join_group(boost::asio::ip::address::from_string("239.255.0.1").to_v4(),listen_endpoint.address().to_v4()));
 }
 
 Agent::~Agent(void)
