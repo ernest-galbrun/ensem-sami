@@ -19,7 +19,7 @@ Sender::Sender(const boost::asio::ip::address& multicast_address,int multicast_p
 	timer_(io_service_sender)
 {    
 
-	boost::asio::io_service io_service;
+	boost::asio::io_service io_service;/*
 
     asio::ip::tcp::resolver resolver(io_service);
     asio::ip::tcp::resolver::query query(boost::asio::ip::host_name(),"");
@@ -33,10 +33,10 @@ Sender::Sender(const boost::asio::ip::address& multicast_address,int multicast_p
 			wifi_addr = addr;
 
     }
-	boost::asio::ip::multicast::outbound_interface option(wifi_addr.to_v4());
+	boost::asio::ip::multicast::outbound_interface option(wifi_addr.to_v4());*/
 	//const ip::address ifAddr( asio::ip::udp::endpoint( *interfaceIP ).address( )); 
 	socket_.open(endpoint_.protocol());
-	socket_.set_option(option);
+	//socket_.set_option(option);
 }
 
 Sender::~Sender(void)
