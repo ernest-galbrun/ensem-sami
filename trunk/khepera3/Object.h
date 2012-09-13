@@ -15,6 +15,8 @@ private:
 	std::tr1::array<double,2> position;
 	double orientation;
 protected:
+	string GetOwnIP(){return localizationSystem.GetOwnIP();};
+	string GetOwnIP_wifi(){return localizationSystem.GetOwnIP_wifi();};
 public:
 	virtual void UpdatePosition();
 	void setPosition(double,double);

@@ -5,6 +5,8 @@
 #include <array>
 
 #include "boost/thread.hpp"
+#include "boost/asio.hpp"
+#include "boost/shared_ptr.hpp"
 
 using namespace boost;
 using namespace std::tr1;
@@ -23,18 +25,10 @@ Agent::Agent(int id, vector<double> initialPosition, double initialOrientation):
 	id_(NULL),	
 	orientation_(NULL),
 	io_service_receiver(),
-	socket_receiver(io_service_receiver)
+	socket_receiver(io_service_receiver)//,
+	//socket_udp_sender(io_service_receiver)
 {
-	/*asio::ip::tcp::resolver resolver(io_service_receiver);
-    asio::ip::tcp::resolver::query query(boost::asio::ip::host_name(),"");
-    asio::ip::tcp::resolver::iterator it=resolver.resolve(query);
-	asio::ip::address wifi_addr;
-    while(it!=asio::ip::tcp::resolver::iterator())
-    {
-        boost::asio::ip::address addr=(it++)->endpoint().address();       
-		if (addr.to_string().substr(0,3)=="10.")
-			wifi_addr = addr;
-    }*/
+	
 	// Create the socket so that multiple may be bound to the same address.
     boost::asio::ip::udp::endpoint listen_endpoint(boost::asio::ip::address::from_string("0.0.0.0"), 5090);
     socket_receiver.open(listen_endpoint.protocol());
@@ -62,7 +56,7 @@ vector<Object> Agent::getNeighbors()
 }
 
 void	Agent::getNeighbors(int* numberOfNeighbors, int** id, double** x, double** y){
-	*numberOfNeighbors=neighbors.size();
+	*numberOfNeighbors=(int)neighbors.size();
 
 	posX_ = (double*) malloc(*numberOfNeighbors * sizeof(double));
 	posY_ = (double*) malloc(*numberOfNeighbors * sizeof(double));
@@ -171,5 +165,46 @@ void Agent::ReceiveContinuously() {
 	while(!stopListening) {
 		io_service_receiver.run();
 		this_thread::sleep(boost::posix_time::milliseconds(10));
+	}
+}
+
+
+void Agent::LaunchUDPServer(int port){
+	using namespace boost::asio::ip;
+	using boost::shared_ptr;
+	socket_udp_sender = shared_ptr<udp::socket> (new udp::socket(io_service_receiver, udp::endpoint(udp::v4(), port)));	
+	udp::endpoint remote_endpoint_;
+	std::array<char, 1> recv_buffer_;
+	socket_udp_sender->async_receive_from(
+		boost::asio::buffer(recv_buffer_), udp_destination_temp,
+        boost::bind(&Agent::handle_receive, this,
+          boost::asio::placeholders::error,
+          boost::asio::placeholders::bytes_transferred));
+}
+
+void Agent::handle_receive(const system::error_code& error, size_t /*bytes_transferred*/){
+	using namespace boost::asio::ip;	  
+	if (!error || error == asio::error::message_size)
+    {
+		udp_destination.first = true;
+		udp_destination.second = udp_destination_temp;
+	}
+	std::array<char, 1> recv_buffer_;
+	socket_udp_sender->async_receive_from(
+		boost::asio::buffer(recv_buffer_), udp_destination_temp,
+        boost::bind(&Agent::handle_receive, this,
+          boost::asio::placeholders::error,
+          boost::asio::placeholders::bytes_transferred));
+}
+
+
+void Agent::SendPositionUDP(){
+	if (udp_destination.first) {
+		//udp_destination.first = false;
+		auto pos = getPosition();
+		stringstream message;
+		message<<this->getId()<<','<<pos[0]<<','<<pos[1]<<','<<getOrientation();
+		string mes(message.str());
+		socket_udp_sender->send_to(boost::asio::buffer(mes), udp_destination.second);
 	}
 }

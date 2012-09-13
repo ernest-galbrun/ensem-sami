@@ -34,12 +34,12 @@ bool Parrot::UpdatePosition(double * frontX, double* frontY, double* frontZ, dou
 {
 	
 	std::array<double,5> ret = { { 0,0,0,0,0 } };
-	double aux;
+//	double aux;
 	sFrameOfData* pFrameOfData=NULL;
 	float* coordFront;
 	float* coordMiddle;
-	float* off1;
-	float* off2;
+//	float* off1;
+//	float* off2;
 	int ack;
 	ack = 1;	
 	FindBodyIndex();
