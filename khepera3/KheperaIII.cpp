@@ -49,7 +49,8 @@ KheperaIII::KheperaIII(int id, bool isVirtual, vector<double> initialPosition, d
 	tcp_buf(1000),
 	irAmbientValues(11),
 	irProximityValues(11),
-	ultrasound(50){
+	ultrasound(50),
+	updateFirstCall(true){
 	setId(id);
 }
 	
@@ -159,12 +160,11 @@ void KheperaIII::timeStep()
 }
 
 void KheperaIII::UpdatePosition() {
-	static bool firstCall = true;
-	if (updatePositionMode==0 || !firstCall) {
+	if (updatePositionMode==0 || !updateFirstCall) {
 		UpdatePositionOffline();
 	}
-	else if (updatePositionMode==1 || firstCall) {
-		firstCall = false;
+	else if (updatePositionMode==1 || updateFirstCall) {
+		updateFirstCall = false;
 		try {
 			this->Object::UpdatePosition();
 			int encoderValueLeft,encoderValueRight;
