@@ -62,6 +62,7 @@ public:
 
 	void CloseConnection();
 
+	void AllowIncomingUDPConnection(int port);
 	void timeStep();
 	void LaunchContinuousThread();
 	void setVelocity(double,double);

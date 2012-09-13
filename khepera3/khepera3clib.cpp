@@ -65,9 +65,9 @@ extern "C" __declspec(dllexport) int GetDronePosition(double * frontX, double* f
 	return K3_NOERROR;
 }
 
-extern "C" __declspec(dllexport) int OpenCortex(const char* ownIP){
-	try {
-		LocalizationSystem::Open(ownIP, "193.49.136.176");
+extern "C" __declspec(dllexport) int OpenCortex(/*const char* ownIP*/){
+	try {		
+		LocalizationSystem::Open();
 	}
 	catch (ios_base::failure) {
 		return K3_OFFLINELOCALIZATION;
@@ -159,6 +159,7 @@ extern "C" __declspec(dllexport) int InitLocalizationSystem(int robotID, int mod
 	if (mode!=0) {
 		try {
 			k3[robotID]->InitLocalizationSystem(bodyName.str());	
+			k3[robotID]->AllowIncomingUDPConnection(6010+robotID);
 		}
 		catch (ios_base::failure e) {
 			k3[robotID]->SetUpdatePositionMode(0);

@@ -9,15 +9,19 @@
 #include <array>
 
 #include "boost/thread.hpp"
+#include "boost/asio.hpp"
 
 #include "Cortex.h"
 #include "KheperaIII.h"
 #include "LocalizationSystem.h"
 
+using namespace boost;
+
 //int LocalizationSystem::instanceCount = 0;
 bool LocalizationSystem::cortexIsConnected = false;
 string LocalizationSystem::me = "0.0.0.0";
-string LocalizationSystem::host ="0.0.0.0";
+string LocalizationSystem::me_wifi = "0.0.0.0";
+string LocalizationSystem::host ="193.49.136.176";
 
 //extern int instanceCount;
 
@@ -44,7 +48,7 @@ void LocalizationSystem::FindBodyIndex()
 	countT = 0;
 	countO = 0;
 	bool bodyNameFound = false;
-	std::array<double,5> auxCor;
+	//std::array<double,5> auxCor;
 	
 	sBodyDefs* pBodyDefs=NULL;
 	int iBody;
@@ -84,8 +88,8 @@ std::array<double,5> LocalizationSystem::GetOwnPosition_Cortex()
 	sFrameOfData* pFrameOfData=NULL;
 	float* coordFront;
 	float* coordMiddle;
-	float* off1;
-	float* off2;
+//	float* off1;
+//	float* off2;
 	int ack;
 	ack = 1;	
 	FindBodyIndex();
@@ -116,9 +120,23 @@ void LocalizationSystem::Close()
 	Cortex_Exit();
 }
 
-void LocalizationSystem::Open(string myAddress, string hostAddress) {	
+void LocalizationSystem::Open(/*string myAddress, string hostAddress*/) {	
+	asio::io_service ios;
+	asio::ip::tcp::resolver resolver(ios);
+    asio::ip::tcp::resolver::query query(boost::asio::ip::host_name(),"");
+    asio::ip::tcp::resolver::iterator it=resolver.resolve(query);
+	asio::ip::address wifi_addr, ethernet_addr,addr;
+    while(it!=asio::ip::tcp::resolver::iterator())
+    {
+        addr=(it++)->endpoint().address();       
+		if (addr.to_string().substr(0,3)=="10.")
+			me_wifi = addr.to_string();
+		else if(addr.to_string().substr(0,4)=="193.")
+			me = addr.to_string();
+    }
+/*
 	host = hostAddress;
-	me = myAddress;
+	me = myAddress;*/
 	sHostInfo Cortex_HostInfo;
 	Cortex_SetVerbosityLevel(VL_None);		
 	printf("Connecting to Cortex Host...\n");

@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 {
 	double X;
 	double Y;
-	OpenCortex("193.49.136.186");
+	OpenCortex();
 	GetWandPosition(&X, &Y);
 	GetWandPosition(&X, &Y);
 	GetWandPosition(&X, &Y);
@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 	int* id;
 	double* x;
 	double* y;
-	int* ir;
+	//int* ir;
 	//GetAmbientIR(6,&ir);
 	GetNeighbors(6, &n, &id, &x, &y);
 	//DeleteKhepera(1);

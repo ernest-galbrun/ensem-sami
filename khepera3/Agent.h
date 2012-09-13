@@ -8,6 +8,7 @@
 #include "Object.h"
 #include "TrackGenerator.h"
 #include "CommunicationSystem.h"
+#include <utility>
 
 class Agent : public Object,boost::noncopyable
 {
@@ -24,13 +25,17 @@ private:
 
 	int testNeighbor(int idArg);
 	void ReceiveContinuously();
+	void handle_receive(const boost::system::error_code& error, std::size_t);
 	bool stopListening;
+	std::pair<bool,boost::asio::ip::udp::endpoint> udp_destination; //bool is true if a client has initiated connection
+	boost::asio::ip::udp::endpoint udp_destination_temp;
 	boost::thread listeningThread;
 
 
 	//from receiver :
 	boost::asio::io_service io_service_receiver;
 	boost::asio::ip::udp::socket socket_receiver;
+	boost::shared_ptr<boost::asio::ip::udp::socket> socket_udp_sender;
 	boost::asio::ip::udp::endpoint receiver_endpoint;
 	char data_[512];
 	boost::system::error_code io_error_;
@@ -42,6 +47,8 @@ private:
 	void ReadIncomingData(const boost::system::error_code& error, std::size_t bytes_recvd);
 protected:
 	void LaunchComm();
+	void LaunchUDPServer(int port);
+	void SendPositionUDP();
 public:
 	Agent(int id, vector<double> initialPosition=vector<double>(2,0), double initialOrientation=0);
 	~Agent(void);

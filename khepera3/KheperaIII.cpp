@@ -154,7 +154,8 @@ void KheperaIII::timeStep()
 
 	trackGenerator.nextStep();
 	UpdatePosition();
-	SendPosition();	
+	SendPosition();
+	SendPositionUDP();
 }
 
 void KheperaIII::UpdatePosition() {
@@ -605,4 +606,18 @@ void KheperaIII::GetUltrasound(int** values){
 			ssAnswer >> comma;
 	}
 	*values = &ultrasound[0];
+}
+
+void KheperaIII::AllowIncomingUDPConnection(int port){
+
+	if (isVirtual_){
+		return;
+	}
+	stringstream message;
+	string ip(GetOwnIP_wifi());
+	replace(ip.begin(),ip.end(),('.'),(','));
+	message<< "$AllowUDPUpdate,"<<ip<<','<<port<<"\r\n";
+	vector<string> answer;
+	sendMsg(message.str(),1, &answer);
+	LaunchUDPServer(port);
 }

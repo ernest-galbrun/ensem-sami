@@ -11,14 +11,14 @@ classdef khepera3 < handle
         isVirtual
         busy
         timerAcquisition
-        ownIP
+       % ownIP
     end
        
     methods (Access = public)
         % Constructor, specifying the handles to the position and speed
         % indicator on screen
-        function k3 = khepera3(ownIP,h_array)
-            k3.ownIP = ownIP;
+        function k3 = khepera3(h_array)
+           % k3.ownIP = ownIP;
             k3.id = 0;
             k3.busy = false;
             k3.timerAcquisition = timer('Period',0.5,'ExecutionMode','fixedSpacing',...
@@ -39,9 +39,9 @@ classdef khepera3 < handle
                 else
                     error('This version of Matlab is not supported by the khepera3 dll')                    
                 end   
-                calllib('khepera3clib', 'OpenCortex', k3.ownIP); 
+                calllib('khepera3clib', 'OpenCortex'); 
             end
-            if nargin>1
+            if nargin>0
                 set(k3.timerAcquisition,'TimerFcn',{@CallBackAcquisition,k3,h_array});
             end
         end

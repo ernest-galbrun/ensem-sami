@@ -1,7 +1,7 @@
 Ip = '193.49.136.189';
 N=input('nombre de robots : ');
-R = KheperaFleet(N,Ip)
-error=R.ConnectF([2;3;4;6],[0,0,0,0],[0 0;0 1500;700 3000;1800 1500],[3*pi/2;0;pi/2;pi])
+R = KheperaFleet(N)
+error=R.ConnectF([3;4;5],[0,0,0,0],[0 0;0 1500;700 3000;1800 1500],[3*pi/2;0;pi/2;pi])
 
 disp('pause');
 pause;
