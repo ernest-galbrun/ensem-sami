@@ -31,6 +31,7 @@ private:
 	int previousL;
 	int previousR;
 	int updatePositionMode; //0 = offline 1 = using cortex 2 = using cortex only for initial position
+	bool updateFirstCall;
 
 
 	int tick;

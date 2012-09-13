@@ -12,11 +12,11 @@ end
 %-------------------------------Methods------------------------------------
 methods
 % Constructor--------------------------------------------------------------
-function Fleet = KheperaFleet(NumberOfKhepera,IPAdress)
+function Fleet = KheperaFleet(NumberOfKhepera)
     IP = IPAdress;
     Fleet.NumberOfKhepera = NumberOfKhepera;
     for i = 1:Fleet.NumberOfKhepera
-        temp(i,1) = khepera3(IP);
+        temp(i,1) = khepera3();
     end
     Fleet.KheperaArray = temp;
     Fleet.Network = zeros(NumberOfKhepera,NumberOfKhepera);
