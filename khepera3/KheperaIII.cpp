@@ -160,7 +160,7 @@ void KheperaIII::timeStep()
 }
 
 void KheperaIII::UpdatePosition() {
-	if (updatePositionMode==0 || !updateFirstCall) {
+	if (updatePositionMode==0 || (updatePositionMode==2 && !updateFirstCall)) {
 		UpdatePositionOffline();
 	}
 	else if (updatePositionMode==1 || updateFirstCall) {
