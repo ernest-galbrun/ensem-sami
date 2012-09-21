@@ -13,7 +13,6 @@ end
 methods
 % Constructor--------------------------------------------------------------
 function Fleet = KheperaFleet(NumberOfKhepera)
-    IP = IPAdress;
     Fleet.NumberOfKhepera = NumberOfKhepera;
     for i = 1:Fleet.NumberOfKhepera
         temp(i,1) = khepera3();
