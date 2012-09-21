@@ -110,7 +110,7 @@ while(any(not(FormationDone)))
     %d = distance([CPX(:,i) CPY(:,i)],[CPX(:,i-1) CPY(:,i-1)]);
     d = distance([CPX(:,i) CPY(:,i)],[CPX(:,i-1) CPY(:,i-1)])
 
-    FormationDone = d<1;
+    FormationDone = d<50;
 %     [CPX(:,i) CPY(:,i) CPX(:,i-1) CPY(:,i-1) d FormationDone]
 
 end
