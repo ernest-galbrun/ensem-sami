@@ -34,13 +34,13 @@ function error = Connect(k3,Id,virtual,initialPosition, initialOrientation,varar
         k3.id = Id;
         %k3.p = get(pp,'value'); 
         %CONNECTION MODE ONLINE
-        error = calllib('khepera3clib','InitLocalizationSystem',Id,1);
+        %error = calllib('khepera3clib','InitLocalizationSystem',Id,1);
         %CONNECTION MODE ONLINE
         %error = calllib('khepera3clib','InitLocalizationSystem',Id,1);
         %CONNECTION MODE OFFLINE
         %error = calllib('khepera3clib','InitLocalizationSystem',Id,0);
        %CONNECTION MODE ONLINE FOR INITIAL POSITION ONLY
-       %error = calllib('khepera3clib','InitLocalizationSystem',Id,2);
+       error = calllib('khepera3clib','InitLocalizationSystem',Id,2);
         if error == 2
             message = {'Offline mode'};
         elseif error~=0
