@@ -50,7 +50,7 @@ void LocalizationSystem::FindBodyIndex()
 	bool bodyNameFound = false;
 	//std::array<double,5> auxCor;
 	
-	sBodyDefs* pBodyDefs=NULL;
+	
 	int iBody;
 	if (cortexIsConnected) {
 	pBodyDefs = Cortex_GetBodyDefs();
@@ -67,6 +67,7 @@ void LocalizationSystem::FindBodyIndex()
 			throw (ios_base::failure("Unable to find body with provided name."));
 		}
 	}
+	Cortex_FreeBodyDefs(pBodyDefs);
 }
 
 
@@ -85,11 +86,9 @@ std::array<double,5> LocalizationSystem::GetOwnPosition_Cortex()
 {
 	std::array<double,5> ret = { { 0,0,0,0,0 } };
 	double aux;
-	sFrameOfData* pFrameOfData=NULL;
+	//sFrameOfData* pFrameOfData=NULL;
 	float* coordFront;
 	float* coordMiddle;
-//	float* off1;
-//	float* off2;
 	int ack;
 	ack = 1;	
 	FindBodyIndex();
@@ -98,7 +97,7 @@ std::array<double,5> LocalizationSystem::GetOwnPosition_Cortex()
 		throw(ios_base::failure("Bad data from Cortex"));
 	coordMiddle = (&pFrameOfData->BodyData[bodyIndex])->Markers[7];
 	coordFront = (&pFrameOfData->BodyData[bodyIndex])->Markers[6];
-	if(coordMiddle[0] == 9999999 || coordFront[0] == 9999999) {// || off1[0] == 9999999 || off2[0] == 9999999)
+	if(coordMiddle[0] == 9999999 || coordFront[0] == 9999999) {
 		throw(ios_base::failure("Bad data from Cortex"));
 	}
 	ret[0] = 1;
@@ -106,12 +105,8 @@ std::array<double,5> LocalizationSystem::GetOwnPosition_Cortex()
 	ret[2] = (double)coordMiddle[1];//*.1;
 	ret[3] = (double)coordMiddle[2];//*.1;
 	aux = atan2((double)(coordFront[1]- coordMiddle[1]),(double)(coordFront[0]- coordMiddle[0]));
-	/*if(aux<0)
-	{
-		aux = aux+ 2*PI; 
-	}*/
 	ret[4] = aux;	
-	//printf("Ack: %f x: %f y: %f z: %f t: %f\n",ret[0],ret[1],ret[2],ret[3],ret[4]);
+	//Cortex_FreeFrame(pFrameOfData); (seems useless ? cortex.h says it is)
 	return ret;
 }
 

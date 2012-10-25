@@ -35,6 +35,8 @@ protected:
 	//sFrameOfData  MyCopyOfFrame;
 	int bodyIndex;
 //	static int instanceCount;
+	sBodyDefs* pBodyDefs;
+	sFrameOfData* pFrameOfData;
 
 public:
 	LocalizationSystem();
