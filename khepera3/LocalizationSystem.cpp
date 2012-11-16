@@ -53,7 +53,8 @@ void LocalizationSystem::FindBodyIndex()
 	
 	int iBody;
 	if (cortexIsConnected) {
-	pBodyDefs = Cortex_GetBodyDefs();
+		//Cortex_FreeBodyDefs(pBodyDefs);
+		pBodyDefs = Cortex_GetBodyDefs();
 		for (iBody=0; iBody<pBodyDefs->nBodyDefs; iBody++) {
 			sBodyDef *pBody = &pBodyDefs->BodyDefs[iBody];
 			char* aux = pBody->szName;
@@ -65,9 +66,9 @@ void LocalizationSystem::FindBodyIndex()
 		if(!bodyNameFound) {
 			enable =0;
 			throw (ios_base::failure("Unable to find body with provided name."));
-		}
+		}	
+		Cortex_FreeBodyDefs(pBodyDefs);
 	}
-	Cortex_FreeBodyDefs(pBodyDefs);
 }
 
 
