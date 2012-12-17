@@ -82,6 +82,7 @@ classdef khepera3 < handle
         [values timestamp] = GetIRProximity(k3);
         [values timestamp]= GetIRAmbient(k3);
         values = GetUltrasound(k3);
+        GoToJiang(k3, x_ref, y_ref, theta_ref, w_ref, v_ref);
     end
     
     methods (Access = private)
