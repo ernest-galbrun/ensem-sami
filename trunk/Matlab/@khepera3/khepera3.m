@@ -7,10 +7,12 @@ classdef khepera3 < handle
         id     
     end
     
-    properties (Access = private) %t : handle to the tcpip object
+    properties (Access = private) 
+        %t : handle to the tcpip object
         isVirtual
         busy
         timerAcquisition
+        ConnectionMode
        % ownIP
     end
        
@@ -19,6 +21,7 @@ classdef khepera3 < handle
         % indicator on screen
         function k3 = khepera3(h_array)
            % k3.ownIP = ownIP;
+            k3.ConnectionMode = 0;
             k3.id = 0;
             k3.busy = false;
             k3.timerAcquisition = timer('Period',0.5,'ExecutionMode','fixedSpacing',...
@@ -59,6 +62,9 @@ classdef khepera3 < handle
         % Start or stop continuous acquisition of position and speed
         % h_array is an array of handles to the screen display
         % mode = {'start'|'stop'}
+        function SetConnectionMode(k3, mode) 
+            k3.ConnectionMode = mode;
+        end
         pos = GetWandPosition(k3)
         RunAcquisition(k3, mode)
         error = Connect(k3,Id,virtual,initialPosition, initialOirentation,h_message)   
