@@ -67,7 +67,7 @@ void LocalizationSystem::FindBodyIndex()
 			enable =0;
 			throw (ios_base::failure("Unable to find body with provided name."));
 		}	
-		Cortex_FreeBodyDefs(pBodyDefs);
+		//Cortex_FreeBodyDefs(pBodyDefs);
 	}
 }
 
@@ -92,7 +92,7 @@ std::array<double,5> LocalizationSystem::GetOwnPosition_Cortex()
 	float* coordMiddle;
 	int ack;
 	ack = 1;	
-	FindBodyIndex();
+	//FindBodyIndex();
 	pFrameOfData = Cortex_GetCurrentFrame();
 	if (!pFrameOfData) 
 		throw(ios_base::failure("Bad data from Cortex"));
@@ -116,7 +116,7 @@ void LocalizationSystem::Close()
 	Cortex_Exit();
 }
 
-void LocalizationSystem::Open(/*string myAddress, string hostAddress*/) {	
+void LocalizationSystem::Open() {	
 	asio::io_service ios;
 	asio::ip::tcp::resolver resolver(ios);
     asio::ip::tcp::resolver::query query(boost::asio::ip::host_name(),"");
@@ -130,9 +130,6 @@ void LocalizationSystem::Open(/*string myAddress, string hostAddress*/) {
 		else if(addr.to_string().substr(0,4)=="193.")
 			me = addr.to_string();
     }
-/*
-	host = hostAddress;
-	me = myAddress;*/
 	sHostInfo Cortex_HostInfo;
 	Cortex_SetVerbosityLevel(VL_None);		
 	printf("Connecting to Cortex Host...\n");

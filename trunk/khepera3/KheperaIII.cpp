@@ -1,6 +1,7 @@
 //#include <winsock2.h>
 //#include <windows.h>
 //#include "Serial.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
@@ -11,6 +12,7 @@
 #include <stdexcept>
 
 #include <ctime>
+#include <cmath>
 
 #include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
@@ -200,7 +202,16 @@ void KheperaIII::UpdatePositionOffline() {
 	}
 	else {
 	getEncodersValue(&encoderValueLeft,&encoderValueRight);
+	// sometimes, the robot erroneously returns a value with an offset of 16776960
+	// this detects the offset and ignores it...
+	if (abs(encoderValueLeft-previousL) > 100000)
+		return;//encoderValueLeft+=16776960;
+	if (abs(encoderValueRight-previousR) > 100000)
+		return;//encoderValueRight+=16776960;
+	
+
 	dl = (encoderValueLeft-previousL)*K_ENCODER;
+
 	dr = (encoderValueRight-previousR)*K_ENCODER;
 	dc = (dl+dr)/2;
 	thetaAux = orientation;
