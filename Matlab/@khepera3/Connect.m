@@ -68,5 +68,6 @@ function error = Connect(k3,Id,virtual,initialPosition, initialOrientation,varar
     if nargin>5
         set(h_message,'string',message);
     end
+    %pause(0.2);
 end
 
