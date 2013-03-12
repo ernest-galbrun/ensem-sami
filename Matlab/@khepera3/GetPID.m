@@ -15,6 +15,6 @@ function PID = GetPID(k3)
     PID(2,2) = get(iRight,'value');
     PID(2,3) = get(dRight,'value');
     PID = PID/30800;
-    PID(2,:) = PID(2,:) * 1000;
+    PID(:,:) = PID(:,:) * 1000;
 end
 
