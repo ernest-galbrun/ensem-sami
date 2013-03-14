@@ -60,6 +60,7 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 k3 = khepera3([handles.leftPosition handles.rightPosition handles.leftSpeed handles.rightSpeed]);
+k3.SetConnectionMode(0);
 set(gcf,'userdata',k3);
 
 % UIWAIT makes main wait for user response (see UIRESUME)
@@ -111,6 +112,7 @@ function connect_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 k3 = get(gcf,'userdata');
+pause(0.2);
 if k3.Connect(str2num(get(handles.ip,'String')),0,[0 0],0,handles.connectionStatus)==0
     modes = k3.GetMode();
     PID = k3.GetPID();
