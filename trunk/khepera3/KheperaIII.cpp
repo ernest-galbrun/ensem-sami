@@ -41,7 +41,6 @@ KheperaIII::KheperaIII(int id, bool isVirtual, vector<double> initialPosition, d
 	axis(AXIS),
 	nIrSensors(NB_SENSORS),
 	irValues(vector<int>(nIrSensors)),
-	firstRead(true),
 	stopContinuousAcquisition(false),
 	previousL(0),
 	previousR(0),
@@ -55,38 +54,44 @@ KheperaIII::KheperaIII(int id, bool isVirtual, vector<double> initialPosition, d
 	updateFirstCall(true){
 	setId(id);
 }
+
+void KheperaIII::OpenTCPConnection(){
+	boost::system::error_code& ec = boost::system::error_code();
+	stringstream s;
+	s<<"10.10.10."<<getId();
+	asio::ip::tcp::resolver resolver(io_service_);
+	asio::ip::tcp::resolver::query query(s.str(),"14");
+	asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
+	asio::ip::tcp::resolver::iterator end;
+	cout << "Establishing connection with the Robot..." << endl;
+	while (iter != end) {
+		socket_.connect(*iter,ec);
+		if (ec == false)
+			break;
+		iter++;
+	}
+	if (ec) {
+		throw(ios_base::failure(ec.message()));
+	}
+	else {
+		boost::asio::ip::tcp::no_delay option(true);
+		socket_.set_option(option);
+		boost::asio::socket_base::keep_alive option2(true);
+		socket_.set_option(option2);
+		initSuccessful = true;
+		vector<string> ans;
+		sendMsg("$SetAcquisitionFrequency1x,0,1\r\n",1,&ans);
+		sendMsg("$SetAcquisitionFrequency1x,1,1\r\n",1,&ans);
+		getEncodersValue(&previousL, &previousR);
+	}
+}
 	
 void KheperaIII::Init(){
 	initSuccessful = false;
 	tick = 0;	
-	if (!isVirtual_){
-		stringstream s;
-		s<<"10.10.10."<<getId();
-		asio::ip::tcp::resolver resolver(io_service_);
-		asio::ip::tcp::resolver::query query(s.str(),"14");
-		asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
-		asio::ip::tcp::resolver::iterator end;
-		cout << "Establishing connection with the Robot..." << endl;
-		boost::system::error_code& ec = boost::system::error_code();
-		while (iter != end) {
-			socket_.connect(*iter,ec);
-			if (ec == false)
-				break;
-			iter++;
-		}
-		if (ec) {
-			throw(ios_base::failure(ec.message()));
-		}
-		else {
-			boost::asio::ip::tcp::no_delay option(true);
-			socket_.set_option(option);
-			initSuccessful = true;
-			vector<string> ans;
-			sendMsg("$SetAcquisitionFrequency1x,0,1\r\n",1,&ans);
-			sendMsg("$SetAcquisitionFrequency1x,1,1\r\n",1,&ans);
-			getEncodersValue(&previousL, &previousR);
-			LaunchComm();
-		}
+	if (!isVirtual_){		
+		OpenTCPConnection();		
+		LaunchComm();
 	}
 	else {
 		encoderValues[0] = 0;
@@ -293,7 +298,7 @@ string KheperaIII::encodersMsg(int lValue, int rValue)
 int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 {
 	
-	boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
+	chrono::system_clock::time_point start = chrono::system_clock::now();
 	if (isVirtual_) {
 		throw (logic_error("Invalid call to \"sendMsg\" with virtual robot."));
 	}
@@ -301,22 +306,25 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 	
 	char buf[1000];
 	*answer = vector<string>();
-	asio::write(socket_,asio::buffer(msg));
+	system::error_code& ec = system::error_code();
+	asio::write(socket_,asio::buffer(msg),ec);
+	if(ec){
+		OpenTCPConnection();
+		sendMsg(msg,n,answer);
+		return 0;
+	}
 	string ans;
 	size_t	bytesRead;
-	system::error_code& ec = system::error_code();
 	istream is(&tcp_buf);
-	if (!firstRead) {
-		asio::read_until(socket_,tcp_buf,"\r\n",ec);
-		is.getline(buf,1000,'\r');
-		is.ignore(1);
-	}
-	else
-		firstRead = false;
-	for (int i=0;i<n-1;i++){
+	for (int i=0;i<n;i++){
 		clock_t t1,t2;
 		t1 = clock();
 		bytesRead = asio::read_until(socket_,tcp_buf,"\r\n",ec);
+		if(ec){
+			OpenTCPConnection();
+			sendMsg(msg,n,answer);
+			return 0;
+		}
 		t2 = clock() - t1;
 		t2 = t2;
 		is.getline(buf,1000,'\r');
@@ -324,7 +332,7 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 		ans = string(buf);
 		answer->push_back(ans);
 	}
-	boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
+	chrono::duration<double> sec = chrono::system_clock::now() - start;
 	double test  = sec.count();
     std::cout << "took " << sec.count() << " seconds\n";
 	tcpLock.unlock();
