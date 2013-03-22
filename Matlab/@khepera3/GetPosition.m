@@ -6,7 +6,7 @@ function pos = GetPosition(k3)
     left = libpointer('int32Ptr',0);
     right = libpointer('int32Ptr',0);
     %tic
-    calllib('khepera3clib', 'GetEncoderPosition',k3.id,left,right);
+    calllib('khepera3clib', 'GetEncoderPosition',k3.id,left,right);        
     %toc
     pos(1) = get(left,'value');
     pos(2) = get(right,'value');

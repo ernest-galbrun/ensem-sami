@@ -42,10 +42,10 @@ private:
 	boost::asio::streambuf tcp_buf;
 	boost::thread	continuousThread;
 	void ContinuousChecks();
+	void OpenTCPConnection();
 
 	void	ReadLastLineHandler(const boost::system::error_code& e, std::size_t size);
 	bool	stopContinuousAcquisition;
-	bool	firstRead;
 	string speedMsg(int,int);
 	string encodersMsg(int,int);
 	int sendMsg(string msg, int n, vector<string>* answer);
