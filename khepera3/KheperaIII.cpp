@@ -309,6 +309,7 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 	system::error_code& ec = system::error_code();
 	asio::write(socket_,asio::buffer(msg),ec);
 	if(ec){
+		this_thread::sleep(boost::posix_time::milliseconds(2000));
 		OpenTCPConnection();
 		sendMsg(msg,n,answer);
 		return 0;
@@ -321,6 +322,7 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
 		t1 = clock();
 		bytesRead = asio::read_until(socket_,tcp_buf,"\r\n",ec);
 		if(ec){
+			this_thread::sleep(boost::posix_time::milliseconds(2000));
 			OpenTCPConnection();
 			sendMsg(msg,n,answer);
 			return 0;
