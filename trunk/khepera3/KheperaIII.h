@@ -16,6 +16,11 @@
 
 using namespace std;
 
+class TCPFailure: public ios_base::failure{
+public:
+	TCPFailure::TCPFailure(std::string s):ios_base::failure(s){
+	};
+};
 
 class KheperaIII : public Agent
 {
@@ -33,22 +38,30 @@ private:
 	int updatePositionMode; //0 = offline 1 = using cortex 2 = using cortex only for initial position
 	bool updateFirstCall;
 
-
 	int tick;
 	boost::asio::io_service      io_service_;
+	boost::asio::io_service::work  work;
 	boost::asio::deadline_timer timer;	
 	boost::asio::ip::tcp::socket socket_;
 	boost::mutex tcpLock;
-	boost::asio::streambuf tcp_buf;
+	std::vector<boost::asio::streambuf *> tcp_buf_read;
+	boost::asio::streambuf * tcp_buf_write;
 	boost::thread	continuousThread;
+	boost::thread	TCPThread;
+	std::vector<string> tcp_answer;
+	char buf[1000];
 	void ContinuousChecks();
 	void OpenTCPConnection();
+	void connect_handler(const boost::system::error_code& error);
+	void write_handler(const boost::system::error_code& error, std::size_t bytes_transferred, int n);
+	void read_handler(const boost::system::error_code& error, std::size_t bytes_transferred,  int i, int n);
 
 	void	ReadLastLineHandler(const boost::system::error_code& e, std::size_t size);
 	bool	stopContinuousAcquisition;
+	bool	stopTCP;
 	string speedMsg(int,int);
 	string encodersMsg(int,int);
-	int sendMsg(string msg, int n, vector<string>* answer);
+	int sendMsg(string msg, int n, vector<string>* answer, boost::chrono::duration<double> timeout);
 	void	RunIOService();
 	void UpdatePositionOffline();
 	virtual void UpdatePosition();
