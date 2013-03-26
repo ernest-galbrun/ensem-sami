@@ -26,9 +26,7 @@
 
 using namespace std;
 using namespace boost;
-
-//int KheperaIII::getTestSerial()
-//{return testSerial;}
+using namespace boost::asio;
 
 //CONSTRUCTOR AND DESTRUCTOR----------------------------------
 KheperaIII::KheperaIII(int id, bool isVirtual, vector<double> initialPosition, double initialOrientation):
@@ -45,9 +43,12 @@ KheperaIII::KheperaIII(int id, bool isVirtual, vector<double> initialPosition, d
 	previousL(0),
 	previousR(0),
 	io_service_(),
+	work(io_service_),
 	timer(io_service_,posix_time::milliseconds(0)),
 	socket_(io_service_),
-	tcp_buf(1000),
+	tcp_buf_read(1000),
+	//tcp_buf_read(1000),
+	//tcp_buf_write(1000),
 	irAmbientValues(11),
 	irProximityValues(11),
 	ultrasound(50),
@@ -55,7 +56,90 @@ KheperaIII::KheperaIII(int id, bool isVirtual, vector<double> initialPosition, d
 	setId(id);
 }
 
+//KheperaIII io thread for processing asyncronous IO functions
+void KheperaIII::RunIOService() {
+	//while(!stopTCP) {
+		io_service_.run();
+		//this_thread::sleep(boost::posix_time::milliseconds(1));
+	//}
+}
+
+
+// send the message and wait for the response, which must contain n lines, the last one 
+// repeating the message command
+int KheperaIII::sendMsg(string msg, int n, vector<string>* answer, chrono::duration<double> timeout=chrono::seconds(1))
+{
+	
+	chrono::system_clock::time_point start = chrono::system_clock::now();
+	if (isVirtual_) {
+		throw (logic_error("Invalid call to \"sendMsg\" with virtual robot."));
+	}
+	tcpLock.lock();
+	tcp_answer = vector<string>();
+	system::error_code& ec = system::error_code();
+	tcp_buf_write = new asio::streambuf(1000);
+	for (int i=0;i<n;++i){
+		tcp_buf_read[i] = new asio::streambuf(1000);
+	}
+    ostream request_stream(tcp_buf_write);
+    request_stream << msg;
+	asio::async_write(socket_,*tcp_buf_write,
+		boost::bind(&KheperaIII::write_handler,this,boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred,n));
+	bool failure;
+	int count = 0;
+	while ((failure = !tcpLock.try_lock()) && (chrono::system_clock::now() - start < timeout)){
+		this_thread::sleep(boost::posix_time::milliseconds(1));
+		++count;
+	}
+	delete tcp_buf_write;
+	for (int i=0;i<n;++i) {
+		delete tcp_buf_read[i];
+	}
+	if(failure) {
+		initSuccessful = false;
+		throw(TCPFailure(ec.message()));
+	} else {
+		tcpLock.unlock();	
+	}
+	*answer = tcp_answer;
+	return 0;	
+}
+
+
+void KheperaIII::write_handler(const boost::system::error_code& error,std::size_t bytes_transferred, int n) {
+	//string ans;
+	//size_t	bytesRead;
+	//tcp_buf_write.consume(bytes_transferred);
+	for (int i=0;i<n;i++){
+		asio::async_read_until(socket_,*(tcp_buf_read[i]),"\r\n",
+			boost::bind(&KheperaIII::read_handler,this,boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred, i,n));
+	}
+}
+	
+
+void KheperaIII::read_handler(const boost::system::error_code& error,std::size_t bytes_transferred, int i, int n) {	
+	istream is(tcp_buf_read[i]);
+	is.getline(buf,1000,'\r');
+	is.ignore(1);
+	string ans(buf);
+	tcp_answer.push_back(ans);
+	if (i==n-1){		
+		tcpLock.unlock();
+	}
+}
+
+void KheperaIII::connect_handler(const boost::system::error_code& error) {
+  if (!error)  {    
+	boost::asio::ip::tcp::no_delay option(true);
+	socket_.set_option(option);
+	boost::asio::socket_base::keep_alive option2(true);
+	socket_.set_option(option2);
+	initSuccessful = true;
+  }
+}
+
 void KheperaIII::OpenTCPConnection(){
+	stopTCP=false;
 	boost::system::error_code& ec = boost::system::error_code();
 	stringstream s;
 	s<<"10.10.10."<<getId();
@@ -65,20 +149,19 @@ void KheperaIII::OpenTCPConnection(){
 	asio::ip::tcp::resolver::iterator end;
 	cout << "Establishing connection with the Robot..." << endl;
 	while (iter != end) {
-		socket_.connect(*iter,ec);
-		if (ec == false)
-			break;
+		socket_.async_connect(*iter,boost::bind(&KheperaIII::connect_handler,this,boost::asio::placeholders::error));
+		//if (ec == false)
+		//	break;
 		iter++;
 	}
-	if (ec) {
-		throw(ios_base::failure(ec.message()));
+	
+	TCPThread = thread(&KheperaIII::RunIOService,this);
+	for (int i=0;(i<100) & (!initSuccessful);++i) {
+		this_thread::sleep(boost::posix_time::milliseconds(20));
 	}
-	else {
-		boost::asio::ip::tcp::no_delay option(true);
-		socket_.set_option(option);
-		boost::asio::socket_base::keep_alive option2(true);
-		socket_.set_option(option2);
-		initSuccessful = true;
+	if (!initSuccessful) {
+		throw(TCPFailure(ec.message()));
+	}	else {
 		vector<string> ans;
 		sendMsg("$SetAcquisitionFrequency1x,0,1\r\n",1,&ans);
 		sendMsg("$SetAcquisitionFrequency1x,1,1\r\n",1,&ans);
@@ -100,10 +183,16 @@ void KheperaIII::Init(){
 	}
 }
 
-KheperaIII::~KheperaIII()
-{
+KheperaIII::~KheperaIII() {
 	stopContinuousAcquisition = true;
-	continuousThread.join();
+	if (continuousThread.joinable()) {
+		continuousThread.join();
+	}
+	stopTCP=true;
+	io_service_.stop();
+	if (TCPThread.joinable()) {
+		TCPThread.join();
+	}
 	closeSession();
 }
 
@@ -121,7 +210,11 @@ void KheperaIII::ContinuousChecks(){
 	while (!stopContinuousAcquisition){
 		lastStepTime = posix_time::microsec_clock::local_time();
 		this_thread::sleep(boost::posix_time::milliseconds(TIME_STEP));
-		timeStep();
+		try {
+			timeStep();
+		} catch (TCPFailure e) {
+
+		}
 	}
 }
 
@@ -292,64 +385,6 @@ string KheperaIII::encodersMsg(int lValue, int rValue)
 	stringstream msg;
 	msg << "$ResetPosition,"<<lValue<<','<<rValue<<"\r\n";
 	return msg.str();
-}
-// send the message and wait for the response, which must contain n lines, the last one 
-// repeating the message command
-int KheperaIII::sendMsg(string msg, int n, vector<string>* answer)
-{
-	
-	chrono::system_clock::time_point start = chrono::system_clock::now();
-	if (isVirtual_) {
-		throw (logic_error("Invalid call to \"sendMsg\" with virtual robot."));
-	}
-	tcpLock.lock();
-	
-	char buf[1000];
-	*answer = vector<string>();
-	system::error_code& ec = system::error_code();
-	asio::write(socket_,asio::buffer(msg),ec);
-	if(ec){
-		this_thread::sleep(boost::posix_time::milliseconds(2000));
-		OpenTCPConnection();
-		sendMsg(msg,n,answer);
-		return 0;
-	}
-	string ans;
-	size_t	bytesRead;
-	istream is(&tcp_buf);
-	for (int i=0;i<n;i++){
-		clock_t t1,t2;
-		t1 = clock();
-		bytesRead = asio::read_until(socket_,tcp_buf,"\r\n",ec);
-		if(ec){
-			this_thread::sleep(boost::posix_time::milliseconds(2000));
-			OpenTCPConnection();
-			sendMsg(msg,n,answer);
-			return 0;
-		}
-		t2 = clock() - t1;
-		t2 = t2;
-		is.getline(buf,1000,'\r');
-		is.ignore(1);
-		ans = string(buf);
-		answer->push_back(ans);
-	}
-	chrono::duration<double> sec = chrono::system_clock::now() - start;
-	double test  = sec.count();
-    std::cout << "took " << sec.count() << " seconds\n";
-	tcpLock.unlock();
-	
-	return 0;	
-}
-
-void	KheperaIII::RunIOService(){
-	tcpLock.lock();
-	io_service_.run();
-	tcpLock.unlock();
-}
-
-void	KheperaIII::ReadLastLineHandler(const boost::system::error_code& e, std::size_t size){
-	//communicationStackCount--;
 }
 
 void KheperaIII::closeSession()
@@ -538,7 +573,7 @@ int	KheperaIII::RecordPulse(int modeLeft, int modeRight, int nStep, int* targetL
 	}
 	else {
 		
-		sendMsg(message.str(),N+1,&answer);
+		sendMsg(message.str(),N+1,&answer,chrono::seconds(60));
 		*timeStamp = (int*) malloc(N * sizeof(int));
 		*valuesLeft = (int*) malloc(N * sizeof(int));
 		*valuesRight = (int*) malloc(N * sizeof(int));

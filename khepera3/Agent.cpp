@@ -42,7 +42,9 @@ Agent::~Agent(void)
 {
 	stopListening = true;
 	io_service_receiver.stop();
-  	listeningThread.join();
+	if (listeningThread.joinable()){
+  		listeningThread.join();
+	}
 	free (posX_);
 	free (posY_);
 	free (orientation_);
