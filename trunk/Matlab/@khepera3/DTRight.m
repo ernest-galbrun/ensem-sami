@@ -1,12 +1,22 @@
 function DTRight(k3,agressivity,velocity)
 A=k3.GetOrientation;
 B=A;
-calllib('khepera3clib', 'StartMotors',k3.id);
-
+k3.StartMotors;
 while A>B-3.14
-  calllib('khepera3clib', 'SetSpeed',k3.id,0.5,-0.7);
-  A=k3.GetOrientation;
+    
+	error = calllib('khepera3clib', 'SetSpeed',k3.id,0.5,-0.7);
+    if error
+    ME = MException('GetPosition:CommunicationError', ...
+         'The connection with the robot has failed. Check the network and try to reconnect');
+    throw(ME);
+    end
+	A=k3.GetOrientation;
 end
-  calllib('khepera3clib', 'StopMotors',k3.id);
-  k3.StartFollowLine(agressivity,velocity);
+	error = calllib('khepera3clib', 'StopMotors',k3.id);
+    if error
+    ME = MException('GetPosition:CommunicationError', ...
+         'The connection with the robot has failed. Check the network and try to reconnect');
+    throw(ME);
+    end
+	k3.StartFollowLine(agressivity,velocity);
 end

@@ -44,6 +44,15 @@ int instanceCount = 0;
 //Wand wand;
 //bool firstCall=true;
 
+
+extern "C" __declspec(dllexport) int DeleteKhepera(int robotID){
+	if (robotID>=maxRobotNumber || !exists[robotID])
+		return K3_BADROBOTID;
+	delete(k3[robotID]);
+	exists[robotID] = false;
+	return K3_NOERROR;
+}
+
 extern "C" const __declspec(dllexport) char*  PrintHello(){
 	return "Hellooo\0";
 }
@@ -106,7 +115,8 @@ extern "C" __declspec(dllexport) int LaunchKhepera(int robotID, int isVirtual,do
 	if (robotID>=maxRobotNumber)
 		return K3_BADROBOTID;
 	if (exists[robotID])
-		delete(k3[robotID]);
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 	vector<double> initialPosition(2,0);
 	initialPosition[0] = x0;
 	initialPosition[1] = y0;
@@ -115,7 +125,8 @@ extern "C" __declspec(dllexport) int LaunchKhepera(int robotID, int isVirtual,do
 		k3[robotID]->Init();
 	}
 	catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_CONNECTIONFAILURE;
 	}
@@ -123,13 +134,6 @@ extern "C" __declspec(dllexport) int LaunchKhepera(int robotID, int isVirtual,do
 	return K3_NOERROR;
 }
 
-extern "C" __declspec(dllexport) int DeleteKhepera(int robotID){
-	if (robotID>=maxRobotNumber || !exists[robotID])
-		return K3_BADROBOTID;
-	delete(k3[robotID]);
-	exists[robotID] = false;
-	return K3_NOERROR;
-}
 
 extern "C" __declspec(dllexport) int SendPosition(int robotID) {
 	if (robotID>=maxRobotNumber || !exists[robotID])
@@ -137,7 +141,8 @@ extern "C" __declspec(dllexport) int SendPosition(int robotID) {
 	try {
 		k3[robotID]->SendPosition();
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -150,7 +155,8 @@ extern "C" __declspec(dllexport) int SetSpeed(int robotID, double linear, double
 	try {
 		k3[robotID]->setVelocity(linear,angular);
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -173,7 +179,8 @@ extern "C" __declspec(dllexport) int InitLocalizationSystem(int robotID, int mod
 		}
 	k3[robotID]->LaunchContinuousThread();
 	} catch(TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}	catch (ios_base::failure e) {
@@ -192,7 +199,8 @@ extern "C" __declspec(dllexport) int GetPosition(int robotID, double *posX, doub
 		*posX = pos[0];
 		*posY = pos[1];
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -205,7 +213,8 @@ extern "C" __declspec(dllexport) int GetOrientation(int robotID, double* orienta
 	try {
 		*orientation = k3[robotID]->getOrientation();
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -218,7 +227,8 @@ extern "C" __declspec(dllexport) int GetMode(int robotID, int* modeLeft, int* mo
 	try {
 	return k3[robotID]->GetMode(modeLeft, modeRight);
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -238,7 +248,8 @@ extern "C" __declspec(dllexport) int GetPID(int robotID, int* pLeft, int* iLeft,
 		*iRight = PIDRight[1];
 		*dRight = PIDRight[2];
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -251,7 +262,8 @@ extern "C" __declspec(dllexport) int GetEncoderPosition(int robotID, int* left, 
 	try {
 		k3[robotID]->getEncodersValue(left, right);
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -264,7 +276,8 @@ extern "C" __declspec(dllexport) int GetSpeed(int robotID, int* left, int* right
 	try{
 		k3[robotID]->GetSpeed(left,right);
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -277,7 +290,8 @@ extern "C" __declspec(dllexport) int SetMode(int robotID, int left, int right){
 	try {
 		k3[robotID]->SetMode(left, right);
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -290,7 +304,8 @@ extern "C" __declspec(dllexport) int SetPID(int robotID, int pLeft, int iLeft, i
 	try {
 		k3[robotID]->SetPID(pLeft, iLeft, dLeft, pRight, iRight, dRight);
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -303,7 +318,8 @@ extern "C" __declspec(dllexport) int SetTargetPoint(int robotID, int targetLeft,
 	try {
 		k3[robotID]->SetTargetPoint(targetLeft, targetRight);
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -316,7 +332,8 @@ extern "C" __declspec(dllexport) int ResetPosition(int robotID, int posLeft, int
 	try {
 		k3[robotID]->ResetPosition(posLeft, posRight);
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -329,7 +346,8 @@ extern "C" __declspec(dllexport) int StartMotors(int robotID){
 	try {
 		k3[robotID]->StartMotors();
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -342,7 +360,8 @@ extern "C" __declspec(dllexport) int StopMotors(int robotID){
 	try {
 		k3[robotID]->StopMotors();
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -356,7 +375,8 @@ extern "C" __declspec(dllexport) int RecordPulse(int robotID, int modeLeft, int 
 	try {
 		k3[robotID]->RecordPulse(modeLeft, modeRight, nStep, targetLeft, targetRight, NAcquisition, timeStamp, valuesLeft, valuesRight);
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -368,7 +388,8 @@ extern "C" __declspec(dllexport) int StartInternalTracking(int robotID){
 		return K3_BADROBOTID;try {
 		k3[robotID]->StartInternalTracking();
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -380,7 +401,8 @@ extern "C" __declspec(dllexport) int StopInternalTracking(int robotID){
 	try {
 		k3[robotID]->StopInternalTracking();
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -393,7 +415,8 @@ extern "C" __declspec(dllexport) int GetNeighbors(int robotID, int* numberOfNeig
 	try {
 		k3[robotID]->getNeighbors(numberOfNeighbors,id,x,y);
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -406,7 +429,8 @@ extern "C" __declspec(dllexport) int GetAmbientIR(int robotID, int* timestamp, i
 	try {
 		k3[robotID]->GetAmbientIR(timestamp, values);
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -419,7 +443,8 @@ extern "C" __declspec(dllexport) int GetProximityIR(int robotID, int* timestamp,
 	try {
 	k3[robotID]->GetProximityIR(timestamp, values);
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -432,7 +457,8 @@ extern "C" __declspec(dllexport) int GetUltrasound(int robotID, int** values){
 	try {
 		k3[robotID]->GetUltrasound(values);
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
@@ -476,7 +502,8 @@ extern "C" __declspec(dllexport)  int FollowLine(int robotID, bool on, int aggre
 	try {
 		k3[robotID]->FollowLine(on,aggressivity,speed);
 	} catch (TCPFailure e) {
-		delete(k3[robotID]);	
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
 		cout<<e.what();
 		return K3_COMMUNICATIONFAILURE;
 	}
