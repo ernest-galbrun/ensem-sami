@@ -53,8 +53,8 @@ private:
 	void ContinuousChecks();
 	void OpenTCPConnection();
 	void connect_handler(const boost::system::error_code& error);
-	void write_handler(const boost::system::error_code& error, std::size_t bytes_transferred, int n);
-	void read_handler(const boost::system::error_code& error, std::size_t bytes_transferred, int n);
+	void write_handler(const boost::system::error_code& error, std::size_t bytes_transferred, int n, const string& msg);
+	void read_handler(const boost::system::error_code& error, std::size_t bytes_transferred, int n, const string& msg);
 
 	void	ReadLastLineHandler(const boost::system::error_code& e, std::size_t size);
 	bool	stopContinuousAcquisition;

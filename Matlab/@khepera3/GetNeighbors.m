@@ -3,7 +3,12 @@ id = libpointer('int32PtrPtr');
 x = libpointer('doublePtrPtr');
 y = libpointer('doublePtrPtr');
 nNeighbors = libpointer('int32Ptr',0);
-calllib('khepera3clib','GetNeighbors',k3.id,nNeighbors,id,x,y);
+error = calllib('khepera3clib','GetNeighbors',k3.id,nNeighbors,id,x,y);
+if error
+    ME = MException('GetPosition:CommunicationError', ...
+         'The connection with the robot has failed. Check the network and try to reconnect');
+    throw(ME);
+end
 n = get (nNeighbors,'value');
 neighbors = zeros(3,n);
 if n~=0

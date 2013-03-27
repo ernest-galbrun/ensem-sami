@@ -5,9 +5,15 @@ function RunAcquisition(k3, mode)
     switch mode
         case 'start'
             start(k3.timerAcquisition);
-            calllib('khepera3clib', 'StartInternalTracking',k3.id);
+             error = calllib('khepera3clib', 'StartInternalTracking',k3.id);
+              if error
+                ME = MException('GetPosition:CommunicationError', ...
+                     'The connection with the robot has failed. Check the network and try to reconnect');
+                throw(ME);
+              end
         case 'stop'
             stop(k3.timerAcquisition);
-            calllib('khepera3clib', 'StopInternalTracking',k3.id);            
+            %error = calllib('khepera3clib', 'StopInternalTracking',k3.id);          
+   
     end
 end

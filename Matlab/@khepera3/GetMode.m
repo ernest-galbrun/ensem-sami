@@ -2,7 +2,12 @@ function modes = GetMode(k3)
 modes = zeros(2,1);
 left = libpointer('int32Ptr',0);
 right = libpointer('int32Ptr',0);
-calllib('khepera3clib', 'GetMode',k3.id,left,right);
+error = calllib('khepera3clib', 'GetMode',k3.id,left,right);
+if error
+    ME = MException('GetPosition:CommunicationError', ...
+         'The connection with the robot has failed. Check the network and try to reconnect');
+    throw(ME);
+end
 modes(1) = get(left,'value')+1;
 if (modes(1)==256)
     modes(1) = 1;

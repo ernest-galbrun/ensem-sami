@@ -49,18 +49,6 @@ function error = Connect(k3,Id,virtual,initialPosition, initialOrientation,varar
         else
             message = {'Connection established'};
         end
-        %fopen(k3.t);
-        %if k3.lock(5)==0
-        %    fprintf(k3.t,'$GetId');
-        %    message = {'Connection established';['Robot Id : ' fscanf(k3.t)]};
-        %    ok = fscanf(k3.t);
-        %    fprintf(k3.t,'$SetAcquisitionFrequency1x,0,1');
-        %    ok = fscanf(k3.t);
-        %    fprintf(k3.t,'$SetAcquisitionFrequency1x,1,1');
-        %    ok = fscanf(k3.t);
-        %    k3.unlock();
-        %else
-        %    message = 'Connection failed';
     catch ME
         message = 'Connection failed';
         error = 1;

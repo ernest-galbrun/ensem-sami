@@ -106,10 +106,18 @@ classdef khepera3 < handle
 end
 
 function CallBackAcquisition (obj,event,k3, h_Array)
-    pos = k3.GetPosition();
-    speed = k3.GetSpeed();
-    set(h_Array(1),'String',pos(1));
-    set(h_Array(2),'String',pos(2));
-    set(h_Array(3),'String',speed(1));
-    set(h_Array(4),'String',speed(2));
+    try 
+        pos = k3.GetPosition();
+        speed = k3.GetSpeed();
+        set(h_Array(1),'String',pos(1));
+        set(h_Array(2),'String',pos(2));
+        set(h_Array(3),'String',speed(1));
+        set(h_Array(4),'String',speed(2));
+    catch err
+        set(h_Array(1),'String','Err');
+        set(h_Array(2),'String','Err');
+        set(h_Array(3),'String','Err');
+        set(h_Array(4),'String','Err');
+        k3.RunAcquisition('stop');
+    end
 end

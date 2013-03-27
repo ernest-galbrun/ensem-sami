@@ -6,7 +6,12 @@ function PID = GetPID(k3)
     pRight = libpointer('int32Ptr',0);
     iRight = libpointer('int32Ptr',0);
     dRight = libpointer('int32Ptr',0);
-    calllib('khepera3clib', 'GetPID',k3.id,pLeft,iLeft,dLeft,pRight,iRight,dRight);
+    error = calllib('khepera3clib', 'GetPID',k3.id,pLeft,iLeft,dLeft,pRight,iRight,dRight);
+    if error
+    ME = MException('GetPosition:CommunicationError', ...
+         'The connection with the robot has failed. Check the network and try to reconnect');
+    throw(ME);
+    end
     PID = zeros(2,3);
     PID(1,1) = get(pLeft,'value');
     PID(1,2) = get(iLeft,'value');

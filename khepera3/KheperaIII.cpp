@@ -75,12 +75,13 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer, chrono::durat
     ostream request_stream(&tcp_buf_write);
     request_stream << msg;
 	asio::async_write(socket_,tcp_buf_write,
-		boost::bind(&KheperaIII::write_handler,this,boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred,n));
+		boost::bind(&KheperaIII::write_handler,this,boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred,n,msg));
 	int count = 0;
 	while ((!dataReceived) && (chrono::system_clock::now() - start < timeout)){
 		this_thread::sleep(boost::posix_time::milliseconds(1));
 		++count;
 	}
+	tcpLock.unlock();
 	if(!dataReceived) {
 		initSuccessful = false;
 		throw(TCPFailure(ec.message()));
@@ -90,13 +91,13 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer, chrono::durat
 }
 
 
-void KheperaIII::write_handler(const boost::system::error_code& error,std::size_t bytes_transferred, int n) {
+void KheperaIII::write_handler(const boost::system::error_code& error,std::size_t bytes_transferred, int n, const string& msg) {
 	asio::async_read_until(socket_,tcp_buf_read,"\r\n",
-		boost::bind(&KheperaIII::read_handler,this,boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred,n-1));
+		boost::bind(&KheperaIII::read_handler,this,boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred,n-1,msg));
 }
 	
 
-void KheperaIII::read_handler(const boost::system::error_code& error,std::size_t bytes_transferred, int n) {
+void KheperaIII::read_handler(const boost::system::error_code& error,std::size_t bytes_transferred, int n, const string& msg) {
 	istream is(&tcp_buf_read);
 	is.getline(buf,1000,'\r');
 	is.ignore(1);
@@ -104,11 +105,14 @@ void KheperaIII::read_handler(const boost::system::error_code& error,std::size_t
 	tcp_answer.push_back(ans);
 	if (n!=0){		
 		asio::async_read_until(socket_,tcp_buf_read,"\r\n",
-			boost::bind(&KheperaIII::read_handler,this,boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred,n-1));
+			boost::bind(&KheperaIII::read_handler,this,boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred,n-1,msg));
 		
 	} else {
-		tcpLock.unlock();
-		dataReceived = true;
+		string command_sent = msg.substr(1,msg.find_first_of (",\r")-1);
+		string ack = tcp_answer.back();
+		if (command_sent == ack) {
+			dataReceived = true;
+		}
 	}
 }
 
