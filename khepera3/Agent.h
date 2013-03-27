@@ -34,6 +34,7 @@ private:
 
 	//from receiver :
 	boost::asio::io_service io_service_receiver;
+	boost::asio::io_service::work  work_receiver;
 	boost::asio::ip::udp::socket socket_receiver;
 	boost::shared_ptr<boost::asio::ip::udp::socket> socket_udp_sender;
 	boost::asio::ip::udp::endpoint receiver_endpoint;

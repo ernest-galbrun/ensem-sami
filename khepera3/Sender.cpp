@@ -18,25 +18,8 @@ Sender::Sender(const boost::asio::ip::address& multicast_address,int multicast_p
 	socket_(io_service_sender), 
 	timer_(io_service_sender)
 {    
-
-	boost::asio::io_service io_service;/*
-
-    asio::ip::tcp::resolver resolver(io_service);
-    asio::ip::tcp::resolver::query query(boost::asio::ip::host_name(),"");
-    asio::ip::tcp::resolver::iterator it=resolver.resolve(query);
-	asio::ip::address wifi_addr;
-    while(it!=asio::ip::tcp::resolver::iterator())
-    {
-        boost::asio::ip::address addr=(it++)->endpoint().address();
-       
-		if (addr.to_string().substr(0,3)=="10.")
-			wifi_addr = addr;
-
-    }
-	boost::asio::ip::multicast::outbound_interface option(wifi_addr.to_v4());*/
-	//const ip::address ifAddr( asio::ip::udp::endpoint( *interfaceIP ).address( )); 
+	boost::asio::io_service io_service;
 	socket_.open(endpoint_.protocol());
-	//socket_.set_option(option);
 }
 
 Sender::~Sender(void)
