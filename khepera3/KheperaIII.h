@@ -44,8 +44,8 @@ private:
 	boost::asio::deadline_timer timer;	
 	boost::asio::ip::tcp::socket socket_;
 	boost::mutex tcpLock;
-	std::vector<boost::asio::streambuf *> tcp_buf_read;
-	boost::asio::streambuf * tcp_buf_write;
+	boost::asio::streambuf tcp_buf_read;
+	boost::asio::streambuf tcp_buf_write;
 	boost::thread	continuousThread;
 	boost::thread	TCPThread;
 	std::vector<string> tcp_answer;
@@ -54,11 +54,12 @@ private:
 	void OpenTCPConnection();
 	void connect_handler(const boost::system::error_code& error);
 	void write_handler(const boost::system::error_code& error, std::size_t bytes_transferred, int n);
-	void read_handler(const boost::system::error_code& error, std::size_t bytes_transferred,  int i, int n);
+	void read_handler(const boost::system::error_code& error, std::size_t bytes_transferred, int n);
 
 	void	ReadLastLineHandler(const boost::system::error_code& e, std::size_t size);
 	bool	stopContinuousAcquisition;
 	bool	stopTCP;
+	bool dataReceived;
 	string speedMsg(int,int);
 	string encodersMsg(int,int);
 	int sendMsg(string msg, int n, vector<string>* answer, boost::chrono::duration<double> timeout);

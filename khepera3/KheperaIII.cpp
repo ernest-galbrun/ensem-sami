@@ -46,9 +46,6 @@ KheperaIII::KheperaIII(int id, bool isVirtual, vector<double> initialPosition, d
 	work(io_service_),
 	timer(io_service_,posix_time::milliseconds(0)),
 	socket_(io_service_),
-	tcp_buf_read(1000),
-	//tcp_buf_read(1000),
-	//tcp_buf_write(1000),
 	irAmbientValues(11),
 	irProximityValues(11),
 	ultrasound(50),
@@ -58,10 +55,7 @@ KheperaIII::KheperaIII(int id, bool isVirtual, vector<double> initialPosition, d
 
 //KheperaIII io thread for processing asyncronous IO functions
 void KheperaIII::RunIOService() {
-	//while(!stopTCP) {
 		io_service_.run();
-		//this_thread::sleep(boost::posix_time::milliseconds(1));
-	//}
 }
 
 
@@ -75,31 +69,21 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer, chrono::durat
 		throw (logic_error("Invalid call to \"sendMsg\" with virtual robot."));
 	}
 	tcpLock.lock();
+	dataReceived = false;
 	tcp_answer = vector<string>();
 	system::error_code& ec = system::error_code();
-	tcp_buf_write = new asio::streambuf(1000);
-	for (int i=0;i<n;++i){
-		tcp_buf_read[i] = new asio::streambuf(1000);
-	}
-    ostream request_stream(tcp_buf_write);
+    ostream request_stream(&tcp_buf_write);
     request_stream << msg;
-	asio::async_write(socket_,*tcp_buf_write,
+	asio::async_write(socket_,tcp_buf_write,
 		boost::bind(&KheperaIII::write_handler,this,boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred,n));
-	bool failure;
 	int count = 0;
-	while ((failure = !tcpLock.try_lock()) && (chrono::system_clock::now() - start < timeout)){
+	while ((!dataReceived) && (chrono::system_clock::now() - start < timeout)){
 		this_thread::sleep(boost::posix_time::milliseconds(1));
 		++count;
 	}
-	delete tcp_buf_write;
-	for (int i=0;i<n;++i) {
-		delete tcp_buf_read[i];
-	}
-	if(failure) {
+	if(!dataReceived) {
 		initSuccessful = false;
 		throw(TCPFailure(ec.message()));
-	} else {
-		tcpLock.unlock();	
 	}
 	*answer = tcp_answer;
 	return 0;	
@@ -107,24 +91,24 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer, chrono::durat
 
 
 void KheperaIII::write_handler(const boost::system::error_code& error,std::size_t bytes_transferred, int n) {
-	//string ans;
-	//size_t	bytesRead;
-	//tcp_buf_write.consume(bytes_transferred);
-	for (int i=0;i<n;i++){
-		asio::async_read_until(socket_,*(tcp_buf_read[i]),"\r\n",
-			boost::bind(&KheperaIII::read_handler,this,boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred, i,n));
-	}
+	asio::async_read_until(socket_,tcp_buf_read,"\r\n",
+		boost::bind(&KheperaIII::read_handler,this,boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred,n-1));
 }
 	
 
-void KheperaIII::read_handler(const boost::system::error_code& error,std::size_t bytes_transferred, int i, int n) {	
-	istream is(tcp_buf_read[i]);
+void KheperaIII::read_handler(const boost::system::error_code& error,std::size_t bytes_transferred, int n) {
+	istream is(&tcp_buf_read);
 	is.getline(buf,1000,'\r');
 	is.ignore(1);
 	string ans(buf);
 	tcp_answer.push_back(ans);
-	if (i==n-1){		
+	if (n!=0){		
+		asio::async_read_until(socket_,tcp_buf_read,"\r\n",
+			boost::bind(&KheperaIII::read_handler,this,boost::asio::placeholders::error,boost::asio::placeholders::bytes_transferred,n-1));
+		
+	} else {
 		tcpLock.unlock();
+		dataReceived = true;
 	}
 }
 
@@ -150,8 +134,6 @@ void KheperaIII::OpenTCPConnection(){
 	cout << "Establishing connection with the Robot..." << endl;
 	while (iter != end) {
 		socket_.async_connect(*iter,boost::bind(&KheperaIII::connect_handler,this,boost::asio::placeholders::error));
-		//if (ec == false)
-		//	break;
 		iter++;
 	}
 	
@@ -189,11 +171,11 @@ KheperaIII::~KheperaIII() {
 		continuousThread.join();
 	}
 	stopTCP=true;
+	closeSession();
 	io_service_.stop();
 	if (TCPThread.joinable()) {
 		TCPThread.join();
 	}
-	closeSession();
 }
 
 void	KheperaIII::CloseConnection()// use instead of destructor because of heap corruption in matlab
@@ -213,7 +195,7 @@ void KheperaIII::ContinuousChecks(){
 		try {
 			timeStep();
 		} catch (TCPFailure e) {
-
+			break;
 		}
 	}
 }
@@ -390,9 +372,10 @@ string KheperaIII::encodersMsg(int lValue, int rValue)
 void KheperaIII::closeSession()
 {	
 	if (!isVirtual_){
-		if (initSuccessful)
+		if (initSuccessful){
 			this->setVelocity(0,0);
-		socket_.close();
+			socket_.close();
+		}
 	}
 }
 
