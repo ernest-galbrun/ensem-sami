@@ -25,6 +25,7 @@ Agent::Agent(int id, vector<double> initialPosition, double initialOrientation):
 	id_(NULL),	
 	orientation_(NULL),
 	io_service_receiver(),
+	work_receiver(io_service_receiver),
 	socket_receiver(io_service_receiver)//,
 	//socket_udp_sender(io_service_receiver)
 {
@@ -164,10 +165,10 @@ void Agent::ReadIncomingData(const system::error_code& error, size_t bytes_recvd
 }
 
 void Agent::ReceiveContinuously() {
-	while(!stopListening) {
-		io_service_receiver.run();
-		this_thread::sleep(boost::posix_time::milliseconds(10));
-	}
+	//while(!stopListening) {
+	io_service_receiver.run();
+	//	this_thread::sleep(boost::posix_time::milliseconds(10));
+	//}
 }
 
 
