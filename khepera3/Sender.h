@@ -12,14 +12,16 @@
 
 class Sender
 {
+	boost::asio::ip::address multicast_address;
 	boost::asio::io_service io_service_sender;
 	boost::asio::ip::udp::endpoint endpoint_;
 	boost::asio::ip::udp::socket socket_;
 	int message_count_;
 	std::string message_;
+	static boost::asio::ip::address GenerateMulticastAddress(int id);
 
 public:
-	Sender(const boost::asio::ip::address&,int);
+	Sender(int id);
 
 	~Sender(void);
 	void sendPosition(int id,const std::array<double,2>& position, const double & orientation);

@@ -14,12 +14,10 @@
 class CommunicationSystem:boost::noncopyable
 {
 	Sender sender;
-	std::string multicastAddress;
 	std::string localAddress;
-	int multicastPort;
 	bool enable;
 public:
-	CommunicationSystem(int id, std::string adMult, int porMult);
+	CommunicationSystem(int id);
 	~CommunicationSystem(void);
 
 	//void run();

@@ -18,7 +18,7 @@ Agent::Agent(int id, vector<double> initialPosition, double initialOrientation):
 	localAddress("1.1.1.1"),
 	neighbors(vector<Object>()),
 	obstacles(vector<Object>()),
-	communicationSystem(id, "239.255.0.1", 30001),
+	communicationSystem(id),
 	stopListening(false),
 	posX_(NULL),
 	posY_(NULL),
@@ -31,12 +31,12 @@ Agent::Agent(int id, vector<double> initialPosition, double initialOrientation):
 {
 	
 	// Create the socket so that multiple may be bound to the same address.
-    asio::ip::udp::endpoint listen_endpoint(asio::ip::address::from_string("0.0.0.0"), 30001);
+    asio::ip::udp::endpoint listen_endpoint(asio::ip::address::from_string("0.0.0.0"), 30159);
     socket_receiver.open(listen_endpoint.protocol());
     socket_receiver.set_option(boost::asio::ip::udp::socket::reuse_address(true));
     socket_receiver.bind(listen_endpoint);
     // Join the multicast group.
-	socket_receiver.set_option(asio::ip::multicast::join_group(asio::ip::address::from_string("239.255.0.1")));
+	//socket_receiver.set_option(asio::ip::multicast::join_group(asio::ip::address::from_string("239.255.0.1")));
 	socket_receiver.async_receive_from(asio::buffer(data_, 1024), sender_endpoint,boost::bind(&Agent::ReadIncomingData, 
 								this, asio::placeholders::error,boost::asio::placeholders::bytes_transferred));
 	
