@@ -260,8 +260,11 @@ k3.RunAcquisition('start');
 function Main_CloseRequestFcn(hObject, eventdata, handles)
 k3 = get(gcf,'userdata');
 if (k3.id~=0)
-    k3.StopMotors();
-    k3.Disconnect();
+    try 
+        k3.StopMotors();
+        k3.Disconnect();
+    catch exception
+    end
 end
 delete(k3);
 set(gcf,'userdata',[]);
