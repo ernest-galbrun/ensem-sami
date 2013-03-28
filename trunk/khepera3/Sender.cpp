@@ -11,16 +11,29 @@
 using namespace boost;
 using namespace std;
 
-Sender::Sender(const boost::asio::ip::address& multicast_address,int multicast_port): 
+Sender::Sender(int id): 
 	io_service_sender(),
-	endpoint_(boost::asio::ip::address::from_string("239.255.0.1"), 30001), 
-	socket_(io_service_sender, endpoint_.protocol())
+	//endpoint_(Sender::GenerateMulticastAddress(id), 30001), 
+	socket_(io_service_sender/*, endpoint_.protocol()*/)
 {    
 	//socket_.open(endpoint_.protocol());
+	system::error_code error;
+	socket_.open(asio::ip::udp::v4(), error);
+	socket_.set_option(asio::ip::udp::socket::reuse_address(true));
+    socket_.set_option(asio::socket_base::broadcast(true));
+    endpoint_ = asio::ip::udp::endpoint(asio::ip::address::from_string("10.10.10.255"), 30159);            
+	//socket.send_to(data, senderEndpoint);
+    //socket.close(error);
 }
 
 Sender::~Sender(void)
 {
+}
+
+boost::asio::ip::address Sender::GenerateMulticastAddress(int id){
+	stringstream ss;
+	ss<<"239.255.0."<<id;
+	return asio::ip::address::from_string(ss.str());
 }
 
 void Sender::sendPosition(int id,const std::array<double,2>& position, const double & orientation)
