@@ -13,13 +13,10 @@ using namespace std;
 
 Sender::Sender(const boost::asio::ip::address& multicast_address,int multicast_port): 
 	io_service_sender(),
-	endpoint_(boost::asio::ip::address::from_string("239.255.0.1")/*multicast_address*/, multicast_port), 
-	endpoint_bis(multicast_address, multicast_port), 
-	socket_(io_service_sender), 
-	timer_(io_service_sender)
+	endpoint_(boost::asio::ip::address::from_string("239.255.0.1"), 30001), 
+	socket_(io_service_sender, endpoint_.protocol())
 {    
-	boost::asio::io_service io_service;
-	socket_.open(endpoint_.protocol());
+	//socket_.open(endpoint_.protocol());
 }
 
 Sender::~Sender(void)

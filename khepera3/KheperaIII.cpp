@@ -64,11 +64,12 @@ void KheperaIII::RunIOService() {
 int KheperaIII::sendMsg(string msg, int n, vector<string>* answer, chrono::duration<double> timeout=chrono::seconds(1))
 {
 	
-	chrono::system_clock::time_point start = chrono::system_clock::now();
+	
 	if (isVirtual_) {
 		throw (logic_error("Invalid call to \"sendMsg\" with virtual robot."));
 	}
 	tcpLock.lock();
+	chrono::system_clock::time_point start = chrono::system_clock::now();
 	dataReceived = false;
 	tcp_answer = vector<string>();
 	system::error_code& ec = system::error_code();
@@ -81,12 +82,13 @@ int KheperaIII::sendMsg(string msg, int n, vector<string>* answer, chrono::durat
 		this_thread::sleep(boost::posix_time::milliseconds(1));
 		++count;
 	}
-	tcpLock.unlock();
 	if(!dataReceived) {
+		tcpLock.unlock();
 		initSuccessful = false;
 		throw(TCPFailure(ec.message()));
 	}
 	*answer = tcp_answer;
+	tcpLock.unlock();
 	return 0;	
 }
 
@@ -204,7 +206,7 @@ void KheperaIII::ContinuousChecks(){
 	}
 }
 
-void KheperaIII::FollowLine(bool on,int aggressivity,int speed){
+void KheperaIII::FollowLine(bool on,float aggressivity,int speed){
  if (!isVirtual_){
 	stringstream msg;
 	if (on)
@@ -215,6 +217,15 @@ void KheperaIII::FollowLine(bool on,int aggressivity,int speed){
 	this->sendMsg(msg.str(),1,&ans);
  }
 
+}
+
+void KheperaIII::Cross(int direction, float aggressivity, int speed){
+	 if (!isVirtual_){
+	stringstream msg;
+	msg << "$Cross,"<<direction<<','<<aggressivity<<','<<speed<<"\r\n";
+	vector<string> ans;
+	this->sendMsg(msg.str(),1,&ans);
+ }
 }
 
 //FUNCTIONAL METHODS------------------------------------------

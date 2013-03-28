@@ -106,7 +106,8 @@ public:
 	void GetAmbientIR(int* timestamp, int** values);
 	void GetProximityIR(int* timestamp, int** values);
 	void GetUltrasound(int** values);
-	void FollowLine(bool on,int aggressivity,int speed);
+	void FollowLine(bool on,float aggressivity,int speed);
+	void Cross(int direction, float aggressivity, int speed);
 };
 
 
