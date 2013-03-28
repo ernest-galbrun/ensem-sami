@@ -496,11 +496,27 @@ BOOL WINAPI DllMain(
     return TRUE;  // Successful DLL_PROCESS_ATTACH.
 }
 
-extern "C" __declspec(dllexport)  int FollowLine(int robotID, bool on, int aggressivity, int speed){
+extern "C" __declspec(dllexport)  int FollowLine(int robotID, bool on, float aggressivity, int speed){
 	if (robotID>=maxRobotNumber || !exists[robotID])
 		return K3_BADROBOTID;
 	try {
 		k3[robotID]->FollowLine(on,aggressivity,speed);
+	} catch (TCPFailure e) {
+		DeleteKhepera(robotID);
+		//delete(k3[robotID]);	
+		cout<<e.what();
+		return K3_COMMUNICATIONFAILURE;
+	}
+	return K3_NOERROR;
+}
+
+
+
+extern "C" __declspec(dllexport)  int Cross(int robotID, int direction, float aggressivity, int speed){
+	if (robotID>=maxRobotNumber || !exists[robotID])
+		return K3_BADROBOTID;
+	try {
+		k3[robotID]->Cross(direction,aggressivity,speed);
 	} catch (TCPFailure e) {
 		DeleteKhepera(robotID);
 		//delete(k3[robotID]);	

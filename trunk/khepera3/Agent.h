@@ -25,20 +25,23 @@ private:
 
 	int testNeighbor(int idArg);
 	void ReceiveContinuously();
+	void UDPServerThread();
 	void handle_receive(const boost::system::error_code& error, std::size_t);
 	bool stopListening;
 	std::pair<bool,boost::asio::ip::udp::endpoint> udp_destination; //bool is true if a client has initiated connection
 	boost::asio::ip::udp::endpoint udp_destination_temp;
 	boost::thread listeningThread;
+	boost::thread udp_server_thread;
 
 
 	//from receiver :
 	boost::asio::io_service io_service_receiver;
-	boost::asio::io_service::work  work_receiver;
+	boost::asio::io_service io_service_udp_server;
+	//boost::asio::io_service::work  work_receiver;
 	boost::asio::ip::udp::socket socket_receiver;
 	boost::shared_ptr<boost::asio::ip::udp::socket> socket_udp_sender;
-	boost::asio::ip::udp::endpoint receiver_endpoint;
-	char data_[512];
+	boost::asio::ip::udp::endpoint sender_endpoint;
+	char data_[1024];
 	boost::system::error_code io_error_;
 
 	int receivedId;
