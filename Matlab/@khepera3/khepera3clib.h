@@ -5,7 +5,7 @@ extern "C" {
 #endif 
 
 	__declspec(dllexport) int FollowLine(int robotID, bool on, int aggressivity, int speed);
-	__declspec(dllexport) int FollowLine(int robotID, int direction, int aggressivity, int speed);
+	__declspec(dllexport) int Cross(int robotID, int direction, int aggressivity, int speed);
 	__declspec(dllexport) int OpenCortex(/*const char* ownIP*/);
 	__declspec(dllexport) int CloseCortex();
 	__declspec(dllexport) int GetWandPosition(double* X, double* Y);
