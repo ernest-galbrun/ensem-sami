@@ -496,7 +496,7 @@ BOOL WINAPI DllMain(
     return TRUE;  // Successful DLL_PROCESS_ATTACH.
 }
 
-extern "C" __declspec(dllexport)  int FollowLine(int robotID, bool on, float aggressivity, int speed){
+extern "C" __declspec(dllexport)  int FollowLine(int robotID, bool on, double aggressivity, int speed){
 	if (robotID>=maxRobotNumber || !exists[robotID])
 		return K3_BADROBOTID;
 	try {
@@ -512,7 +512,7 @@ extern "C" __declspec(dllexport)  int FollowLine(int robotID, bool on, float agg
 
 
 
-extern "C" __declspec(dllexport)  int Cross(int robotID, int direction, float aggressivity, int speed){
+extern "C" __declspec(dllexport)  int Cross(int robotID, int direction, double aggressivity, int speed){
 	if (robotID>=maxRobotNumber || !exists[robotID])
 		return K3_BADROBOTID;
 	try {
