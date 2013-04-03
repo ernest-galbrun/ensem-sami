@@ -224,7 +224,7 @@ void KheperaIII::Cross(int direction, float aggressivity, int speed){
 	stringstream msg;
 	msg << "$Cross,"<<direction<<','<<aggressivity<<','<<speed<<"\r\n";
 	vector<string> ans;
-	this->sendMsg(msg.str(),1,&ans);
+	this->sendMsg(msg.str(),1,&ans,chrono::seconds(30));
  }
 }
 

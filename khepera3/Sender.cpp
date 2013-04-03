@@ -28,6 +28,9 @@ Sender::Sender(int id):
 
 Sender::~Sender(void)
 {
+	io_service_sender.stop();
+	socket_.close();
+	//~io_service_sender();
 }
 
 boost::asio::ip::address Sender::GenerateMulticastAddress(int id){
