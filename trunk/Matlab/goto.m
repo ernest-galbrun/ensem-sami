@@ -1,16 +1,27 @@
-function goto(r,dest,time)
-tic;
-t=toc;
-K1 = 1;
-K2 = 0.2;
-while(t<time)
-    d = dest - r.GetXYPosition;
-    dist = norm(d)
-    diff_angle = atan2(d(2),d(1)) - r.GetOrientation
-    v = K1 * dist;
-    v_theta = K2 * diff_angle
-    v = v*cos(diff_angle)
-    r.SetVelocity(v,v_theta);
-    t = toc;
+function goto(r,x,y,t)
+tic
+dist=inf;
+while(toc<t && dist>70)
+    theta=r.GetOrientation();
+    pos = r.GetXYPosition();
+    Ex=x-pos(1);
+    Ey=y-pos(2);
+    dist=sqrt(Ex^2+Ey^2);
+
+    thetap=atan2(Ey,Ex);
+    if thetap<0
+        thetap=thetap+2*pi;
+    end;
+    Etheta=thetap-theta;
+    if(Etheta>pi)
+        Etheta = Etheta-2*pi;
+    elseif(Etheta<-pi)
+            Etheta=Etheta+2*pi;
+    end
+
+    V=0.5*dist*cos(Etheta);
+    Omega=Etheta;
+    r.SetVelocity(V,Omega);
+    pause(0.05);
 end
-r.SetVelocity(0,0)
+r.SetVelocity(0,0);
