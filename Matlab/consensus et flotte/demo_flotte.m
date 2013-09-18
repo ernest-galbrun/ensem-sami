@@ -1,7 +1,11 @@
-Ip = '193.49.136.189';
-N=input('nombre de robots : ');
+%Ip = '193.49.136.189';
+%N=input('nombre de robots : ');
+N=3
 R = KheperaFleet(N)
-error=R.ConnectF([3;4;5],[0,0,0,0],[0 0;0 1500;700 3000;1800 1500],[3*pi/2;0;pi/2;pi])
+R.SetConnectionModeF(1);
+%error=R.ConnectF([3;4;5],[0,0,0,0],[0 0;0 1500;700 3000;1800 1500],[3*pi/2;0;pi/2;pi])
+error=R.ConnectF([3;4;5],[0,0,0],[0 0;0 0;0 0],[0;0;0])
+
 
 disp('pause');
 pause;
@@ -26,5 +30,5 @@ R.DefineNetwork('manual',A)
 
 
 %R.RDV_Static(10,0.5,0)
-R.FleetFormation(1,'circle',1000,0)
-R.FleetFormation(2,'line',[2 1000],0)
+%R.FleetFormation(1,'circle',1000,0)
+%R.FleetFormation(2,'line',[2 1000],0)
