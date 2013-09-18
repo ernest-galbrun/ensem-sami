@@ -16,7 +16,7 @@ CommunicationSystem::CommunicationSystem(int id):
 	enable(true)
 {
 	stringstream ss_localip;
-	ss_localip<<"10.10.10."<<id;
+	ss_localip<<"192.168.1."<<id;
 	localAddress = ss_localip.str();
 }
 

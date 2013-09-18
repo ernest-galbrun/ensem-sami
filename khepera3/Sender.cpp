@@ -21,7 +21,7 @@ Sender::Sender(int id):
 	socket_.open(asio::ip::udp::v4(), error);
 	socket_.set_option(asio::ip::udp::socket::reuse_address(true));
     socket_.set_option(asio::socket_base::broadcast(true));
-    endpoint_ = asio::ip::udp::endpoint(asio::ip::address::from_string("10.10.10.255"), 30159);            
+    endpoint_ = asio::ip::udp::endpoint(asio::ip::address::from_string("192.168.1.255"), 30159);            
 	//socket.send_to(data, senderEndpoint);
     //socket.close(error);
 }
