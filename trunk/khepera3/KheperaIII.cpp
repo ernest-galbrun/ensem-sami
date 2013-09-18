@@ -132,7 +132,7 @@ void KheperaIII::OpenTCPConnection(){
 	stopTCP=false;
 	boost::system::error_code& ec = boost::system::error_code();
 	stringstream s;
-	s<<"10.10.10."<<getId();
+	s<<"192.168.1."<<getId();
 	asio::ip::tcp::resolver resolver(io_service_);
 	asio::ip::tcp::resolver::query query(s.str(),"14");
 	asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);

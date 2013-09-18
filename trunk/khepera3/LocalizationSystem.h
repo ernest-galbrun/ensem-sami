@@ -35,7 +35,7 @@ protected:
 	//sFrameOfData  MyCopyOfFrame;
 	int bodyIndex;
 //	static int instanceCount;
-	sBodyDefs* pBodyDefs;
+	//sBodyDefs* pBodyDefs;
 	sFrameOfData* pFrameOfData;
 
 public:

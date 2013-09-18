@@ -54,7 +54,7 @@ void LocalizationSystem::FindBodyIndex()
 	int iBody;
 	if (cortexIsConnected) {
 		//Cortex_FreeBodyDefs(pBodyDefs);
-		pBodyDefs = Cortex_GetBodyDefs();
+		sBodyDefs* pBodyDefs = Cortex_GetBodyDefs();
 		for (iBody=0; iBody<pBodyDefs->nBodyDefs; iBody++) {
 			sBodyDef *pBody = &pBodyDefs->BodyDefs[iBody];
 			char* aux = pBody->szName;
