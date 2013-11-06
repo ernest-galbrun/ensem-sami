@@ -5,7 +5,7 @@
 extern int instanceCount;
 
 Parrot::Parrot() {
-	SetName("Parrot1");
+	SetName("markerset_parrot21");
 }
 
 std::array<double,5> Parrot::GetOwnPosition_Cortex() {//{Ack,X,Y,Z,theta}
@@ -19,7 +19,7 @@ std::array<double,5> Parrot::GetOwnPosition_Cortex() {//{Ack,X,Y,Z,theta}
 	pFrameOfData = Cortex_GetCurrentFrame();
 	if ((&pFrameOfData->BodyData[i])->nMarkers == 3) {
 		A = (&pFrameOfData->BodyData[bodyIndex])->Markers[0];
-		B = (&pFrameOfData->BodyData[bodyIndex])->Markers[2];
+		B = (&pFrameOfData->BodyData[bodyIndex])->Markers[1];
 		ret[0] = 1;
 		ret[1] = A[0] +  A[2]* (B[0]-A[0]) / (A[2]-B[2]);
 		ret[2] = A[1] +  A[2]* (B[1]-A[1]) / (A[2]-B[2]);
@@ -44,8 +44,8 @@ bool Parrot::UpdatePosition(double * frontX, double* frontY, double* frontZ, dou
 	ack = 1;	
 	FindBodyIndex();
 	pFrameOfData = Cortex_GetCurrentFrame();
-	coordMiddle = (&pFrameOfData->BodyData[bodyIndex])->Markers[5];
-	coordFront = (&pFrameOfData->BodyData[bodyIndex])->Markers[6];
+	coordMiddle = (&pFrameOfData->BodyData[bodyIndex])->Markers[1];
+	coordFront = (&pFrameOfData->BodyData[bodyIndex])->Markers[0];
 	if(coordMiddle[0] == 9999999 || coordFront[0] == 9999999) {// || off1[0] == 9999999 || off2[0] == 9999999)
 		return false;
 	}
