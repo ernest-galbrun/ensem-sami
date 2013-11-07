@@ -30,31 +30,28 @@ std::array<double,5> Parrot::GetOwnPosition_Cortex() {//{Ack,X,Y,Z,theta}
 	return ret;
 }
 
-bool Parrot::UpdatePosition(double * frontX, double* frontY, double* frontZ, double* backX, double * backY, double* backZ)
+bool Parrot::UpdatePosition(double * x, double* y, double* z, double* yaw, double * pitch, double* roll)
 {
 	
 	std::array<double,5> ret = { { 0,0,0,0,0 } };
-//	double aux;
-	sFrameOfData* pFrameOfData=NULL;
-	float* coordFront;
-	float* coordMiddle;
-//	float* off1;
-//	float* off2;
+	sFrameOfData* pFrameOfData= nullptr;
 	int ack;
 	ack = 1;	
 	FindBodyIndex();
 	pFrameOfData = Cortex_GetCurrentFrame();
-	coordMiddle = (&pFrameOfData->BodyData[bodyIndex])->Markers[1];
-	coordFront = (&pFrameOfData->BodyData[bodyIndex])->Markers[0];
-	if(coordMiddle[0] == 9999999 || coordFront[0] == 9999999) {// || off1[0] == 9999999 || off2[0] == 9999999)
+	float* m = (&pFrameOfData->BodyData[bodyIndex])->Markers[1]; //middle
+	float* f = (&pFrameOfData->BodyData[bodyIndex])->Markers[0]; //front
+	float* bl = (&pFrameOfData->BodyData[bodyIndex])->Markers[4]; //back left
+	float* br = (&pFrameOfData->BodyData[bodyIndex])->Markers[5]; //back right
+	if(m[0] == 9999999 || f[0] == 9999999 || br[0] == 9999999 || bl[0] == 9999999) {
 		return false;
 	}
-	*frontX = coordFront[0];	
-	*frontY = coordFront[1];	
-	*frontZ = coordFront[2];
-	*backX = coordMiddle[0];
-	*backY = coordMiddle[1];
-	*backZ = coordMiddle[2];
+	*x = m[0];	
+	*y = m[1];	
+	*z = m[2];
+	*pitch = atan2(f[2]-m[2],sqrt((f[0]-m[0]) * (f[0] - m[0]) + (f[1]-m[1]) * (f[1] - m[1])));
+	*yaw = atan2(f[1] - m[1], f[0] - m[0]);
+	*roll = atan2(br[2]-bl[2],sqrt((br[0]-bl[0]) * (br[0] - bl[0]) + (br[1]-bl[1]) * (br[1] - bl[1])));
 
 	return true;
 }
