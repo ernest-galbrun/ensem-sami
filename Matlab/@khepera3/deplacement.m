@@ -1,45 +1,75 @@
-function  ts=deplacement( k3,agr,vel,te )
-k3.StartFollowLine(agr,vel);
-c=tcpip('193.49.136.247',502);
+function Deplacement( k3,t )
+c=tcpip('193.49.136.247',502); %Etablissement de la connection avec le superviseur 
 fopen(c);
-a=0;
-tc=30;
+nb_robots = numel(t(:,1));
 
-for i=1:6
-    a=0;
-    while(a~=1)
-        tc=tc+1;
-        a=0;
-     fwrite(c,uint8([0 0 0 0  0 6 1 4 16 33 0 1]),'uint8');
-    X1=fread(c,11);
-    fwrite(c,uint8([0 0 0 0  0 6 1 4 16 38 0 1]),'uint8');
-    X2=fread(c,11);
-    fwrite(c,uint8([0 0 0 0  0 6 1 4 16 43 0 1]),'uint8');
-    X3=fread(c,11);
-    val=X1(10)+X2(10)+X3(10);
-    
 
-    if (val==125&& tc>2000)
-        if (te(i)==10)
-           
-            CrossLeft(k3,agr, vel);
-            StartFollowLine(k3,agr, vel);
-        else if (te(i)==01)
-               CrossRight2(k3,agr, vel);
-            StartFollowLine(k3,agr, vel);
+
+for l= 1 : nb_robots                     %boucle d'initialisation des variables et des robots.
+    longueur_dir(l)=numel(t{l,4}(:,1)); %précise le nombre de déplcaments élémentaires
+    arret(l)=false; % fin de la réalisation d'une mission -> dernier déplacement élémentaire du vecteur ci-dessus
+    dernier(l)=0;  % enregistrer la position courante qui est le dernier lecteur rencontré 
+    StartFollowLine(t{l,1},t{l,2},t{l,3});     %Démarage de tout les robots en suivi de ligne tout droit
+    etape(l)=1; % Au début tout les robot sont à l'étape 1.
+end
+
+% la variable 'a' est utilisé pour savoir si tout les déplacements
+% élémentaires de de tout les AGVs sont réalisés
+a=true;    %Initialisation de a, qui sera la condition de sortie
+while (a)
+    a=false;
+    for j= 1: nb_robots     %Boucle qui se répètera pour chacun des robots successivement
+        X=appelpatch(t{j,1},c);     % X est un tableau contenant ce que chaque lecteur détecte
+        r=Recherche(k3,j,X);    % cherche la position du patch du robot j. Renvoit 0 si le patch n'est pas devant un lecteur.
+        %Vérification si le prochain noeud est avec conflit ou pas, si oui,
+        %vérifier si la condition renseignée à l'exécution (par rapport au
+        %lecteur de sortie de l'AGV prioritaire s'il détecte celcui-ci
+        %(page29-30) si oui, alors autorisation de passage
+        if(arret(j)==false) 
+            t{j,4}(etape(j),2)=Auto(X,t{j,4}(etape(j),2)); % modifie l'autorisation d'un robot en fonction de la position des autres.
+        end              
+         
+        %ce bloc X permet d'exécuter le déplacement élémentaire en question
+        if(r~=0 && arret(j)==false && r~=dernier(j))    %Condition :robot j arrivé au lecteur suivant
+            StopFollowLine(t{j,1});  % arrivé au lecteur, on arréte le robot et vérifie sa priorité dans la suite.   
+            
+            if(t{j,4}(etape(j),2)==0)   % cette valeur de la matrice t contient l'autorisation pour ce robot.
+                dernier(j)=r;           % enregistre le numéro du dernier lecteur détecté (sécurité pour ne pas relancer le if (ligne 28) plusieur fois).
+                t{j,1}.Cross(t{j,4}(etape(j),1),t{j,2},t{j,3}); % on lance le Cross pour ce robot avec ces valeur de direction, d'agressivité et de vitesse.
+                etape(j)=etape(j)+1;    % on passe un lecteur donc on avance d'une étape. 
             end
         end
-        if (X1(10)==125)
-            ts(i)=33;
-        else if (X2(10)==125)
-                ts(i)=38;
-            end
+        % fin du bloc X
+        
+        %ici on vérifie pour le robot considéré s'il a fini sa mission, si
+        %oui alors sa variable "arret" passe à true (alors qu'elle est
+        %initialisée à false)
+        if(etape(j)>=longueur_dir(j)+1)
+            t{j,1}.StopFollowLine;
+            arret(j)=true;  % Le robot j a fini son parcours.
         end
-        a=1;
+                
+        
     end
     
-    end       
+    %ici on vérifie si tout les robots ont réalisés leur mission pour
+    %-> pour sortir de la boucle infinie while
+    for k=1: nb_robots
+        a=a||etape(k)<=longueur_dir(k);     % a=false ssi tout les robots ont fini
+    end
+    
+end
 
 end
+
+
+function [priorite] = Auto(X,priorite)
+if priorite ~= 0              % Pour éviter d'appeler X(0), qui existe pas.
+    
+    if X(priorite)~=0      % test du passage d'un robot au lecteur p(i_robot).
+        priorite=0;        % autorisation de passer en modifiant le vecteur p.
+    end
+end
+
 end
 
