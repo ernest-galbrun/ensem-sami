@@ -30,3 +30,22 @@ std::array<double,5> Wand::GetOwnPosition_Cortex() {//{Ack,X,Y,Z,theta}
 	return ret;
 }
 
+void Wand::UpdateOrientation(double* X,double *Y,double *Z){
+	int i = GetBodyIndex();
+	std::array<double,5> ret = { { 0,0,0,0,0 } };
+	sFrameOfData* pFrameOfData=NULL;
+	float* A;
+	float* B;
+	pFrameOfData = Cortex_GetCurrentFrame();
+	if ((&pFrameOfData->BodyData[i])->nMarkers == 3) {
+		A = (&pFrameOfData->BodyData[bodyIndex])->Markers[0];
+		B = (&pFrameOfData->BodyData[bodyIndex])->Markers[2];
+		double dx = B[0] - A[0];
+		double dy = B[1] - A[1];
+		double dz = B[2] - A[2];
+		double norm = sqrt(dx*dx + dy*dy + dz*dz);
+		*X = dx/norm;
+		*Y = dy/norm;
+		*Z = dz/norm;
+	}					
+}

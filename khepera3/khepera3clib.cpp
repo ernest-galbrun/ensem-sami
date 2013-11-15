@@ -90,6 +90,24 @@ extern "C" __declspec(dllexport) int CloseCortex(){
 	return K3_NOERROR;
 }
 
+
+extern "C" __declspec(dllexport) int GetWandDirection(double* X, double* Y, double *Z){
+	static bool firstCall=true;
+	static Wand wand;
+	try {
+		if (firstCall) {
+			firstCall=false;
+			wand.FindBodyIndex();
+		}
+		wand.UpdateOrientation(X,Y,Z);
+	}
+	catch (ios_base::failure e) {
+		cout<<e.what();
+		return K3_CORTEXFAILURE;
+	}
+	return K3_NOERROR;
+}
+
 extern "C" __declspec(dllexport) int GetWandPosition(double* X, double* Y){
 	static bool firstCall=true;
 	static Wand wand;

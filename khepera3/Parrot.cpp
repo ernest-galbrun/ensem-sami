@@ -46,9 +46,9 @@ bool Parrot::UpdatePosition(double * x, double* y, double* z, double* yaw, doubl
 	if(m[0] == 9999999 || f[0] == 9999999 || br[0] == 9999999 || bl[0] == 9999999) {
 		return false;
 	}
-	*x = m[0];	
-	*y = m[1];	
-	*z = m[2];
+	*x = (m[0]+f[0])/2;
+	*y = (m[1]+f[1])/2;	
+	*z = (m[2]+f[2])/2;
 	*pitch = atan2(f[2]-m[2],sqrt((f[0]-m[0]) * (f[0] - m[0]) + (f[1]-m[1]) * (f[1] - m[1])));
 	*yaw = atan2(f[1] - m[1], f[0] - m[0]);
 	*roll = atan2(br[2]-bl[2],sqrt((br[0]-bl[0]) * (br[0] - bl[0]) + (br[1]-bl[1]) * (br[1] - bl[1])));
