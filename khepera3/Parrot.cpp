@@ -36,7 +36,7 @@ bool Parrot::UpdatePosition(double * x, double* y, double* z, double* yaw, doubl
 	std::array<double,5> ret = { { 0,0,0,0,0 } };
 	sFrameOfData* pFrameOfData= nullptr;
 	int ack;
-	ack = 1;	
+	ack = 1;	 
 	FindBodyIndex();
 	pFrameOfData = Cortex_GetCurrentFrame();
 	float* m = (&pFrameOfData->BodyData[bodyIndex])->Markers[1]; //middle

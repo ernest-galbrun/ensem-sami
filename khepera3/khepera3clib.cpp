@@ -91,7 +91,7 @@ extern "C" __declspec(dllexport) int CloseCortex(){
 }
 
 
-extern "C" __declspec(dllexport) int GetWandDirection(double* X, double* Y, double *Z){
+extern "C" __declspec(dllexport) int GetWandDirection(double* X, double* Y, double *Z,double *x1,double *y1, double *z1){
 	static bool firstCall=true;
 	static Wand wand;
 	try {
@@ -99,7 +99,7 @@ extern "C" __declspec(dllexport) int GetWandDirection(double* X, double* Y, doub
 			firstCall=false;
 			wand.FindBodyIndex();
 		}
-		wand.UpdateOrientation(X,Y,Z);
+		wand.UpdateOrientation(X,Y,Z,x1,y1,z1);
 	}
 	catch (ios_base::failure e) {
 		cout<<e.what();
