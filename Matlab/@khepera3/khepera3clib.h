@@ -9,7 +9,7 @@ extern "C" {
 	__declspec(dllexport) int OpenCortex(/*const char* ownIP*/);
 	__declspec(dllexport) int CloseCortex();
 	__declspec(dllexport) int GetWandPosition(double* X, double* Y);
-	__declspec(dllexport) int GetWandDirection(double* X, double* Y, double *Z);
+	__declspec(dllexport) int GetWandDirection(double* X, double* Y, double *Z,double *x1,double *y1, double *z1);
 
 	// Connects to the robot 192.168.1.N
 	//Creates KheperaIII object, returns a pointer to it
