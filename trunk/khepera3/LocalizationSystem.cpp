@@ -125,7 +125,7 @@ void LocalizationSystem::Open() {
     while(it!=asio::ip::tcp::resolver::iterator())
     {
         addr=(it++)->endpoint().address();       
-		if (addr.to_string().substr(0,3)=="10.")
+		if (addr.to_string().substr(0,3)=="192.")
 			me_wifi = addr.to_string();
 		else if(addr.to_string().substr(0,4)=="193.")
 			me = addr.to_string();
