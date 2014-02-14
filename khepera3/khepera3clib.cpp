@@ -191,9 +191,9 @@ extern "C" __declspec(dllexport) int InitLocalizationSystem(int robotID, int mod
 	bodyName << "markerset_robot"<< robotID;
 	try {
 		k3[robotID]->SetUpdatePositionMode(mode);
+		k3[robotID]->AllowIncomingUDPConnection(6010+robotID);	
 		if (mode!=0) {
-			k3[robotID]->InitLocalizationSystem(bodyName.str());	
-			k3[robotID]->AllowIncomingUDPConnection(6010+robotID);			
+			k3[robotID]->InitLocalizationSystem(bodyName.str());			
 		}
 	k3[robotID]->LaunchContinuousThread();
 	} catch(TCPFailure e) {
