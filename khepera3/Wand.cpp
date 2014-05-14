@@ -5,7 +5,7 @@
 extern int instanceCount;
 
 Wand::Wand(){
-	SetName("Wand500");
+	SetName("wand500");
 }
 
 std::array<double,5> Wand::GetOwnPosition_Cortex() {//{Ack,X,Y,Z,theta}
