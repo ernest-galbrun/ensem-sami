@@ -1,0 +1,1 @@
+class library for integration of autonomous robots on an educational platform, hosted in ENSEM - INPL.
