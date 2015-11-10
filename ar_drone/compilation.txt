@@ -1,0 +1,2 @@
+javac6 -cp jna-4.1.0.jar ThreadCmd.java
+javac6 ThreadNdt.java
