@@ -1,0 +1,4 @@
+SERVER flexlm1.univ-lorraine.fr INTERNET=172.23.10.136 27000
+SERVER flexlm2.univ-lorraine.fr INTERNET=172.17.22.1 27000
+SERVER flexlm3.univ-lorraine.fr INTERNET=172.22.123.34 27000
+USE_SERVER
