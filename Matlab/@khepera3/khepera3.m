@@ -100,6 +100,7 @@ classdef khepera3 < handle
     end    
     
     methods (Static)
+        r = demarrage(k3)
         K3value = RWtoK3(mode, RWvalue);
         RWvalue = K3toRW(mode, k3value);
     end
