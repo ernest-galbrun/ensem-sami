@@ -1,5 +1,6 @@
 function r=demarrage(id)
-r=khepera3(id);a=1;
+r=khepera3(id);
+a=1;
 r.SetConnectionMode(0);
 a=r.Connect(id)
 if(a~=0)
