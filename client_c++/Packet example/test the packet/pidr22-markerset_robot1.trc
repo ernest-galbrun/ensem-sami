@@ -1,0 +1,66 @@
+PathFileType	4	(X/Y/Z)	C:\Windows.old\Documents and Settings\Ensem\Mes documents\Donnees_Motion\SAMI\pidr22-markerset_robot1.trc
+DataRate	CameraRate	NumFrames	NumMarkers	Units	OrigDataRate	OrigDataStartFrame	OrigNumFrames
+60.00	60.00	        60	4	mm	60.00	1	        60
+Frame#	Time	robot1-fl			robot1-fr			robot1-bl			robot1-u			V_wheel_L			V_wheel_R			V_front			V_back			
+		X1	Y1	Z1	X2	Y2	Z2	X3	Y3	Z3	X4	Y4	Z4	X5	Y5	Z5	X6	Y6	Z6	X7	Y7	Z7	X8	Y8	Z8	
+
+1	0.000																									
+2	0.017																									
+3	0.033																									
+4	0.050																									
+5	0.067																									
+6	0.083																									
+7	0.100																									
+8	0.117																									
+9	0.133																									
+10	0.150																									
+11	0.167																									
+12	0.183																									
+13	0.200																									
+14	0.217																									
+15	0.233																									
+16	0.250																									
+17	0.267																									
+18	0.283																									
+19	0.300																									
+20	0.317																									
+21	0.333																									
+22	0.350																									
+23	0.367																									
+24	0.383																									
+25	0.400																									
+26	0.417																									
+27	0.433																									
+28	0.450																									
+29	0.467																									
+30	0.483																									
+31	0.500																									
+32	0.517																									
+33	0.533																									
+34	0.550																									
+35	0.567																									
+36	0.583																									
+37	0.600																									
+38	0.617																									
+39	0.633																									
+40	0.650																									
+41	0.667																									
+42	0.683																									
+43	0.700																									
+44	0.717																									
+45	0.733																									
+46	0.750																									
+47	0.767																									
+48	0.783																									
+49	0.800																									
+50	0.817																									
+51	0.833																									
+52	0.850																									
+53	0.867																									
+54	0.883																									
+55	0.900																									
+56	0.917																									
+57	0.933																									
+58	0.950																									
+59	0.967																									
+60	0.983																									

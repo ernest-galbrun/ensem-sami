@@ -3,3 +3,8 @@
 /ensem-sam_vs2012.v11.suo
 /ensem-sam_vs2015.sdf
 /dlluser/x64/Release/*.cache
+
+/client_c++/built
+
+.DS_Store
+
