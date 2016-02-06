@@ -4,9 +4,11 @@ The purpose of the project is to develop a C++ library for requesting the positi
 **This project is in development mode so everything is not yet ready and doesn't yet work.**
 
 ## 5 min quickstart
+This section will be written once the first version of the project will be done.
 
 ## How does it work?
-![Class diagram](https://github.com/ernest-galbrun/ensem-sami/blob/client_c%2B%2B/client_c%2B%2B/design/uml_diagramme.png)
+Well, well, well, so far in the project this is how we plan to develop :
+![Class diagram](https://github.com/ernest-galbrun/ensem-sami/blob/client_c%2B%2B/client_c%2B%2B/design/class_diagram.png)
 
 ## Dependencies
 - Boost.Asio - v 1.60
