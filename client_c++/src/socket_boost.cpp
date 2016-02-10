@@ -6,8 +6,6 @@
 #include <boost/thread/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "packet_parser.cpp"
-
 #define SERVICE_PORT "1510"
 #define SERVER_IP "100.64.209.183"
 #define BUFLEN 2048
@@ -58,13 +56,16 @@ class SocketBoost {
                 cout << "Send\n";
                 try {
                 this->s->send_to(boost::asio::buffer(regularMessage, strlen(regularMessage)), this->server_endpoint);
-                this->s->async_receive_from(boost::asio::buffer(buf, BUFLEN),
-                                            this->server_endpoint,
-                                            boost::bind(&SocketBoost::updateData,
-                                                        this,
-                                                        boost::asio::placeholders::error,
-                                                        boost::asio::placeholders::bytes_transferred)
-                                            );
+                // this->s->async_receive_from(boost::asio::buffer(buf, BUFLEN),
+                //                             this->client_endpoint,
+                //                             boost::bind(&SocketBoost::updateData,
+                //                                         this,
+                //                                         boost::asio::placeholders::error,
+                //                                         boost::asio::placeholders::bytes_transferred)
+                //                             );
+                size_t reply_length = this->s->receive_from(boost::asio::buffer(buf, BUFLEN), this->client_endpoint);
+                cout << "Receive\n";
+
                 }
                 catch ( boost::system::system_error& e)
                 {
