@@ -5,6 +5,7 @@
 #include <boost/bind.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include "packet_parser.cpp"
 
 #define SERVICE_PORT "1510"
 #define SERVER_IP "100.64.209.183"
@@ -28,6 +29,8 @@ class SocketBoost {
 
         boost::thread *t;
 
+		Packet_Parser * parser;
+
         void connect() {
             try {
                 this->s->send_to(boost::asio::buffer(initMessage, strlen(initMessage)), this->server_endpoint);
@@ -41,6 +44,9 @@ class SocketBoost {
 
     public:
         SocketBoost(int timeToWait) {
+
+			this->parser = new Packet_Parser();
+
             this->s = new udp::socket(io_service, udp::endpoint(udp::v4(), 0));
 
             udp::resolver resolver(this->io_service);
@@ -64,6 +70,8 @@ class SocketBoost {
                 //                                         boost::asio::placeholders::bytes_transferred)
                 //                             );
                 size_t reply_length = this->s->receive_from(boost::asio::buffer(buf, BUFLEN), this->client_endpoint);
+
+				parser->parse(buf,BUFLEN);
                 cout << "Receive\n";
 
                 }

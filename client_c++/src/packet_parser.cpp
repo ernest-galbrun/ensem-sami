@@ -154,7 +154,11 @@ class Packet_Parser {
 			for(;;){
 
 
-				last_three_00_detect();
+				if(last_three_00_detect() == -1){
+
+					break;
+
+				}
 				if(*current_cursor == 0x02){
 					
 					break;			
@@ -176,7 +180,7 @@ class Packet_Parser {
 
 };
 
-int main(){
+/*int main(){
 
 	//Faking test opening file instead of received data
 	FILE * myfile = fopen("socket_data", "r");
@@ -199,4 +203,4 @@ int main(){
 	free(buffer);
 	buffer = NULL;
 
-}
+}*/
