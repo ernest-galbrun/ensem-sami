@@ -6,7 +6,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-class Vehicle_Object{
+#include "Vehicle.cpp"
+
+/*
+class Vehicle_Object {
 
 	private:
 		char * name;
@@ -30,7 +33,7 @@ class Vehicle_Object{
 
 			while(i < data_size){
 
-				std::cout << "Coord " << coord << ": " << *(float *)g_slist_nth_data(this->float_32_data, i) << " ";	
+				std::cout << "Coord " << coord << ": " << *(float *)g_slist_nth_data(this->float_32_data, i) << " ";
 
 				if(coord[0] == 'z'){
 					coord[0] = 'x';
@@ -51,30 +54,30 @@ class Vehicle_Object{
 		}
 
 		GSList * get_data(){
-			
+
 			return this->float_32_data;
 
 		}
 
-};
+};*/
 
 class Packet_Parser {
 
 	private:
 
 		char * packet_to_analyze;
-		char * last_char;		
+		char * last_char;
 		char * current_cursor;
 
 		int last_three_00_detect(){ //Position to the next char after detecting 00 00 00 hex. (VERIFIED)
 
-			while((current_cursor + 3) <= last_char){ 
+			while((current_cursor + 3) <= last_char){
 
 				if(*current_cursor == 0x00 && *(current_cursor + 1) == 0x00 && *(current_cursor + 2) == 0x00 && *(current_cursor + 3) != 0x00){ //Checking that there is no 00 character after the one analyzed
 
 					current_cursor+=3;
 					return 0;
-	
+
 				}
 				else{
 
@@ -83,7 +86,7 @@ class Packet_Parser {
 				}
 
 			}
-		
+
 			return -1;
 
 		}
@@ -91,14 +94,14 @@ class Packet_Parser {
 		char * parsing_name(){ //Get the name of the first object. Must be executed after checking you are at the beginning of the name.
 
 			char * limit_cursor = current_cursor;
-			int name_size = 1;			
+			int name_size = 1;
 
 			while(*limit_cursor != 0x00){
 
 				limit_cursor++;
 				name_size++;
 
-			}		
+			}
 
 			char * object_name = (char *)malloc(sizeof(char) * name_size);
 			int i;
@@ -123,7 +126,7 @@ class Packet_Parser {
 			int i;
 
 			for(i = 0; i < 3 * triplet_number; i++){
- 
+
 				current_storage = (float *)malloc(sizeof(float));
 				*current_storage = *float_32bit;
 				chained_list = g_slist_append(chained_list,(gpointer *)current_storage);
@@ -134,7 +137,7 @@ class Packet_Parser {
 			return chained_list;
 
 		}
-		
+
 		void parsing_40bit_data(){
 
 			current_cursor+=59; //Arbritrary Jump
@@ -148,7 +151,7 @@ class Packet_Parser {
 			this->packet_to_analyze = packet_to_analyze;
 			last_char = packet_to_analyze + size;
 			current_cursor = packet_to_analyze;
-			
+
 			int i;
 
 			for(;;){
@@ -160,8 +163,8 @@ class Packet_Parser {
 
 				}
 				if(*current_cursor == 0x02){
-					
-					break;			
+
+					break;
 
 				}
 				char * name = parsing_name();
@@ -184,7 +187,7 @@ class Packet_Parser {
 
 	//Faking test opening file instead of received data
 	FILE * myfile = fopen("socket_data", "r");
-	
+
 	fseek (myfile , 0 , SEEK_END);
   	int fileSize = ftell (myfile);
 	rewind (myfile);
