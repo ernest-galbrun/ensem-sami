@@ -8,39 +8,38 @@
 
 using namespace std;
 
-class Data {
-    private:
-        Vehicle *data;
-        sem_t *sem_data;
+// Constructor
+Data::Data() {
+    sem_data = sem_open("data", O_CREAT);
 
-    public:
-        // Constructor
-        Data() {
-            this->data = (Vehicle*)malloc(sizeof(Vehicle));
-            sem_data = sem_open("data", O_CREAT);
+    this->numberOfVehicles = 0;
+}
+
+// Destructor
+Data::~Data() {
+    free(this->data);
+    sem_unlink("data");
+}
+Vehicle* Data::getVehicle(char* name) {
+    Vehicle *data;
+
+    sem_wait(sem_data);
+        for (int i=0; i<this->numberOfVehicles; i++) {
+            if (this->data[i]->getName() == name) {
+                memcpy(data, this->data[i], sizeof(Vehicle));
+            }
         }
 
-        // Destructor
-        ~Data() {
-            free(this->data);
-            sem_unlink("data");
-        }
-        Vehicle getData() {
-            sem_wait(sem_data);
+    sem_post(sem_data);
 
-            Vehicle data;
-            memcpy(data, this->data, sizeof(Vehicle));
+    return data;
+}
 
-            sem_post(sem_data);
+void Data::setMultipleVehicles(Vehicle **data, int number) {
+    sem_wait(sem_data);
+        this->numberOfVehicles = number;
 
-            return data;
-        }
-
-        void setData(Vehicle *data) {
-            sem_wait(sem_data);
-
-            memcpy(this->data, data, sizeof(Vehicle));
-
-            sem_post(sem_data);
-        }
-};
+        free(this->data);
+        this->data = data;
+    sem_post(sem_data);
+}
