@@ -4,14 +4,17 @@
 class Vehicle_Object{
 
 	private:
-		char * name;
-		GSList * float_32_data;
+		char ** name;
+		int * points_number;
+		Point points[];
 
 	public:
-		Vehicle_Object(char * name, GSList * float_32_data);
+		Vehicle_Object(char * name, float ** float_32_data, int points_number);
+		~Vehicle_Object();
 		void print_data();
-		GSList * get_data();
-		char * get_name();
+		int getPointsNumber();
+		Point * getPoints();
+		char * getName();
 
 };	
 
