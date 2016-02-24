@@ -1,21 +1,19 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdio.h>
-#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 
 #include "Vehicle_Object.h"
-#include "Point.h"
 
 using namespace std;
 
 Vehicle_Object::Vehicle_Object(char ** name, float ** float_32_data, int points_number){
 
 	this->name = name;
-	this->points_number = points_number;
-	points = new Point[this->points_number];
+	*(this->points_number) = points_number;
+	points = new Point*[points_number];
 	
 	int i;
 	for(i = 0; i < points_number; i++){
@@ -29,7 +27,7 @@ Vehicle_Object::Vehicle_Object(char ** name, float ** float_32_data, int points_
 Vehicle_Object::~Vehicle_Object(){
 
 	int i;
-	for(i = 0; i < points_number; i++){
+	for(i = 0; i < *points_number; i++){
 
 		delete points[i];
 
@@ -44,11 +42,11 @@ void Vehicle_Object::print_data(){
 	int i = 0;
 	cout << "Object : " << getName() << endl;
 
-	while(i < points_number){
+	for(i = 0; i < *points_number; i++){
 
-		cout << "Coord x : " << Point[i]->getX()  << " ;";
-		cout << "Coord y : " << Point[i]->getY()  << " ;";
-		cout << "Coord z : " << Point[i]->getZ()  << " ;" << endl;	
+		cout << "Coord x : " << points[i]->getX()  << " ;";
+		cout << "Coord y : " << points[i]->getY()  << " ;";
+		cout << "Coord z : " << points[i]->getZ()  << " ;" << endl;	
 
 	}
 
@@ -60,7 +58,7 @@ char * Vehicle_Object::getName(){
 
 }
 
-Point * Vehicle_Object::getPoints(){
+Point ** Vehicle_Object::getPoints(){
 
 	return points;
 
@@ -68,6 +66,6 @@ Point * Vehicle_Object::getPoints(){
 
 int Vehicle_Object::getPointsNumber(){
 
-	return point_number;
+	return *points_number;
 
 }

@@ -1,7 +1,6 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdio.h>
-#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -9,28 +8,28 @@
 #include "packet_parser.h"
 #include "Vehicle_Object.h"
 
-	int Packet_Parser::last_three_00_detect(){ //Position to the next char after detecting 00 00 00 hex. (VERIFIED)
+int Packet_Parser::last_three_00_detect(){ //Position to the next char after detecting 00 00 00 hex. (VERIFIED)
 
-		while((current_cursor + 3) <= last_char){ 
+	while((current_cursor + 3) <= last_char){ 
 
-			if(*current_cursor == 0x00 && *(current_cursor + 1) == 0x00 && *(current_cursor + 2) == 0x00 && *(current_cursor + 3) != 0x00){ //Checking that there is no 00 character after the one analyzed
+		if(*current_cursor == 0x00 && *(current_cursor + 1) == 0x00 && *(current_cursor + 2) == 0x00 && *(current_cursor + 3) != 0x00){ //Checking that there is no 00 character after the one analyzed
 
-				current_cursor+=3;
-				return 0;
-
-			}
-			else{
-
-				current_cursor++; //Move to the next XX
-
-			}
+			current_cursor+=3;
+			return 0;
 
 		}
-	
-		return -1;
+		else{
 
+			current_cursor++; //Move to the next XX
+
+		}
 
 	}
+
+	return -1;
+
+
+}
 
 char * Packet_Parser::parsing_name(){ //Get the name of the first object. Must be executed after checking you are at the beginning of the name.
 
@@ -59,24 +58,27 @@ char * Packet_Parser::parsing_name(){ //Get the name of the first object. Must b
 
 }
 
-GSList * Packet_Parser::parsing_32bit_float(int triplet_number){ //Collect 32bit float data position triplet
+void Packet_Parser::parsing_32bit_float(int triplet_number){ //Collect 32bit float data position triplet
 
 	float * float_32bit = (float *)current_cursor;
-	GSList * chained_list = NULL;
+	points_value = new float*[triplet_number];
 	float * current_storage;
-	int i;
 
-	for(i = 0; i < 3 * triplet_number; i++){
+	int i, j;
+	for(i = 0; i < triplet_number; i++){
 
-		current_storage = (float *)malloc(sizeof(float));
-		*current_storage = *float_32bit;
-		chained_list = g_slist_append(chained_list,(gpointer *)current_storage);
-		float_32bit++;
+		points_value[i] = new float[3];
+
+		for(j = 0; j < 3 ; j++){
+
+			*current_storage = *float_32bit;
+			points_value[i][j] = *current_storage;
+			float_32bit++;
+
+		}
 
 	}
 	current_cursor = (char *)float_32bit;
-	return chained_list;
-
 }
 	
 void Packet_Parser::parsing_40bit_data(){
@@ -86,7 +88,7 @@ void Packet_Parser::parsing_40bit_data(){
 }
 
 
-GSList * Packet_Parser::parse(char * packet_to_analyze, int size){
+void Packet_Parser::parse(char * packet_to_analyze, int size){
 
 	this->packet_to_analyze = packet_to_analyze;
 	last_char = packet_to_analyze + size;
@@ -106,41 +108,25 @@ GSList * Packet_Parser::parse(char * packet_to_analyze, int size){
 			break;			
 
 		}
-		char * name = parsing_name();
+		char ** name = new char*;
+		*name = parsing_name();
 		current_cursor++;
 		int triplet_number = *(int*)current_cursor;
 		last_three_00_detect();
-		Vehicle_Object v(name,parsing_32bit_float(triplet_number));
+		parsing_32bit_float(triplet_number);
+		Vehicle_Object v(name,points_value,triplet_number);
+		for(i = 0; i < triplet_number; i++){
+
+			delete [] points_value[i];
+
+		}
+		delete [] points_value;
 		v.print_data();
+		std::cout << "Test" << std::endl;
 		if(*(int *)current_cursor == 1){
 			parsing_40bit_data();
 		}
 
 	}
-
-}
-
-/*int main(){
-
-	//Faking test opening file instead of received data
-	FILE * myfile = fopen("socket_data", "r");
-
-	fseek (myfile , 0 , SEEK_END);
-  	int fileSize = ftell (myfile);
-	rewind (myfile);
-
-	char * buffer = (char*) malloc (sizeof(char)*fileSize);
-	if (buffer == NULL) {fputs ("Memory error",stderr); exit (2);}
-
-	int result = fread (buffer,1,fileSize,myfile);
-	if (result != fileSize) {fputs ("Reading error",stderr); exit (3);}
-	printf("File size : %d \n", fileSize);
-	//END
-
-	Packet_Parser * parser = new Packet_Parser();
-	parser->parse(buffer,fileSize);
-
-	free(buffer);
-	buffer = NULL;
 
 }

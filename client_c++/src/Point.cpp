@@ -1,10 +1,11 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdio.h>
-#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+
+#include "Point.h"
 
 Point::Point(int x, int y, int z){
 
@@ -23,19 +24,19 @@ Point::Point(int x, int y, int z, char ** name){
 
 }
 
-float Point::GetX(){
+float Point::getX(){
 
 	return x;
 
 }
 
-float Point::GetY(){
+float Point::getY(){
 
 	return y;
 
 }
 
-float Point::GetZ(){
+float Point::getZ(){
 
 	return z;
 
@@ -48,7 +49,7 @@ char * Point::getName(){
 }
 
 
-void * Point::setName(char ** name){
+void Point::setName(char ** name){
 
 	this->name = name;
 
