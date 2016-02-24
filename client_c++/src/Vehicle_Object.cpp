@@ -7,54 +7,67 @@
 #include <stdint.h>
 
 #include "Vehicle_Object.h"
+#include "Point.h"
 
-Vehicle_Object::Vehicle_Object(char * name, GSList * float_32_data){
+using namespace std;
+
+Vehicle_Object::Vehicle_Object(char ** name, float ** float_32_data, int points_number){
 
 	this->name = name;
-	this->float_32_data = float_32_data;
+	this->points_number = points_number;
+	points = new Point[this->points_number];
+	
+	int i;
+	for(i = 0; i < points_number; i++){
+
+		points[i] = new Point(float_32_data[i][0],float_32_data[i][1],float_32_data[i][2]);
+
+	} 
+
+}
+
+Vehicle_Object::~Vehicle_Object(){
+
+	int i;
+	for(i = 0; i < points_number; i++){
+
+		delete points[i];
+
+	}
+
+	delete [] points;
 
 }
 
 void Vehicle_Object::print_data(){
 
-	int data_size = g_slist_length(float_32_data);
 	int i = 0;
-	char coord[] = "x";
+	cout << "Object : " << getName() << endl;
 
-	std::cout << "Object : " << name << std::endl;
+	while(i < points_number){
 
-	while(i < data_size){
-
-		std::cout << "Coord " << coord << ": " << *(float *)g_slist_nth_data(float_32_data, i) << " ";	
-
-		if(coord[0] == 'z'){
-			coord[0] = 'x';
-			std::cout << std::endl;
-		}
-		else{
-			if(coord[0] == 'x'){
-				coord[0]='y';
-			}
-			else{
-				coord[0]='z';
-			}
-		}
-		i++;
+		cout << "Coord x : " << Point[i]->getX()  << " ;";
+		cout << "Coord y : " << Point[i]->getY()  << " ;";
+		cout << "Coord z : " << Point[i]->getZ()  << " ;" << endl;	
 
 	}
 
 }
 
-GSList * Vehicle_Object::get_data(){
-	
-	return float_32_data;
+char * Vehicle_Object::getName(){
+
+	return * name;
 
 }
 
-char * Vehicle_Object::get_name(){
+Point * Vehicle_Object::getPoints(){
 
-	return name;
+	return points;
 
 }
 
+int Vehicle_Object::getPointsNumber(){
 
+	return point_number;
+
+}
