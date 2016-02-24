@@ -6,6 +6,8 @@
 #include <boost/thread/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#include "socket_boost.h"
+
 #define SERVICE_PORT "1510"
 #define SERVER_IP "100.64.209.183"
 #define BUFLEN 2048
@@ -19,72 +21,57 @@ char regularMessage[] = {0x0C, 0x00}; // <- Requête position
 
 char buf[BUFLEN];
 
-class SocketBoost {
-    private:
-        boost::asio::io_service io_service;
-        udp::endpoint server_endpoint;
-        udp::endpoint client_endpoint;
-        udp::socket *s;
+SocketBoost::SocketBoost(int timeToWait) {
+    // Create the packet parser instance
+	// this->parser = new Packet_Parser();
 
-        boost::thread *t;
+    // Configure the boost library and socket
+    this->s = new udp::socket(io_service, udp::endpoint(udp::v4(), 0));
+    udp::resolver resolver(this->io_service);
+    this->server_endpoint = *resolver.resolve(udp::resolver::query(udp::v4(), SERVER_IP, SERVICE_PORT));
 
-		// Packet_Parser * parser;
+    // Save the time between two requests
+    this->timeToWait = timeToWait;
 
-        int timeToWait;
+    this->init();
+}
 
-    public:
-        SocketBoost(int timeToWait) {
-            // Create the packet parser instance
-			// this->parser = new Packet_Parser();
+void SocketBoost::init() {
+    try {
+        this->s->send_to(boost::asio::buffer(initMessage, 127/*strlen(initMessage)*/), this->server_endpoint);
+        size_t reply_length = this->s->receive_from(boost::asio::buffer(buf, BUFLEN), this->client_endpoint);
+    }
+    catch ( boost::system::system_error& e)
+    {
+       cerr << "Exception while connecting: " << e.what() << "\n";
+    }
 
-            // Configure the boost library and socket
-            this->s = new udp::socket(io_service, udp::endpoint(udp::v4(), 0));
-            udp::resolver resolver(this->io_service);
-            this->server_endpoint = *resolver.resolve(udp::resolver::query(udp::v4(), SERVER_IP, SERVICE_PORT));
+    this->t = new boost::thread(boost::bind(&SocketBoost::start, this));
+}
 
-            // Save the time between two requests
-            this->timeToWait = timeToWait;
+void SocketBoost::start() {
+    while(1) {
+        try {
+            this->s->send_to(boost::asio::buffer(regularMessage, strlen(regularMessage)), this->server_endpoint);
+            size_t reply_length = this->s->receive_from(boost::asio::buffer(buf, BUFLEN), this->client_endpoint);
 
-            this->init();
+			// parser->parse(buf,BUFLEN);
+
+        }
+        catch ( boost::system::system_error& e)
+        {
+           cerr << "Exception while sending: " << e.what() << "\n";
         }
 
-        void init() {
-            try {
-                this->s->send_to(boost::asio::buffer(initMessage, 127/*strlen(initMessage)*/), this->server_endpoint);
-                size_t reply_length = this->s->receive_from(boost::asio::buffer(buf, BUFLEN), this->client_endpoint);
-            }
-            catch ( boost::system::system_error& e)
-            {
-               cerr << "Exception while connecting: " << e.what() << "\n";
-            }
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(this->timeToWait*1000));
+        // launch boost::thread_interrupted if the current thread of execution is interrupted
+    }
+}
 
-            this->t = new boost::thread(boost::bind(&SocketBoost::start, this));
-        }
+void SocketBoost::stop() {
+    this->t->interrupt();
+}
 
-        void start() {
-            while(1) {
-                try {
-                    this->s->send_to(boost::asio::buffer(regularMessage, strlen(regularMessage)), this->server_endpoint);
-                    size_t reply_length = this->s->receive_from(boost::asio::buffer(buf, BUFLEN), this->client_endpoint);
-
-    				// parser->parse(buf,BUFLEN);
-
-                }
-                catch ( boost::system::system_error& e)
-                {
-                   cerr << "Exception while sending: " << e.what() << "\n";
-                }
-
-                boost::this_thread::sleep_for(boost::chrono::milliseconds(this->timeToWait*1000));
-                // launch boost::thread_interrupted if the current thread of execution is interrupted
-            }
-        }
-
-        void stop() {
-            this->t->interrupt();
-        }
-
-};
 
 int main(int argc, char* argv[]) {
     SocketBoost *t = new SocketBoost(1);
