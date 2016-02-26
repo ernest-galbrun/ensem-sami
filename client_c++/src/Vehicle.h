@@ -3,7 +3,7 @@
 #ifndef VEHICLE_H
 #define VEHICLE_H
 
-class Vehicle{
+class Vehicle {
 
 	private:
 		char ** name;
@@ -18,6 +18,6 @@ class Vehicle{
 		Point ** getPoints();
 		char * getName();
 
-};	
+};
 
 #endif

@@ -10,7 +10,7 @@
 
 int Packet_Parser::last_three_00_detect(){ //Position to the next char after detecting 00 00 00 hex. (VERIFIED)
 
-	while((current_cursor + 3) <= last_char){ 
+	while((current_cursor + 3) <= last_char){
 
 		if(*current_cursor == 0x00 && *(current_cursor + 1) == 0x00 && *(current_cursor + 2) == 0x00 && *(current_cursor + 3) != 0x00){ //Checking that there is no 00 character after the one analyzed
 
@@ -34,7 +34,7 @@ int Packet_Parser::last_three_00_detect(){ //Position to the next char after det
 char * Packet_Parser::parsing_name(){ //Get the name of the first object. Must be executed after checking you are at the beginning of the name.
 
 	char * limit_cursor = current_cursor;
-	int name_size = 1;			
+	int name_size = 1;
 
 
 	while(*limit_cursor != 0x00){
@@ -42,7 +42,7 @@ char * Packet_Parser::parsing_name(){ //Get the name of the first object. Must b
 		limit_cursor++;
 		name_size++;
 
-	}		
+	}
 
 	char * object_name = (char *)malloc(sizeof(char) * name_size);
 	int i;
@@ -80,7 +80,7 @@ void Packet_Parser::parsing_32bit_float(int triplet_number){ //Collect 32bit flo
 	}
 	current_cursor = (char *)float_32bit;
 }
-	
+
 void Packet_Parser::parsing_40bit_data(){
 
 	current_cursor+=59; //Arbritrary Jump
@@ -93,7 +93,7 @@ void Packet_Parser::parse(char * packet_to_analyze, int size){
 	this->packet_to_analyze = packet_to_analyze;
 	last_char = packet_to_analyze + size;
 	current_cursor = packet_to_analyze;
-	
+
 	int i;
 
 	for(;;){
@@ -104,8 +104,8 @@ void Packet_Parser::parse(char * packet_to_analyze, int size){
 
 		}
 		if(*current_cursor == 0x02){
-			
-			break;			
+
+			break;
 
 		}
 		char ** name = new char*;

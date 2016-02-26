@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include "Vehicle.h"
+#include "Point.h"
 
 using namespace std;
 

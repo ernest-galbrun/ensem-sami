@@ -1,5 +1,5 @@
 #include <semaphore.h>
-#include "Vehicle.cpp"
+#include "Vehicle.h"
 
 #ifndef DATA_H
 #define DATA_H
@@ -8,13 +8,15 @@ class Data {
 
 	private:
         Vehicle **data;
-        sem_t *sem_data;
 		int numberOfVehicles;
+        sem_t *sem_data;
 
 	public:
+		Vehicle *lastReturned;
+
         Data();
         ~Data();
-        Vehicle getVehicle(char* name);
+        Vehicle *getVehicle(char* name);
 		void setMultipleVehicles(Vehicle **data, int number);
 };
 
