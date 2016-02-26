@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "packet_parser.h"
-#include "Vehicle_Object.h"
+#include "Vehicle.h"
 
 int Packet_Parser::last_three_00_detect(){ //Position to the next char after detecting 00 00 00 hex. (VERIFIED)
 
@@ -114,7 +114,7 @@ void Packet_Parser::parse(char * packet_to_analyze, int size){
 		int triplet_number = *(int*)current_cursor;
 		last_three_00_detect();
 		parsing_32bit_float(triplet_number);
-		Vehicle_Object v(name,points_value,triplet_number);
+		Vehicle v(name,points_value,triplet_number);
 		for(i = 0; i < triplet_number; i++){
 
 			delete [] points_value[i];

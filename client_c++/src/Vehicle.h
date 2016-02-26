@@ -1,9 +1,9 @@
 #include "Point.h"
 
-#ifndef VEHICLE_OBJECT_H
-#define VEHICLE_OBJECT_H
+#ifndef VEHICLE_H
+#define VEHICLE_H
 
-class Vehicle_Object{
+class Vehicle{
 
 	private:
 		char ** name;
@@ -11,8 +11,8 @@ class Vehicle_Object{
 		Point ** points;
 
 	public:
-		Vehicle_Object(char ** name, float ** float_32_data, int points_number);
-		~Vehicle_Object();
+		Vehicle(char ** name, float ** float_32_data, int points_number);
+		~Vehicle();
 		void print_data();
 		int getPointsNumber();
 		Point ** getPoints();

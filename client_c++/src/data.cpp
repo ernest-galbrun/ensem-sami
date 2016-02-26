@@ -2,7 +2,9 @@
 #include <cstring>
 #include <stdlib.h>
 #include <semaphore.h>
-#include "Vehicle.cpp"
+
+#include "data.h"
+#include "Vehicle.h"
 
 #define MAXDATA 2048
 
@@ -21,7 +23,7 @@ Data::~Data() {
     sem_unlink("data");
 }
 Vehicle* Data::getVehicle(char* name) {
-    Vehicle *data;
+    Vehicle *data = (Vehicle *)malloc(sizeof(Vehicle));
 
     sem_wait(sem_data);
         for (int i=0; i<this->numberOfVehicles; i++) {
@@ -37,9 +39,11 @@ Vehicle* Data::getVehicle(char* name) {
 
 void Data::setMultipleVehicles(Vehicle **data, int number) {
     sem_wait(sem_data);
-        this->numberOfVehicles = number;
+        for (int i = 0; i<this->numberOfVehicles; i++) {
+            free(this->data[i]);
+        }
 
-        free(this->data);
+        this->numberOfVehicles = number;
         this->data = data;
     sem_post(sem_data);
 }
