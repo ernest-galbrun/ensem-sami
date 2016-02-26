@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "packet_parser.h"
+#include "PacketParser.h"
 #include "Vehicle.h"
 
 int Packet_Parser::last_three_00_detect(){ //Position to the next char after detecting 00 00 00 hex. (VERIFIED)

@@ -6,7 +6,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "socket_boost.h"
+#include "SocketBoost.h"
 
 #define SERVICE_PORT "1510"
 #define SERVER_IP "100.64.209.183"
