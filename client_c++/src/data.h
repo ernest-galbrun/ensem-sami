@@ -7,6 +7,7 @@
 class Data {
 
 	private:
+		bool charCompare(char* c1, char* c2);
         Vehicle **data;
 		int numberOfVehicles;
         sem_t *sem_data;
