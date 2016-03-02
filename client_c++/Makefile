@@ -1,8 +1,23 @@
-socket_boost: ./src/socket_boost.cpp packet_parser Vehicle_Object
-	g++ -I /usr/lib/boost_1_60_0 -L /usr/lib/boost_1_60_0/lib -lboost_system -lboost_thread -lpthread -o ./built/socket_boost ./src/socket_boost.cpp ./built/packet_parser ./built/Vehicle_Object -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -lglib-2.0
+test: ./src/test.cpp CortexClient SocketBoost PacketParser Vehicle Point Data
+	g++ -I /usr/lib/boost_1_60_0 -L /usr/lib/boost_1_60_0/lib -lboost_system -lboost_thread -lpthread ./src/test.cpp -o ./built/test ./built/CortexClient ./built/SocketBoost ./built/PacketParser ./built/Vehicle ./built/Point ./built/Data
 
-packet_parser: ./src/packet_parser.cpp
-	g++ -c ./src/packet_parser.cpp -o ./built/packet_parser -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include/ -lglib-2.0
+CortexClient: ./src/CortexClient.cpp
+	g++ -c -I /usr/lib/boost_1_60_0 ./src/CortexClient.cpp -o ./built/CortexClient
 
-Vehicle_Object: ./src/Vehicle_Object.cpp
-	g++ -c ./src/Vehicle_Object.cpp -o ./built/Vehicle_Object -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include/ -lglib-2.0
+SocketBoost: ./src/SocketBoost.cpp
+	g++ -c -I /usr/lib/boost_1_60_0 ./src/SocketBoost.cpp -o ./built/SocketBoost
+
+PacketParser: ./src/PacketParser.cpp
+	g++ -c ./src/PacketParser.cpp -o ./built/PacketParser
+
+Vehicle: ./src/Vehicle.cpp
+	g++ -c ./src/Vehicle.cpp -o ./built/Vehicle
+
+Point: ./src/Point.cpp
+	g++ -c ./src/Point.cpp -o ./built/Point
+
+Data: ./src/Data.cpp
+	g++ -c ./src/Data.cpp -o ./built/Data
+
+clean:
+	rm built/*

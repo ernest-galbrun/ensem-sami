@@ -6,7 +6,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "socket_boost.h"
+#include "SocketBoost.h"
 
 #define SERVICE_PORT "1510"
 #define SERVER_IP "100.64.209.183"
@@ -32,8 +32,6 @@ SocketBoost::SocketBoost(int timeToWait) {
 
     // Save the time between two requests
     this->timeToWait = timeToWait;
-
-    this->init();
 }
 
 void SocketBoost::init() {
@@ -70,13 +68,4 @@ void SocketBoost::start() {
 
 void SocketBoost::stop() {
     this->t->interrupt();
-}
-
-
-int main(int argc, char* argv[]) {
-    SocketBoost *t = new SocketBoost(1);
-
-    while(1){}
-
-    return 0;
 }

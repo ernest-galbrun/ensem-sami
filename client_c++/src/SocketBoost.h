@@ -1,4 +1,5 @@
 #include <boost/asio.hpp>
+#include <boost/thread/thread.hpp>
 
 #ifndef SOCKET_BOOST_H
 #define SOCKET_BOOST_H
