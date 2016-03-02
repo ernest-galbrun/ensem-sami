@@ -28,7 +28,6 @@ int Packet_Parser::last_three_00_detect(){ //Position to the next char after det
 
 	return -1;
 
-
 }
 
 char * Packet_Parser::parsing_name(){ //Get the name of the first object. Must be executed after checking you are at the beginning of the name.
@@ -108,12 +107,15 @@ void Packet_Parser::parse(char * packet_to_analyze, int size){
 			break;			
 
 		}
+		std::cout << "Test check" << std::endl;
 		char ** name = new char*;
 		*name = parsing_name();
 		current_cursor++;
 		int triplet_number = *(int*)current_cursor;
 		last_three_00_detect();
+		std::cout << "Test 00 detect" << std::endl;
 		parsing_32bit_float(triplet_number);
+		std::cout << "Test parse 32bit" << std::endl;
 		Vehicle_Object v(name,points_value,triplet_number);
 		for(i = 0; i < triplet_number; i++){
 
@@ -126,7 +128,5 @@ void Packet_Parser::parse(char * packet_to_analyze, int size){
 		if(*(int *)current_cursor == 1){
 			parsing_40bit_data();
 		}
-
 	}
-
 }
