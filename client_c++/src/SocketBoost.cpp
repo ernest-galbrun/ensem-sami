@@ -9,7 +9,7 @@
 #include "SocketBoost.h"
 
 #define SERVICE_PORT "1510"
-#define SERVER_IP "100.64.209.183"
+#define SERVER_IP "192.168.1.109"
 #define BUFLEN 2048
 
 using boost::asio::ip::udp;
@@ -23,7 +23,7 @@ char buf[BUFLEN];
 
 SocketBoost::SocketBoost(int timeToWait) {
     // Create the packet parser instance
-	// this->parser = new Packet_Parser();
+	this->parser = new Packet_Parser();
 
     // Configure the boost library and socket
     this->s = new udp::socket(io_service, udp::endpoint(udp::v4(), 0));
@@ -48,12 +48,13 @@ void SocketBoost::init() {
 }
 
 void SocketBoost::start() {
+
     while(1) {
         try {
             this->s->send_to(boost::asio::buffer(regularMessage, strlen(regularMessage)), this->server_endpoint);
             size_t reply_length = this->s->receive_from(boost::asio::buffer(buf, BUFLEN), this->client_endpoint);
 
-			// parser->parse(buf,BUFLEN);
+			parser->parse(buf,BUFLEN);
 
         }
         catch ( boost::system::system_error& e)

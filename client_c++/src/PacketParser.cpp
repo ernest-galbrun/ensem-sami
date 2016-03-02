@@ -89,12 +89,14 @@ void Packet_Parser::parsing_40bit_data(){
 
 void Packet_Parser::parse(char * packet_to_analyze, int size){
 
+	std::cerr << "Test check" << std::endl;
+
 	this->packet_to_analyze = packet_to_analyze;
 	last_char = packet_to_analyze + size;
 	current_cursor = packet_to_analyze;
 
 	int i;
-
+	std::cerr << "Test check" << std::endl;
 	for(;;){
 
 		if(last_three_00_detect() == -1){
@@ -107,13 +109,16 @@ void Packet_Parser::parse(char * packet_to_analyze, int size){
 			break;
 
 		}
-		std::cout << "Test check" << std::endl;
+		std::cerr << "Test check" << std::endl;
 		char ** name = new char*;
 		*name = parsing_name();
 		current_cursor++;
 		int triplet_number = *(int*)current_cursor;
-		last_three_00_detect();
-		std::cout << "Test 00 detect" << std::endl;
+		if(last_three_00_detect()){
+
+			std::cerr << "ERROR THREE 00 DETECT" << std::endl;
+
+		}
 		parsing_32bit_float(triplet_number);
 		std::cout << "Test parse 32bit" << std::endl;
 		Vehicle v(name,points_value,triplet_number);
