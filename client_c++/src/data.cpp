@@ -1,7 +1,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <stdlib.h>
-#include <semaphore.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <string.h>
+#include <mutex>
+#include <vector>
+#include <boost/optional.hpp>
 
 #include "Data.h"
 #include "Vehicle.h"
@@ -9,45 +14,26 @@
 #define MAXDATA 2048
 
 using namespace std;
+using std::vector;
+using std::mutex;
+using std::lock_guard;
 
-// Constructor
-Data::Data() {
-    sem_data = sem_open("data", O_CREAT);
-    this->lastReturned = (Vehicle *)malloc(sizeof(Vehicle));
+boost::optional<Vehicle> Data::getVehicle(char* name) {
+    lock_guard<mutex> lock(this->dataLock);
 
-    this->numberOfVehicles = 0;
-}
-
-// Destructor
-Data::~Data() {
-    free(this->data);
-    free(this->lastReturned);
-    sem_unlink("data");
-}
-Vehicle *Data::getVehicle(char* name) {
-    sem_wait(sem_data);
-        for (int i=0; i<this->numberOfVehicles; i++) {
-            if (this->charCompare(this->data[i]->getName(), name)) {
-                memcpy(this->lastReturned, this->data[i], sizeof(Vehicle));
-            }
+    for (int i = 0; i < this->data.size(); i++) {
+        if(this->compareVehicle(this->data.at(i), name)) {
+            return boost::optional<Vehicle>(this->data.at(i));
         }
-
-    sem_post(sem_data);
-
-    return this->lastReturned;
+    }
+    return boost::optional<Vehicle>();
 }
 
-void Data::setMultipleVehicles(Vehicle **data, int number) {
-    sem_wait(sem_data);
-        for (int i = 0; i<this->numberOfVehicles; i++) {
-            free(this->data[i]);
-        }
-
-        this->numberOfVehicles = number;
-        this->data = data;
-    sem_post(sem_data);
+void Data::setAll(vector<Vehicle> data) {
+    lock_guard<mutex> lock(this->dataLock);
+    this->data = data;
 }
 
-bool Data::charCompare(char* c1, char* c2) {
-    return (strcmp(c1, c2) == 0)? true: false;
+bool Data::compareVehicle(Vehicle v1, char* name) {
+     return (std::strcmp(v1.getName(), name) == 0)? true: false;
 }

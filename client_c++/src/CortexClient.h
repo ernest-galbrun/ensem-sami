@@ -14,7 +14,7 @@ class CortexClient {
 	public:
         CortexClient();
         void init();
-        Vehicle* getXYPosition(char* name);
+        Vehicle getXYPosition(char* name);
         void stop();
 };
 

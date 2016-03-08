@@ -16,8 +16,8 @@ void CortexClient::init() {
     this->socket->init();
 }
 
-Vehicle *CortexClient::getXYPosition(char *name) {
-    return this->data->getVehicle(name);
+Vehicle CortexClient::getXYPosition(char *name) {
+    return *this->data->getVehicle(name);
 }
 
 void CortexClient::stop() {

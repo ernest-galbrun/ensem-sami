@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 
 #define GROUP "225.1.1.1"
+#define MYIP "192.168.1.111"
 #define PORT 2222
 
 int main(int argc, char* argv[]) {
@@ -25,18 +26,17 @@ int main(int argc, char* argv[]) {
     struct sockaddr_in addr_r;
     memset(&addr_r, 0, sizeof(addr_r));
     addr_r.sin_family = AF_INET;
-    addr_r.sin_port = htons(PORT);
+    // addr_r.sin_port = htons(PORT);
     addr_r.sin_addr.s_addr = htonl(INADDR_ANY);
 
     /* Init group struct */
     struct ip_mreq imr;
     imr.imr_multiaddr.s_addr = inet_addr(GROUP);
     imr.imr_interface.s_addr = INADDR_ANY;
-    imr.imr_interface.sin_port=htons(PORT);
 
     /* Request registering group */
     if (setsockopt(sdr, IPPROTO_IP, IP_ADD_MEMBERSHIP, &imr, sizeof(imr)) < 0) {
-        perror("error setsockopt \n");
+        perror("error add membership \n");
         exit(1);
     }
 
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
     }
 
     /* Bind socket */
-    if (bind(sdr, (struct sockaddr *)&imr, sizeof(imr)) < 0) {
+    if (bind(sdr, (struct sockaddr *)&addr_r, sizeof(addr_r)) < 0) {
         perror("error bind\n");
         exit(1);
     }

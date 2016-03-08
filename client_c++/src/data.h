@@ -1,5 +1,7 @@
-#include <semaphore.h>
+#include <vector>
+#include <mutex>
 #include "Vehicle.h"
+#include <boost/optional.hpp>
 
 #ifndef DATA_H
 #define DATA_H
@@ -7,18 +9,13 @@
 class Data {
 
 	private:
-		bool charCompare(char* c1, char* c2);
-        Vehicle **data;
-		int numberOfVehicles;
-        sem_t *sem_data;
+		bool compareVehicle(Vehicle v1, char* name);
+        std::vector<Vehicle> data;
+		std::mutex dataLock;
 
 	public:
-		Vehicle *lastReturned;
-
-        Data();
-        ~Data();
-        Vehicle *getVehicle(char* name);
-		void setMultipleVehicles(Vehicle **data, int number);
+        boost::optional<Vehicle> getVehicle(char* name);
+		void setAll(std::vector<Vehicle> data);
 };
 
 #endif

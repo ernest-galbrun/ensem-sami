@@ -9,7 +9,7 @@
 #include "SocketBoost.h"
 
 #define SERVICE_PORT "1510"
-#define SERVER_IP "100.64.209.183"
+#define SERVER_IP "192.168.1.109"
 #define BUFLEN 2048
 
 using boost::asio::ip::udp;
