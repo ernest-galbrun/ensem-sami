@@ -1,6 +1,8 @@
 #include <boost/asio.hpp>
 #include <boost/thread/thread.hpp>
 
+#include "PacketParser.h"
+
 #ifndef SOCKET_BOOST_H
 #define SOCKET_BOOST_H
 
@@ -16,7 +18,7 @@ class SocketBoost {
 
         boost::thread *t;
 
-        // Packet_Parser * parser;
+        Packet_Parser * parser;
 
         int timeToWait;
 	public:
