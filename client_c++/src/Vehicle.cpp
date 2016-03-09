@@ -10,31 +10,18 @@
 
 using namespace std;
 
-Vehicle::Vehicle(char ** name, float ** float_32_data, int points_number){
+Vehicle::Vehicle(string name, vector<float> float_32_data){
 
+	int size = float_32_data.size() / 3;
 	this->name = name;
-	*(this->points_number) = points_number;
-	points = new Point*[points_number];
+	points.reserve(size);
 
 	int i;
-	for(i = 0; i < points_number; i++){
+	for(i = 0; i < size; i++ ){
 
-		points[i] = new Point(float_32_data[i][0],float_32_data[i][1],float_32_data[i][2]);
-
-	}
-
-}
-
-Vehicle::~Vehicle(){
-
-	int i;
-	for(i = 0; i < *points_number; i++){
-
-		delete points[i];
+		points[i] = Point(float_32_data[3*i],float_32_data[3*i+1],float_32_data[3*i+2]);
 
 	}
-
-	delete [] points;
 
 }
 
@@ -43,30 +30,25 @@ void Vehicle::print_data(){
 	int i = 0;
 	cout << "Object : " << getName() << endl;
 
-	for(i = 0; i < *points_number; i++){
+	for(i = 0; i < points.size(); i++){
 
-		cout << "Coord x : " << points[i]->getX()  << " ;";
-		cout << "Coord y : " << points[i]->getY()  << " ;";
-		cout << "Coord z : " << points[i]->getZ()  << " ;" << endl;
+		cout << "Coord x : " << points[i].getX()  << " ;";
+		cout << "Coord y : " << points[i].getY()  << " ;";
+		cout << "Coord z : " << points[i].getZ()  << " ;" << endl;
 
 	}
 
 }
 
-char * Vehicle::getName(){
+string Vehicle::getName(){
 
-	return * name;
+	return name;
 
 }
 
-Point ** Vehicle::getPoints(){
+vector<Point> Vehicle::getPoints(){
 
 	return points;
 
 }
 
-int Vehicle::getPointsNumber(){
-
-	return *points_number;
-
-}

@@ -15,7 +15,7 @@ Point::Point(int x, int y, int z){
 
 }
 
-Point::Point(int x, int y, int z, char ** name){
+Point::Point(int x, int y, int z, string name){
 
 	this->x = x;
 	this->y = y;
@@ -42,14 +42,14 @@ float Point::getZ(){
 
 }
 
-char * Point::getName(){
+string Point::getName(){
 
-	return * name;
+	return name;
 
 }
 
 
-void Point::setName(char ** name){
+void Point::setName(string name){
 
 	this->name = name;
 

@@ -8,6 +8,8 @@
 #include "PacketParser.h"
 #include "Vehicle.h"
 
+using namespace std;
+
 int Packet_Parser::last_three_00_detect(){ //Position to the next char after detecting 00 00 00 hex. (VERIFIED)
 
 	while((current_cursor + 3) <= last_char){
@@ -57,27 +59,25 @@ char * Packet_Parser::parsing_name(){ //Get the name of the first object. Must b
 
 }
 
-void Packet_Parser::parsing_32bit_float(int triplet_number){ //Collect 32bit float data position triplet
+int Packet_Parser::parsing_32bit_float(int triplet_number){ //Collect 32bit float data position triplet
 
 	float * float_32bit = (float *)current_cursor;
-	points_value = new float*[triplet_number];
-	float * current_storage;
+	points_value.reserve(triplet_number * 3);
 
 	int i, j;
-	for(i = 0; i < triplet_number; i++){
+	for(i = 0; i < triplet_number * 3; i++){
 
-		points_value[i] = new float[3];
+		if(((char *)float_32bit) > last_char){
 
-		for(j = 0; j < 3 ; j++){
-
-			*current_storage = *float_32bit;
-			points_value[i][j] = *current_storage;
-			float_32bit++;
+			return -1;
 
 		}
+		points_value[i] = *float_32bit;;
+		float_32bit++;
 
 	}
 	current_cursor = (char *)float_32bit;
+	return 0;
 }
 
 void Packet_Parser::parsing_40bit_data(){
@@ -89,14 +89,12 @@ void Packet_Parser::parsing_40bit_data(){
 
 void Packet_Parser::parse(char * packet_to_analyze, int size){
 
-	std::cerr << "Test check" << std::endl;
-
 	this->packet_to_analyze = packet_to_analyze;
 	last_char = packet_to_analyze + size;
 	current_cursor = packet_to_analyze;
-
+	
 	int i;
-	std::cerr << "Test check" << std::endl;
+
 	for(;;){
 
 		if(last_three_00_detect() == -1){
@@ -109,25 +107,22 @@ void Packet_Parser::parse(char * packet_to_analyze, int size){
 			break;
 
 		}
-		std::cerr << "Test check" << std::endl;
-		char ** name = new char*;
-		*name = parsing_name();
+		string name = parsing_name();
 		current_cursor++;
 		int triplet_number = *(int*)current_cursor;
-		if(last_three_00_detect()){
+		if(last_three_00_detect() == -1){
 
 			std::cerr << "ERROR THREE 00 DETECT" << std::endl;
+			break;
 
 		}
-		parsing_32bit_float(triplet_number);
-		std::cout << "Test parse 32bit" << std::endl;
-		Vehicle v(name,points_value,triplet_number);
-		for(i = 0; i < triplet_number; i++){
+		if(parsing_32bit_float(triplet_number) == -1){
 
-			delete [] points_value[i];
+			std::cerr << "ERROR PARSING 32 BIT FLOAT COORD" << std::endl;
+			break;
 
 		}
-		delete [] points_value;
+		Vehicle v(name,points_value);
 		v.print_data();
 		std::cout << "Test" << std::endl;
 		if(*(int *)current_cursor == 1){

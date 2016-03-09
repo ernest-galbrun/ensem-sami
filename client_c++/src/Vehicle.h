@@ -1,22 +1,24 @@
 #include "Point.h"
+#include <stdio.h>
+#include<vector>
+#include<string>
 
 #ifndef VEHICLE_H
 #define VEHICLE_H
 
+using namespace std;
+
 class Vehicle {
 
 	private:
-		char ** name;
-		int * points_number;
-		Point ** points;
+		string name;
+		vector<Point> points;
 
 	public:
-		Vehicle(char ** name, float ** float_32_data, int points_number);
-		~Vehicle();
+		Vehicle(string name, vector<float> float_32_data);
 		void print_data();
-		int getPointsNumber();
-		Point ** getPoints();
-		char * getName();
+		vector<Point> getPoints();
+		string getName();
 
 };
 
