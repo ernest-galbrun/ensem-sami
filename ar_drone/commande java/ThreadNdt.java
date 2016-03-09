@@ -11,7 +11,7 @@ public class ThreadNdt extends Thread {
 	private final static int portNdt = 5554;
 	private DatagramPacket receivedData;
 	private DatagramSocket socketNdt; // Socket de réception des nav data
-	private DatagramSocket socketCmd; // Socket d'envoi des commandes pour la synchronisation régulière
+	private DatagramSocket socketCmd; // Socket d'nevoi des commandes pour la synchronisation régulière
 	private FileWriter fileWriter;
 	private BufferedWriter output;
 	private int size = 1024;
@@ -231,4 +231,3 @@ public class ThreadNdt extends Thread {
 		+" Vx : "+String.valueOf(this.getVx())+" Vy : "+String.valueOf(this.getVy())+" Vz : "+String.valueOf(this.getVz())+"\n";
 	}
 }
-,
