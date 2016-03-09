@@ -10,6 +10,12 @@
 
 using namespace std;
 
+Packet_Parser::Packet_Parser(Data * data){
+
+	this->data = data;
+
+}
+
 int Packet_Parser::last_three_00_detect(){ //Position to the next char after detecting 00 00 00 hex. (VERIFIED)
 
 	while((current_cursor + 3) <= last_char){
@@ -53,7 +59,7 @@ char * Packet_Parser::parsing_name(){ //Get the name of the first object. Must b
 		current_cursor++;
 	}
 
-	object_name[i+1] = 0x00; //Ending the char by \o
+	object_name[i] = 0x00; //Ending the char by \o
 
 	return object_name;
 
@@ -62,7 +68,7 @@ char * Packet_Parser::parsing_name(){ //Get the name of the first object. Must b
 int Packet_Parser::parsing_32bit_float(int triplet_number){ //Collect 32bit float data position triplet
 
 	float * float_32bit = (float *)current_cursor;
-	points_value.reserve(triplet_number * 3);
+	points_value.clear();
 
 	int i, j;
 	for(i = 0; i < triplet_number * 3; i++){
@@ -72,7 +78,7 @@ int Packet_Parser::parsing_32bit_float(int triplet_number){ //Collect 32bit floa
 			return -1;
 
 		}
-		points_value[i] = *float_32bit;;
+		points_value.push_back(*float_32bit);
 		float_32bit++;
 
 	}
@@ -92,8 +98,7 @@ void Packet_Parser::parse(char * packet_to_analyze, int size){
 	this->packet_to_analyze = packet_to_analyze;
 	last_char = packet_to_analyze + size;
 	current_cursor = packet_to_analyze;
-	
-	int i;
+	vector<Vehicle> vehicle_list;
 
 	for(;;){
 
@@ -102,7 +107,7 @@ void Packet_Parser::parse(char * packet_to_analyze, int size){
 			break;
 
 		}
-		if(*current_cursor == 0x02){
+		if(*current_cursor == 0x01){
 
 			break;
 
@@ -122,11 +127,10 @@ void Packet_Parser::parse(char * packet_to_analyze, int size){
 			break;
 
 		}
-		Vehicle v(name,points_value);
-		v.print_data();
-		std::cout << "Test" << std::endl;
+		vehicle_list.push_back(Vehicle(name,points_value));
 		if(*(int *)current_cursor == 1){
 			parsing_40bit_data();
 		}
+		
 	}
 }
