@@ -11,8 +11,6 @@
 #include "Data.h"
 #include "Vehicle.h"
 
-#define MAXDATA 2048
-
 using namespace std;
 using std::vector;
 using std::mutex;
