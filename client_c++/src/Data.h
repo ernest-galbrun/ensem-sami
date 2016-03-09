@@ -1,7 +1,7 @@
 #include <vector>
-#include <mutex>
 #include "Vehicle.h"
 #include <boost/optional.hpp>
+#include <boost/thread/mutex.hpp>
 
 #ifndef DATA_H
 #define DATA_H
@@ -10,7 +10,7 @@ class Data {
 
 	private:
         std::vector<Vehicle> data;
-		std::mutex dataLock;
+		boost::mutex dataLock;
 
 	public:
         boost::optional<Vehicle> getVehicle(string name);
