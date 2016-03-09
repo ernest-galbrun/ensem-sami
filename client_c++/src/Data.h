@@ -9,12 +9,11 @@
 class Data {
 
 	private:
-		bool compareVehicle(Vehicle v1, char* name);
         std::vector<Vehicle> data;
 		std::mutex dataLock;
 
 	public:
-        boost::optional<Vehicle> getVehicle(char* name);
+        boost::optional<Vehicle> getVehicle(string name);
 		void setAll(std::vector<Vehicle> data);
 };
 

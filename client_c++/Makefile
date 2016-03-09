@@ -17,7 +17,7 @@ Point: ./src/Point.cpp
 	g++ -c ./src/Point.cpp -o ./built/Point
 
 Data: ./src/Data.cpp
-	g++ -c ./src/Data.cpp -o ./built/Data
+	g++ -c -I /usr/lib/boost_1_60_0 ./src/Data.cpp -o ./built/Data
 
 clean:
 	rm built/*
