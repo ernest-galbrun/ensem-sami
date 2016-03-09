@@ -11,7 +11,6 @@
 % if it's defined as local variable in takeoff, there will
 % be only the navdata of the last flight.
 
-
 function main
     figNdt = figure('units', 'pixels', ...
             'position', [500 250 700 700], ...

@@ -4,11 +4,9 @@ N=3
 R = KheperaFleet(N)
 R.SetConnectionModeF(1);
 %error=R.ConnectF([3;4;5],[0,0,0,0],[0 0;0 1500;700 3000;1800 1500],[3*pi/2;0;pi/2;pi])
-error=R.ConnectF([3;4;5],[0,0,0],[0 0;0 0;0 0],[0;0;0])
+error=R.ConnectF([4;7;6],[0,0,0],[0 0;0 0;0 0],[0;0;0])
 
 
-disp('pause');
-pause;
 [X Y] = R.GetPositionF;
 A = zeros(N,N);
 thresold = 1000;

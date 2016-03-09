@@ -21,7 +21,7 @@ using namespace boost;
 bool LocalizationSystem::cortexIsConnected = false;
 string LocalizationSystem::me = "0.0.0.0";
 string LocalizationSystem::me_wifi = "0.0.0.0";
-string LocalizationSystem::host ="193.49.136.176";
+string LocalizationSystem::host ="192.168.1.109";
 
 //extern int instanceCount;
 
@@ -37,6 +37,7 @@ LocalizationSystem::LocalizationSystem():
 
 LocalizationSystem::~LocalizationSystem(void)
 {
+	Close();
 	//instanceCount--;
 	//if(instanceCount==0) {
 	//	LocalizationSystem::Close();
@@ -134,7 +135,7 @@ void LocalizationSystem::Open() {
 	Cortex_SetVerbosityLevel(VL_None);		
 	printf("Connecting to Cortex Host...\n");
 	int retval;
-	retval = Cortex_Initialize((char*)me.c_str(), (char*)host.c_str());		
+	retval = Cortex_Initialize((char*)me_wifi.c_str(), (char*)host.c_str());		
 	if (retval != RC_Okay)	{
 		cortexIsConnected = false;
 		throw (ios_base::failure("Unable to initialize ethernet communication."));

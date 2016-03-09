@@ -1,7 +1,7 @@
 function error = Connect(k3,Id,virtual,initialPosition, initialOrientation,varargin)
     % varargin{1} = handle to message string
     % k3.Connect(k3,Id,virtual,initialPosition, initialOrientation,varargin)
-    % Id : number of the robot
+    % Id : number of the 
     % virtual : ==0 if robot is real, ==1 if virtual (default : 0)
     % initialPosition, initialOrientation : for virtual robot or robot
     % without GPS
