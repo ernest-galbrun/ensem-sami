@@ -7,10 +7,14 @@
 
 using namespace std;
 
-void CortexClient::init() {
-    this->socket.setTimeToWait(1);
+CortexClient::CortexClient() {
+    this->socket = SocketBoost(this->data);
+}
 
-    this->socket.init("192.168.1.109", "1510");
+void CortexClient::init() {
+    this->socket->setTimeToWait(1);
+
+    this->socket.init("100.64.209.183", "1510");
 }
 
 Vehicle CortexClient::getXYPosition(string name) {

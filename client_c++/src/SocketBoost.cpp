@@ -8,6 +8,8 @@
 
 #include "SocketBoost.h"
 
+#define SERVICE_IP "100.64.209.183"
+#define SERVICE_PORT "1510"
 #define BUFLEN 2048
 
 using boost::asio::ip::udp;
@@ -19,13 +21,18 @@ char PointsNameMessage[] = {0x0a, 0x00}; // <- Requête pour les points
 
 char buf[BUFLEN];
 
-SocketBoost::SocketBoost() {
+SocketBoost::SocketBoost(Data data) {
     this->s = new udp::socket(io_service, udp::endpoint(udp::v4(), 0));
     udp::resolver resolver(this->io_service);
+    string ip = "100.64.209.183";
+    string port = "1510";
     this->server_endpoint = *resolver.resolve(udp::resolver::query(udp::v4(), this->ip, this->port));
+
+    this->data = data;
+    this->parser = new Parser(this->data);
 }
 
-void SocketBoost::init() {    
+void SocketBoost::init() {
 	this->sendReceive(initMessage, 127, buf, BUFLEN);
     this->t = new boost::thread(boost::bind(&SocketBoost::start, this));
 }
@@ -40,7 +47,7 @@ void SocketBoost::start() {
 
     while(1) {
 		this->sendReceive(regularMessage, strlen(regularMessage), buf, BUFLEN);
-		this->parser->parse(buf, BUFLEN);
+		this->parser.parse(buf, BUFLEN);
 
         boost::this_thread::sleep_for(boost::chrono::milliseconds(this->timeToWait*1000));
         // launch boost::thread_interrupted if the current thread of execution is interrupted
@@ -53,7 +60,7 @@ void SocketBoost::stop() {
 
 void SocketBoost::getPointsName() {
 	this->sendReceive(PointsNameMessage, strlen(PointsNameMessage), buf, BUFLEN);
-	this->parser->parse(buf, BUFLEN);
+	this->parser.parse(buf, BUFLEN);
 }
 
 string SocketBoost::getIp() {

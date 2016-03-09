@@ -2,6 +2,7 @@
 #include <boost/thread/thread.hpp>
 
 #include "PacketParser.h"
+#include "Data.h"
 
 #ifndef SOCKET_BOOST_H
 #define SOCKET_BOOST_H
@@ -18,7 +19,8 @@ class SocketBoost {
 
         boost::thread *t;
 
-        Packet_Parser * parser;
+		Data data;
+        Packet_Parser parser;
 
         int timeToWait;
 		string ip;
@@ -28,7 +30,7 @@ class SocketBoost {
 		void init();
 
 	public:
-        SocketBoost();
+        SocketBoost(Data data);
 		void init(string ip, string port);
         void start();
         void stop();

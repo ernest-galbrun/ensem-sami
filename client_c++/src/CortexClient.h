@@ -8,10 +8,12 @@
 class CortexClient {
 
     private:
-        SocketBoost socket;
         Data data;
+        SocketBoost* socket;
 
 	public:
+        CortexClient();
+
         void init();
         Vehicle getXYPosition(string name);
         void stop();
