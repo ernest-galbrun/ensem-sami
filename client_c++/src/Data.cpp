@@ -25,7 +25,7 @@ Data::~Data() {
     free(this->lastReturned);
     sem_unlink("data");
 }
-Vehicle *Data::getVehicle(char* name) {
+Vehicle *Data::getVehicle(string name) {
     sem_wait(sem_data);
         for (int i=0; i<this->numberOfVehicles; i++) {
             if (this->charCompare(this->data[i]->getName(), name)) {
@@ -49,6 +49,6 @@ void Data::setMultipleVehicles(Vehicle **data, int number) {
     sem_post(sem_data);
 }
 
-bool Data::charCompare(char* c1, char* c2) {
-    return (strcmp(c1, c2) == 0)? true: false;
+bool Data::charCompare(string c1, string c2) {
+    return (c1.compare(c2) == 0)? true: false;
 }
