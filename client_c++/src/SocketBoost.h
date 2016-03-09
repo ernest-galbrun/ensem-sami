@@ -21,12 +21,26 @@ class SocketBoost {
         Packet_Parser * parser;
 
         int timeToWait;
+		string ip;
+		string port;
+
+		size_t sendReceive(char* message, int size, char* buffer, int bufferLength);
+		void init();
+
 	public:
-        SocketBoost(int timeToWait);
-        void init();
+        SocketBoost();
+		void init(string ip, string port);
         void start();
         void stop();
+		void getPointsName();
 
+		void setIp(string ip);
+		void setPort(string port);
+		void setTimeToWait(int timeToWait);
+
+		string getIp();
+		string getPort();
+		int getTimeToWait();
 };
 
 #endif

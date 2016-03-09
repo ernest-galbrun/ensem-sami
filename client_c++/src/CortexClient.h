@@ -8,14 +8,23 @@
 class CortexClient {
 
     private:
-        SocketBoost* socket;
-        Data* data;
+        SocketBoost socket;
+        Data data;
 
 	public:
-        CortexClient();
         void init();
-        Vehicle getXYPosition(char* name);
+        Vehicle getXYPosition(string name);
         void stop();
+
+        string getIp();
+        void setIp(string ip);
+
+        string getPort();
+        void setPort(string port);
+
+        int getTimeToWait();
+        void setTimeToWait(int timeToWait);
+
 };
 
 #endif
