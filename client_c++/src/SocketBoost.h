@@ -31,7 +31,7 @@ class SocketBoost {
 
 	public:
 		SocketBoost();
-    SocketBoost(Data data);
+    SocketBoost(Data const& data);
 		void init(string ip, string port);
     void start();
     void stop();

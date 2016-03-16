@@ -7,6 +7,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "SocketBoost.h"
+#include "Data.h"
 
 #define SERVICE_IP "100.64.209.183"
 #define SERVICE_PORT "1510"
@@ -23,7 +24,7 @@ char buf[BUFLEN];
 
 SocketBoost::SocketBoost(){}
 
-SocketBoost::SocketBoost(Data &data) {
+SocketBoost::SocketBoost(Data const& data) {
     s = udp::socket(io_service, udp::endpoint(udp::v4(), 0));
     udp::resolver resolver(this->io_service);
     string ip = "100.64.209.183";
