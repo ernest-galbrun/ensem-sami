@@ -26,7 +26,6 @@ SocketBoost::SocketBoost(Data &data) {
     udp::resolver resolver(this->io_service);
     string ip = "100.64.209.183";
     string port = "1510";
-    server_endpoint = resolver.resolve(udp::resolver::query(udp::v4(), this->ip, this->port));
 
     parser = Packet_Parser(data);
 }
@@ -68,6 +67,7 @@ string SocketBoost::getIp() {
 
 void SocketBoost::setIp(string ip) {
 	this->ip = ip;
+  updateServerEndpoint();
 }
 
 string SocketBoost::getPort() {
@@ -76,6 +76,7 @@ string SocketBoost::getPort() {
 
 void SocketBoost::setPort(string port) {
 	this->port = port;
+  updateServerEndpoint();
 }
 
 int SocketBoost::getTimeToWait() {
@@ -95,4 +96,8 @@ size_t SocketBoost::sendReceive(char* message, int size, char* buffer, int buffe
        cerr << "Exception while connecting: " << e.what() << "\n";
     }
 	return 0;
+}
+
+void SocketBoost::updateServerEndpoint() {
+  server_endpoint = resolver.resolve(udp::resolver::query(udp::v4(), ip, port));
 }
