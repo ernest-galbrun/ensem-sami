@@ -27,7 +27,7 @@ SocketBoost::SocketBoost(Data &data) {
     string ip = "100.64.209.183";
     string port = "1510";
 
-    parser = Packet_Parser(data);
+    parser = Packet_Parser();
 }
 
 void SocketBoost::init() {

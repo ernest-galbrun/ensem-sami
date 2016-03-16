@@ -7,8 +7,8 @@
 
 using namespace std;
 
-CortexClient::CortexClient(){
-  socket = SocketBoost(data);
+CortexClient::CortexClient() {
+  SocketBoost socket = SocketBoost(data);
 }
 
 void CortexClient::init() {

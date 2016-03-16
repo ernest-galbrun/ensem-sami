@@ -15,21 +15,17 @@ using namespace std;
 using std::vector;
 
 boost::optional<Vehicle> Data::getVehicle(string name) {
-    dataLock.lock();
+    boost::lock_guard<boost::mutex> guard(dataLock);
 
     for (int i = 0; i < data.size(); i++) {
-        if(data.at(i).getName().compare(name)) {
-            dataLock.unlock();
+        if(data.at(i).getName().compare(name))
             return boost::optional<Vehicle>(data.at(i));
-        }
     }
 
-    dataLock.unlock();
     return boost::optional<Vehicle>();
 }
 
 void Data::setAll(vector<Vehicle> data) {
-    dataLock.lock();
-    data = data;
-    dataLock.unlock();
+    boost::lock_guard<boost::mutex> guard(dataLock);
+    this->data = data;
 }
