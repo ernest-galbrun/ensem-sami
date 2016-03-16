@@ -22,7 +22,7 @@ class Packet_Parser {
 		void parsing_40bit_data();
 
 	public:
-		Packet_Parser(Data * data);
+		Packet_Parser(Data data);
 		void parse(char * packet_to_analyze, int size);
 
 };

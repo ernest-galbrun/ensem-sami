@@ -10,7 +10,7 @@
 
 using namespace std;
 
-Packet_Parser::Packet_Parser(Data * data){
+Packet_Parser::Packet_Parser(Data & data){
 
 	this->data = data;
 
