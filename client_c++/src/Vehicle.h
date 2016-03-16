@@ -15,6 +15,7 @@ class Vehicle {
 		vector<Point> points;
 
 	public:
+		Vehicle();
 		Vehicle(string name, vector<float> float_32_data);
 		void print_data();
 		vector<Point> getPoints();
