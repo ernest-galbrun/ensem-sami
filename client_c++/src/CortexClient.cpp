@@ -12,7 +12,7 @@ CortexClient::CortexClient() {
 }
 
 void CortexClient::init() {
-  socket->setTimeToWait(1);
+  socket.setTimeToWait(1);
 
   socket.init("100.64.209.183", "1510");
 }
