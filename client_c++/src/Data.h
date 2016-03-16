@@ -2,16 +2,17 @@
 #include "Vehicle.h"
 #include <boost/optional.hpp>
 #include <boost/thread/mutex.hpp>
-#include <boost/core/noncopyable.hpp>
 
 #ifndef DATA_H
 #define DATA_H
 
-class Data {
+class Data
+{
 
 	private:
 		boost::mutex dataLock;
 		std::vector<Vehicle> data;
+  	Data(const Data & data);
 
 	public:
 		Data();
