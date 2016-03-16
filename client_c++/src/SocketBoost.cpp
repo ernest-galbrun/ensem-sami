@@ -21,6 +21,8 @@ char PointsNameMessage[] = {0x0a, 0x00}; // <- Requête pour les points
 
 char buf[BUFLEN];
 
+SocketBoost::SocketBoost(){}
+
 SocketBoost::SocketBoost(Data &data) {
     s = udp::socket(io_service, udp::endpoint(udp::v4(), 0));
     udp::resolver resolver(this->io_service);
