@@ -10,7 +10,7 @@
 #include "CommunicationSystem.h"
 #include <utility>
 
-class Agent : public Object,boost::noncopyable
+class Agent : public Object, boost::noncopyable
 {
 private:
 	std::vector<Object> neighbors;

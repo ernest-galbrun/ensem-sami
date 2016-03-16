@@ -680,7 +680,7 @@ DLL int Cortex_FreeBodyDefs(sBodyDefs* pBodyDefs);
  *  In addition, this function is available to get a frame directly.
  *
  *  Note: Cortex considers the current frame to be the latest LiveMode frame completed or,
- *        if not in LiveMode, the current frame is the one that is displayed on the screen.
+ *        if not in, the current frame is the one that is displayed on the screen.
  *
  * \return sFrameOfData
 */
