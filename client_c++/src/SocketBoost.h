@@ -12,17 +12,16 @@ using boost::asio::ip::udp;
 class SocketBoost {
 
 	private:
-        boost::asio::io_service io_service;
-        udp::endpoint server_endpoint;
-        udp::endpoint client_endpoint;
-        udp::socket *s;
+    boost::asio::io_service io_service;
+    udp::endpoint server_endpoint;
+    udp::endpoint client_endpoint;
+    udp::socket s;
 
-        boost::thread *t;
+    boost::thread t;
 
-		Data data;
-        Packet_Parser parser;
+    Packet_Parser parser;
 
-        int timeToWait;
+    int timeToWait;
 		string ip;
 		string port;
 
@@ -30,10 +29,10 @@ class SocketBoost {
 		void init();
 
 	public:
-        SocketBoost(Data data);
+    SocketBoost(Data data);
 		void init(string ip, string port);
-        void start();
-        void stop();
+    void start();
+    void stop();
 		void getPointsName();
 
 		void setIp(string ip);

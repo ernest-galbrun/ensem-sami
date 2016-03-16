@@ -7,25 +7,26 @@
 
 class CortexClient {
 
-    private:
-        Data data;
-        SocketBoost* socket;
+  private:
+    Data data;
+    SocketBoost socket;
 
 	public:
-        CortexClient();
+    CortexClient();
 
-        void init();
-        Vehicle getXYPosition(string name);
-        void stop();
+    void init();
+    Vehicle getXYPosition(string name);
+    // getVehicleNames() : liste de tous les véhicules présents
+    void stop();
 
-        string getIp();
-        void setIp(string ip);
+    string getIp();
+    void setIp(string ip);
 
-        string getPort();
-        void setPort(string port);
+    string getPort();
+    void setPort(string port);
 
-        int getTimeToWait();
-        void setTimeToWait(int timeToWait);
+    int getTimeToWait();
+    void setTimeToWait(int timeToWait);
 
 };
 

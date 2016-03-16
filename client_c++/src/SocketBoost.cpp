@@ -21,50 +21,49 @@ char PointsNameMessage[] = {0x0a, 0x00}; // <- Requête pour les points
 
 char buf[BUFLEN];
 
-SocketBoost::SocketBoost(Data data) {
-    this->s = new udp::socket(io_service, udp::endpoint(udp::v4(), 0));
+SocketBoost::SocketBoost(Data &data) {
+    s = udp::socket(io_service, udp::endpoint(udp::v4(), 0));
     udp::resolver resolver(this->io_service);
     string ip = "100.64.209.183";
     string port = "1510";
-    this->server_endpoint = *resolver.resolve(udp::resolver::query(udp::v4(), this->ip, this->port));
+    server_endpoint = resolver.resolve(udp::resolver::query(udp::v4(), this->ip, this->port));
 
-    this->data = data;
-    this->parser = new Parser(this->data);
+    parser = Packet_Parser(data);
 }
 
 void SocketBoost::init() {
-	this->sendReceive(initMessage, 127, buf, BUFLEN);
-    this->t = new boost::thread(boost::bind(&SocketBoost::start, this));
+    sendReceive(initMessage, 127, buf, BUFLEN);
+    t = boost::thread(boost::bind(&SocketBoost::start, this));
 }
 
 void SocketBoost::init(string ip, string port) {
-	this->setIp(ip);
-	this->setPort(port);
-	this->init();
+	setIp(ip);
+  setPort(port);
+	init();
 }
 
 void SocketBoost::start() {
 
     while(1) {
-		this->sendReceive(regularMessage, strlen(regularMessage), buf, BUFLEN);
-		this->parser.parse(buf, BUFLEN);
+       sendReceive(regularMessage, strlen(regularMessage), buf, BUFLEN);
+       parser.parse(buf, BUFLEN);
 
-        boost::this_thread::sleep_for(boost::chrono::milliseconds(this->timeToWait*1000));
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(timeToWait));
         // launch boost::thread_interrupted if the current thread of execution is interrupted
     }
 }
 
 void SocketBoost::stop() {
-    this->t->interrupt();
+    t->interrupt();
 }
 
 void SocketBoost::getPointsName() {
-	this->sendReceive(PointsNameMessage, strlen(PointsNameMessage), buf, BUFLEN);
-	this->parser.parse(buf, BUFLEN);
+	sendReceive(PointsNameMessage, strlen(PointsNameMessage), buf, BUFLEN);
+	parser.parse(buf, BUFLEN);
 }
 
 string SocketBoost::getIp() {
-	return this->ip;
+	return ip;
 }
 
 void SocketBoost::setIp(string ip) {
@@ -72,7 +71,7 @@ void SocketBoost::setIp(string ip) {
 }
 
 string SocketBoost::getPort() {
-	return this->port;
+	return port;
 }
 
 void SocketBoost::setPort(string port) {
@@ -80,7 +79,7 @@ void SocketBoost::setPort(string port) {
 }
 
 int SocketBoost::getTimeToWait() {
-	return this->timeToWait;
+	return timeToWait;
 }
 
 void SocketBoost::setTimeToWait(int timeToWait) {
@@ -89,8 +88,8 @@ void SocketBoost::setTimeToWait(int timeToWait) {
 
 size_t SocketBoost::sendReceive(char* message, int size, char* buffer, int bufferLength) {
 	try {
-        this->s->send_to(boost::asio::buffer(message, size), this->server_endpoint);
-        return this->s->receive_from(boost::asio::buffer(buffer, bufferLength), this->client_endpoint);
+        s->send_to(boost::asio::buffer(message, size), server_endpoint);
+        return s->receive_from(boost::asio::buffer(buffer, bufferLength), client_endpoint);
     }
     catch ( boost::system::system_error& e) {
        cerr << "Exception while connecting: " << e.what() << "\n";

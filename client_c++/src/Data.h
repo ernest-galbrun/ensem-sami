@@ -9,11 +9,11 @@
 class Data {
 
 	private:
-        std::vector<Vehicle> data;
 		boost::mutex dataLock;
+		std::vector<Vehicle> data;
 
 	public:
-        boost::optional<Vehicle> getVehicle(string name);
+		boost::optional<Vehicle> getVehicle(string name);
 		void setAll(std::vector<Vehicle> data);
 };
 
