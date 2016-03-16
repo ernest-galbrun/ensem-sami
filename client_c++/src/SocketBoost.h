@@ -28,9 +28,9 @@ class SocketBoost {
 		size_t sendReceive(char* message, int size, char* buffer, int bufferLength);
 		void init();
 		void updateServerEndpoint();
-		SocketBoost();
 
 	public:
+		SocketBoost();
     SocketBoost(Data data);
 		void init(string ip, string port);
     void start();
