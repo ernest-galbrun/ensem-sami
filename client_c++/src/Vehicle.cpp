@@ -10,6 +10,8 @@
 
 using namespace std;
 
+Vehicle::Vechicle(){}
+
 Vehicle::Vehicle(string name, vector<float> float_32_data){
 
 	int size = float_32_data.size() / 3;
