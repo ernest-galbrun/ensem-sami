@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <vector>
-#include <boost/optional.hpp>
 #include <boost/thread/mutex.hpp>
 
 #include "Data.h"
@@ -16,15 +15,15 @@ using std::vector;
 
 Data::Data(){}
 
-boost::optional<Vehicle> Data::getVehicle(string name) {
+Vehicle Data::getVehicle(string name) {
     boost::lock_guard<boost::mutex> guard(dataLock);
 
     for (int i = 0; i < data.size(); i++) {
         if(data.at(i).getName().compare(name))
-            return boost::optional<Vehicle>(data.at(i));
+            return data.at(i);
     }
 
-    return boost::optional<Vehicle>();
+    return Vehicle();
 }
 
 void Data::setAll(vector<Vehicle> data) {

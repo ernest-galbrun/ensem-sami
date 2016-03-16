@@ -1,6 +1,5 @@
 #include <vector>
 #include "Vehicle.h"
-#include <boost/optional.hpp>
 #include <boost/thread/mutex.hpp>
 
 #ifndef DATA_H
@@ -16,7 +15,7 @@ class Data
 
 	public:
 		Data();
-		boost::optional<Vehicle> getVehicle(string name);
+		Vehicle getVehicle(string name);
 		void setAll(std::vector<Vehicle> data);
 };
 
