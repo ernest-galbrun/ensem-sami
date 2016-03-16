@@ -14,6 +14,8 @@
 using namespace std;
 using std::vector;
 
+Data::Data(){}
+
 boost::optional<Vehicle> Data::getVehicle(string name) {
     boost::lock_guard<boost::mutex> guard(dataLock);
 
