@@ -9,7 +9,7 @@ class CortexClient {
 
   private:
     Data data;
-    SocketBoost socket;
+    SocketBoost socket = SocketBoost(data);
 
 	public:
     CortexClient();

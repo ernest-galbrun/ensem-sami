@@ -7,9 +7,7 @@
 
 using namespace std;
 
-CortexClient::CortexClient() {
-  SocketBoost socket = SocketBoost(data);
-}
+CortexClient::CortexClient() {}
 
 void CortexClient::init() {
   socket->setTimeToWait(1);
