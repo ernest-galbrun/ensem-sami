@@ -17,6 +17,8 @@ class SocketBoost {
     udp::endpoint client_endpoint;
     udp::socket s;
 
+	udp::resolver resolver;
+
     boost::thread t;
 
     Packet_Parser parser;
@@ -30,11 +32,10 @@ class SocketBoost {
 		void updateServerEndpoint();
 
 	public:
-		SocketBoost();
-    SocketBoost(Data const& data);
+    	SocketBoost(Data& data);
 		void init(string ip, string port);
-    void start();
-    void stop();
+    	void start();
+    	void stop();
 		void getPointsName();
 
 		void setIp(string ip);

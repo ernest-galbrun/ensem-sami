@@ -22,15 +22,7 @@ char PointsNameMessage[] = {0x0a, 0x00}; // <- Requête pour les points
 
 char buf[BUFLEN];
 
-SocketBoost::SocketBoost(){}
-
-SocketBoost::SocketBoost(Data const& data) {
-    s = udp::socket(io_service, udp::endpoint(udp::v4(), 0));
-    udp::resolver resolver(this->io_service);
-    string ip = "100.64.209.183";
-    string port = "1510";
-
-    parser = Packet_Parser(data);
+SocketBoost::SocketBoost(Data& data):parser(data),ip("100.64.209.183"),port("1510"),s(io_service, udp::endpoint(udp::v4(), 0)),resolver(this->io_service){
 }
 
 void SocketBoost::init() {
@@ -56,7 +48,7 @@ void SocketBoost::start() {
 }
 
 void SocketBoost::stop() {
-    t->interrupt();
+    t.interrupt();
 }
 
 void SocketBoost::getPointsName() {
@@ -92,8 +84,8 @@ void SocketBoost::setTimeToWait(int timeToWait) {
 
 size_t SocketBoost::sendReceive(char* message, int size, char* buffer, int bufferLength) {
 	try {
-        s->send_to(boost::asio::buffer(message, size), server_endpoint);
-        return s->receive_from(boost::asio::buffer(buffer, bufferLength), client_endpoint);
+        s.send_to(boost::asio::buffer(message, size), server_endpoint);
+        return s.receive_from(boost::asio::buffer(buffer, bufferLength), client_endpoint);
     }
     catch ( boost::system::system_error& e) {
        cerr << "Exception while connecting: " << e.what() << "\n";
@@ -102,5 +94,5 @@ size_t SocketBoost::sendReceive(char* message, int size, char* buffer, int buffe
 }
 
 void SocketBoost::updateServerEndpoint() {
-  server_endpoint = resolver.resolve(udp::resolver::query(udp::v4(), ip, port));
+  server_endpoint = *(resolver.resolve(udp::resolver::query(udp::v4(), ip, port)));
 }

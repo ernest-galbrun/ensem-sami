@@ -10,7 +10,7 @@
 
 using namespace std;
 
-Vehicle::Vechicle(){}
+Vehicle::Vehicle(){}
 
 Vehicle::Vehicle(string name, vector<float> float_32_data){
 
@@ -33,9 +33,9 @@ void Vehicle::print_data(){
 
 	for(i = 0; i < points.size(); i++){
 
-		cout << "Coord x : " << points[i].getX()  << " ;";
-		cout << "Coord y : " << points[i].getY()  << " ;";
-		cout << "Coord z : " << points[i].getZ()  << " ;" << endl;
+		cout << "Coord x : " << points[i].x  << " ;";
+		cout << "Coord y : " << points[i].y  << " ;";
+		cout << "Coord z : " << points[i].z  << " ;" << endl;
 
 	}
 

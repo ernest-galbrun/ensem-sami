@@ -26,6 +26,8 @@ Vehicle Data::getVehicle(string name) {
     return Vehicle();
 }
 
+Data::Data(const Data & _data):dataLock(),data(_data.data){}
+
 void Data::setAll(vector<Vehicle> data) {
     boost::lock_guard<boost::mutex> guard(dataLock);
     this->data = data;
