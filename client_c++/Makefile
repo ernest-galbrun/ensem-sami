@@ -8,7 +8,7 @@ SocketBoost: ./src/SocketBoost.cpp
 	g++ -c -I /usr/lib/boost_1_60_0 ./src/SocketBoost.cpp -o ./built/SocketBoost
 
 PacketParser: ./src/PacketParser.cpp
-	g++ -c ./src/PacketParser.cpp -o ./built/PacketParser
+	g++ -c -I /usr/lib/boost_1_60_0 ./src/PacketParser.cpp -o ./built/PacketParser
 
 Vehicle: ./src/Vehicle.cpp
 	g++ -c ./src/Vehicle.cpp -o ./built/Vehicle

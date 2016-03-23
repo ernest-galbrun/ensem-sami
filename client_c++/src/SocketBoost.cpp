@@ -22,7 +22,7 @@ char PointsNameMessage[] = {0x0a, 0x00}; // <- Requête pour les points
 
 char buf[BUFLEN];
 
-SocketBoost::SocketBoost(Data& data):parser(data),ip("100.64.209.183"),port("1510"),s(io_service, udp::endpoint(udp::v4(), 0)),resolver(this->io_service){
+SocketBoost::SocketBoost(Data& data):parser(data),s(io_service, udp::endpoint(udp::v4(), 0)),resolver(this->io_service){
 }
 
 void SocketBoost::init() {
@@ -30,9 +30,10 @@ void SocketBoost::init() {
     t = boost::thread(boost::bind(&SocketBoost::start, this));
 }
 
-void SocketBoost::init(string ip, string port) {
+void SocketBoost::init(string ip, string port, int timeToWait) {
 	setIp(ip);
-  setPort(port);
+    setPort(port);
+    setTimeToWait(timeToWait);
 	init();
 }
 
@@ -62,7 +63,7 @@ string SocketBoost::getIp() {
 
 void SocketBoost::setIp(string ip) {
 	this->ip = ip;
-  updateServerEndpoint();
+    updateServerEndpoint();
 }
 
 string SocketBoost::getPort() {
@@ -71,7 +72,7 @@ string SocketBoost::getPort() {
 
 void SocketBoost::setPort(string port) {
 	this->port = port;
-  updateServerEndpoint();
+    updateServerEndpoint();
 }
 
 int SocketBoost::getTimeToWait() {

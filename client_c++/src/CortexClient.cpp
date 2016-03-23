@@ -10,9 +10,7 @@ using namespace std;
 CortexClient::CortexClient():socket(data) {}
 
 void CortexClient::init() {
-  socket.setTimeToWait(1);
-
-  socket.init("100.64.209.183", "1510");
+  socket.init(getIp(), getPort(), getTimeToWait());
 }
 
 Vehicle CortexClient::getXYPosition(string name) {
