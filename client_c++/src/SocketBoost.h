@@ -7,11 +7,16 @@
 #ifndef SOCKET_BOOST_H
 #define SOCKET_BOOST_H
 
+#define BUFLEN 2048
+
 using boost::asio::ip::udp;
 
 class SocketBoost {
 
 	private:
+		char buf[BUFLEN];
+		char bufNames[BUFLEN];
+
 	    boost::asio::io_service io_service;
 	    udp::endpoint server_endpoint;
 	    udp::endpoint client_endpoint;
