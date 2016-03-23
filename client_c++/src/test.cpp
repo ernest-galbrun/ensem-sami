@@ -17,8 +17,10 @@ int main(int argc, char* argv[]) {
 
 
     while(1){
-      for(string s : client->getVehiclesNames()){
-        cout << s << endl;
+      vector<string> vehicleNames = client->getVehiclesNames();
+      int i;
+      for(i = 0; i < vehicleNames.size(); i++){
+        cout << vehicleNames[i] << endl;
       }
     }
 
