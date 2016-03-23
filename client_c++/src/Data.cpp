@@ -16,11 +16,14 @@ using std::vector;
 Data::Data(){}
 
 vector<string> Data::getVehiclesNames(){
+  boost::lock_guard<boost::mutex> guard(dataLock);
   int i;
   int size = data.size();
   vector<string> tempNames;
   tempNames.resize(size);
+
   for(i = 0 ; i < size; i++){
+    cout << data[i].getName() << endl;
     tempNames.push_back(data[i].getName());
   }
   return tempNames;
@@ -41,5 +44,8 @@ Data::Data(const Data & _data):dataLock(),data(_data.data){}
 
 void Data::setAll(vector<Vehicle> data) {
     boost::lock_guard<boost::mutex> guard(dataLock);
+
+    this->data.clear();
+    this->data.reserve(data.size());
     this->data = data;
 }

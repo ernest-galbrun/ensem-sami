@@ -22,8 +22,7 @@ char PointsNameMessage[] = {0x0a, 0x00}; // <- Requête pour les points
 
 char buf[BUFLEN];
 
-SocketBoost::SocketBoost(Data& data):parser(data),s(io_service, udp::endpoint(udp::v4(), 0)),resolver(this->io_service){
-}
+SocketBoost::SocketBoost(Data& data):parser(data),s(io_service, udp::endpoint(udp::v4(), 0)),resolver(this->io_service){}
 
 void SocketBoost::init() {
     sendReceive(initMessage, 127, buf, BUFLEN);

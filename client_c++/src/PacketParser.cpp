@@ -10,7 +10,7 @@
 
 using namespace std;
 
-Packet_Parser::Packet_Parser(Data & data):data(data){}
+Packet_Parser::Packet_Parser(Data & data):data(&data){}
 
 int Packet_Parser::last_three_00_detect(){ //Position to the next char after detecting 00 00 00 hex. (VERIFIED)
 
@@ -130,6 +130,6 @@ void Packet_Parser::parse(char * packet_to_analyze, int size){
 
 	}
 
-	data.setAll(vehicle_list);
+	data->setAll(vehicle_list);
 
 }
