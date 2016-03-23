@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
 
     client->setIp("192.168.1.109");
     client->setPort("1510");
-    client->setTimeToWait(1);
+    client->setTimeToWait(1000);
     client->init();
 
 

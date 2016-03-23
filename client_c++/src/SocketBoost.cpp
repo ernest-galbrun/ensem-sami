@@ -38,6 +38,7 @@ void SocketBoost::start() {
 
     while(1) {
        sendReceive(regularMessage, strlen(regularMessage), buf, BUFLEN);
+
        parser.parse(buf, BUFLEN);
 
         boost::this_thread::sleep_for(boost::chrono::milliseconds(timeToWait));
@@ -92,5 +93,5 @@ size_t SocketBoost::sendReceive(char* message, int size, char* buffer, int buffe
 }
 
 void SocketBoost::updateServerEndpoint() {
-  server_endpoint = *(resolver.resolve(udp::resolver::query(udp::v4(), "192.168.1.109", "1510")));
+  server_endpoint = *(resolver.resolve(udp::resolver::query(ip, port)));
 }
