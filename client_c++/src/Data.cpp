@@ -15,6 +15,17 @@ using std::vector;
 
 Data::Data(){}
 
+vector<string> Data::getVehiclesNames(){
+  int i;
+  int size = data.size();
+  vector<string> tempNames;
+  tempNames.resize(size);
+  for(int i = 0 ; i < size; i++){
+    tempNames.push_back(data[i].getName());
+  }
+  return tempNames;
+}
+
 Vehicle Data::getVehicle(string name) {
     boost::lock_guard<boost::mutex> guard(dataLock);
 

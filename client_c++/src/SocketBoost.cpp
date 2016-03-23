@@ -92,5 +92,5 @@ size_t SocketBoost::sendReceive(char* message, int size, char* buffer, int buffe
 }
 
 void SocketBoost::updateServerEndpoint() {
-  server_endpoint = *(resolver.resolve(udp::resolver::query(udp::v4(), ip, port)));
+  server_endpoint = *(resolver.resolve(udp::resolver::query(udp::v4(), "192.168.1.109", "1510")));
 }
