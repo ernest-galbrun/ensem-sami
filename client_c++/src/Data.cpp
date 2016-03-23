@@ -20,7 +20,7 @@ vector<string> Data::getVehiclesNames(){
   int size = data.size();
   vector<string> tempNames;
   tempNames.resize(size);
-  for(int i = 0 ; i < size; i++){
+  for(i = 0 ; i < size; i++){
     tempNames.push_back(data[i].getName());
   }
   return tempNames;
