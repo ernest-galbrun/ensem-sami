@@ -15,6 +15,7 @@ class CortexClient {
     CortexClient();
 
     void init();
+    vector<string> getVehiclesNames();
     Vehicle getXYPosition(string name);
     // getVehicleNames() : liste de tous les véhicules présents
     void stop();

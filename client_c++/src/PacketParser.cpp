@@ -127,6 +127,9 @@ void Packet_Parser::parse(char * packet_to_analyze, int size){
 		if(*(int *)current_cursor == 1){
 			parsing_40bit_data();
 		}
-		
+
 	}
+
+	data.setAll(vehicle_list);
+
 }

@@ -16,6 +16,8 @@ class Data
 	public:
 		Data();
   		Data(const Data & data);
+
+		vector<string> getVehiclesNames();
 		Vehicle getVehicle(string name);
 		void setAll(std::vector<Vehicle> data);
 

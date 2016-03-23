@@ -13,6 +13,10 @@ void CortexClient::init() {
   socket.init(getIp(), getPort(), getTimeToWait());
 }
 
+vector<string> CortexClient::getVehiclesNames(){
+  return data.getVehiclesNames();
+}
+
 Vehicle CortexClient::getXYPosition(string name) {
   return data.getVehicle(name);
 }
