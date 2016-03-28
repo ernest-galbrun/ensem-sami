@@ -30,22 +30,66 @@ vector<string> Data::getVehiclesNames(){
 }
 
 Vehicle Data::getVehicle(string name) {
-    boost::lock_guard<boost::mutex> guard(dataLock);
+  boost::lock_guard<boost::mutex> guard(dataLock);
 
-    for (int i = 0; i < data.size(); i++) {
-        if(data.at(i).getName().compare(name))
-            return data.at(i);
+  for (int i = 0; i < data.size(); i++) {
+      if(data.at(i).getName().compare(name))
+          return data.at(i);
+  }
+
+  return Vehicle();
+}
+
+Vector<String> Data::getPointsNames(string name){
+  int i;
+  for(i = 0; i < posInfo.size(); i++){
+    if(nameInfo[posInfo[i]].compare(name) == 0){
+      Vector<String> v;
+      int maxSize;
+      if(i == posInfo.size() - 1){
+        maxSize = nameInfo.size();
+      }
+      else{
+        maxSize = posInfo[i+1];
+      }
+      v.resize(maxSize - (i + 1));
+      int j;
+      for(j = i + 1; j < maxSize; j++){
+        v.push_back(nameInfo[j]);
+      }
+      return v;
     }
+  }
+  return null;
+}
 
-    return Vehicle();
+void Data::setPointsNames(){
+  int i;
+  for(i = 0; i < data.size(); i++){
+    data[i].setPointsNames(getPointsNames);
+  }
 }
 
 Data::Data(const Data & _data):dataLock(),data(_data.data){}
 
 void Data::setAll(vector<Vehicle> data) {
-    boost::lock_guard<boost::mutex> guard(dataLock);
+  boost::lock_guard<boost::mutex> guard(dataLock);
 
-    this->data.clear();
-    this->data.reserve(data.size());
-    this->data = data;
+  this->data.clear();
+  this->data.reserve(data.size());
+  this->data = data;
+
+  //Checking if names of points do exist
+  int i;
+  bool needToRefresh = false;
+  for(i = 0; i < data.size(); i++){
+    if(getPointsNames(data[i].getName()) == null || getPointsNames(data[i].getName()).size() != data[i].getPoints().size()){
+      needToRefresh = true;
+      break;
+    }
+  }
+  if(needToRefresh){
+    //Call refresh procedure
+  }
+  setPointsNames();
 }

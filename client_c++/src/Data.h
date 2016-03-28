@@ -3,6 +3,8 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/lock_guard.hpp>
 
+using namespace std;
+
 #ifndef DATA_H
 #define DATA_H
 
@@ -11,7 +13,11 @@ class Data
 
 	private:
 		boost::mutex dataLock;
-		std::vector<Vehicle> data;
+		vector<Vehicle> data;
+		Vector<String> nameInfo;
+		Vector<int> posInfo;
+		Vector<String> getPointsNames(string name);
+		void setPointsNames();
 
 	public:
 		Data();
