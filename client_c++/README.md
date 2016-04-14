@@ -3,14 +3,15 @@ The purpose of the project is to develop a C++ library for requesting the positi
 
 **This project is in development mode so everything is not yet ready and doesn't yet work.**
 
-## 5 min quickstart
-This section will be written once the first version of the project will be done.
-
 ## How does it work?
 Well, well, well, so far in the project this is how we plan to develop.
 ![Class diagram](https://github.com/ernest-galbrun/ensem-sami/blob/client_c%2B%2B/client_c%2B%2B/design/class_diagram.png)
 
-The CortexClient file represents the main class, it provides all the callable methods. For started, it creates an SocketBoost's instance which will initiate a connection to the server. Then the SocketBoost's instance will perform a UDP request to the remote server every second in order to keep the data updated. On server's response, the datas are sent to the SocketParser which will translate the bytes encoded data into an understandable format inside of the Data class. Finally, the Data class has 2 two methods in order to ensure a secure access and update with semaphore.
+The CortexClient file is the main class, it provides all the callable methods for an outside project. This object creates a an instance of SocketBoost which will initiate a connection to the server.
+
+Then that instance will perform an UDP request to the remote server every second (default timeToWait value) in order to keep the data updated. When the remote server responds, it is necessary to transform the bytes into Vehicles. So the data are sent to the SocketParser and all the bytes translated into an understandable format inside of the Data class.
+
+Finally, the Data class has 2 two access methods in order to ensure a secure access and update.
 
 ## Dependencies
 - Boost.Asio - v 1.60
