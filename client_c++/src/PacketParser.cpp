@@ -88,7 +88,7 @@ void Packet_Parser::parsing_40bit_data(){
 
 }
 
-void Packet_Parser::parse_data(){
+void Packet_Parser::parse_name(){
 	vector<string> names;
 	vector<int> pos;
 
@@ -110,14 +110,14 @@ void Packet_Parser::parse_data(){
 		}
 		int i;
 		for(i = 0; i < points_number; i++){
-			names.push_back(name, pos);
+			names.push_back(parsing_name());
+			current_cursor++;
 		}
-		current_cursor++;
 	}
-	data->setPointsNames(names);
+	data->setPointsNames(names, pos);
 }
 
-void Packet_Parser::parse_name(){
+void Packet_Parser::parse_data(){
 	vector<Vehicle> vehicle_list;
 	for(;;){
 

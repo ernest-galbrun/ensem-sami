@@ -1,6 +1,5 @@
 #include <boost/asio.hpp>
 #include <boost/thread/thread.hpp>
-
 #include "PacketParser.h"
 #include "Data.h"
 
@@ -17,18 +16,18 @@ class SocketBoost {
 		char buf[BUFLEN];
 		char bufNames[BUFLEN];
 
-	    boost::asio::io_service io_service;
-	    udp::endpoint server_endpoint;
-	    udp::endpoint client_endpoint;
-	    udp::socket s;
+    boost::asio::io_service io_service;
+    udp::endpoint server_endpoint;
+    udp::endpoint client_endpoint;
+    udp::socket s;
 
 		udp::resolver resolver;
 
-	    boost::thread t;
+    boost::thread t;
 
-	    Packet_Parser parser;
+    Packet_Parser parser;
 
-	    int timeToWait;
+    int timeToWait;
 		string ip;
 		string port;
 
@@ -37,10 +36,10 @@ class SocketBoost {
 		void updateServerEndpoint();
 
 	public:
-    	SocketBoost(Data& data);
+    SocketBoost(Data& data);
 		void init(string ip, string port, int timeToWait);
-    	void start();
-    	void stop();
+    void start();
+    void stop();
 		void getPointsName();
 
 		void setIp(string ip);

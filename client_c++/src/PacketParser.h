@@ -16,16 +16,6 @@ class Packet_Parser {
 		vector<float> points_value;
 		Data * data;
 
-		typedef struct{
-			uint16_t type;
-			char * data;
-		} packet_raw;
-
-		typedef struct{
-			uint16_t type;
-			uint16_t unknown;
-		} packet_name;
-
 		int last_three_00_detect();//Position to the next char after detecting 00 00 00 hex. (VERIFIED)
 		char * parsing_name();//Get the name of the first object. Must be executed after checking you are at the beginning of the name.
 		int parsing_32bit_float(int triplet_number);//Collect 32bit float data position triplet

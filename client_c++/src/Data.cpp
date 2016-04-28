@@ -14,7 +14,7 @@
 using namespace std;
 using std::vector;
 
-Data::Data(CortexClient& client):client(client){}
+Data::Data(){}
 
 vector<string> Data::getVehiclesNames(){
   boost::lock_guard<boost::mutex> guard(dataLock);
@@ -90,11 +90,11 @@ void Data::setAll(vector<Vehicle> data) {
       break;
     }
   }
-  if(needToRefresh){
+  /*if(needToRefresh){
     client.updatePointsName();
   }
   for(i = 0; i< data.size(); i++){
     setPointsNames(data[i].getPointsNames(data[i].name));
-  }
+  }*/
 
 }
