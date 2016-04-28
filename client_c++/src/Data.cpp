@@ -9,21 +9,21 @@
 
 #include "Data.h"
 #include "Vehicle.h"
+#include "CortexClient.h"
 
 using namespace std;
 using std::vector;
 
-Data::Data(){}
+Data::Data(CortexClient& client):client(client){}
 
 vector<string> Data::getVehiclesNames(){
   boost::lock_guard<boost::mutex> guard(dataLock);
   int i;
   int size = data.size();
   vector<string> tempNames;
-  tempNames.resize(size);
+  tempNames.reserve(size);
 
   for(i = 0 ; i < size; i++){
-    cout << data[i].getName() << endl;
     tempNames.push_back(data[i].getName());
   }
   return tempNames;
@@ -33,18 +33,18 @@ Vehicle Data::getVehicle(string name) {
   boost::lock_guard<boost::mutex> guard(dataLock);
 
   for (int i = 0; i < data.size(); i++) {
-      if(data.at(i).getName().compare(name))
+      if(data.at(i).getName().compare(name) == 0)
           return data.at(i);
   }
 
   return Vehicle();
 }
 
-Vector<String> Data::getPointsNames(string name){
+vector<string> Data::getPointsNames(string name){
   int i;
+  vector<string> v;
   for(i = 0; i < posInfo.size(); i++){
     if(nameInfo[posInfo[i]].compare(name) == 0){
-      Vector<String> v;
       int maxSize;
       if(i == posInfo.size() - 1){
         maxSize = nameInfo.size();
@@ -60,14 +60,16 @@ Vector<String> Data::getPointsNames(string name){
       return v;
     }
   }
-  return null;
+  return v;
 }
 
-void Data::setPointsNames(){
-  int i;
-  for(i = 0; i < data.size(); i++){
-    data[i].setPointsNames(getPointsNames);
-  }
+void Data::setPointsNames(vector<string> nameInfo, vector<int> posInfo){
+  this->nameInfo.clear();
+  this->posInfo.clear();
+  this->data.reserve(nameInfo.size());
+  this->data.reserve(posInfo.size());
+  this->nameInfo = nameInfo;
+  this->posInfo = posInfo;
 }
 
 Data::Data(const Data & _data):dataLock(),data(_data.data){}
@@ -83,13 +85,16 @@ void Data::setAll(vector<Vehicle> data) {
   int i;
   bool needToRefresh = false;
   for(i = 0; i < data.size(); i++){
-    if(getPointsNames(data[i].getName()) == null || getPointsNames(data[i].getName()).size() != data[i].getPoints().size()){
+    if(getPointsNames(data[i].getName()).size() == 0 || getPointsNames(data[i].getName()).size() != data[i].getPoints().size()){
       needToRefresh = true;
       break;
     }
   }
   if(needToRefresh){
-    //Call refresh procedure
+    client.updatePointsName();
   }
-  setPointsNames();
+  for(i = 0; i< data.size(); i++){
+    setPointsNames(data[i].getPointsNames(data[i].name));
+  }
+
 }

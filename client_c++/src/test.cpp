@@ -3,26 +3,32 @@
 #include <stdlib.h>
 
 #include "CortexClient.h"
+#include "Vehicle.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    CortexClient *client = new CortexClient();
+    CortexClient client;
 
-    client->setIp("192.168.1.109");
-    client->setPort("1510");
-    client->setTimeToWait(1000);
-    client->init();
+    client.setIp("192.168.1.109");
+    client.setPort("1510");
+    client.setTimeToWait(200);
+    client.init();
 
 
 
     while(1){
       sleep(2);
-      vector<string> vehicleNames = client->getVehiclesNames();
+      vector<string> vehicleNames = client.getVehiclesNames();
+      Vehicle myVehicle = client.getXYPosition("markerset_robot8");
+      client.updatePointsName();
       int i;
-      for(i = 0; i < vehicleNames.size(); i++){
+      cout << "markerset_robot8" << endl;
+      myVehicle.print_data();
+      /*for(i = 0; i < myVehicle.getPoints(); i++){
         cout << vehicleNames[i] << endl;
-      }
+        markerset_robot8
+      }*/
     }
 
     return 0;

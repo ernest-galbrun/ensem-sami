@@ -88,14 +88,37 @@ void Packet_Parser::parsing_40bit_data(){
 
 }
 
+void Packet_Parser::parse_data(){
+	vector<string> names;
+	vector<int> pos;
 
-void Packet_Parser::parse(char * packet_to_analyze, int size){
+	for(;;){
 
-	this->packet_to_analyze = packet_to_analyze;
-	last_char = packet_to_analyze + size;
-	current_cursor = packet_to_analyze;
+		if(*current_cursor == 0x01){
+			break;
+		}
+		if(last_three_00_detect() == -1){
+			break;
+		}
+		names.push_back(parsing_name());
+		pos.push_back(names.size()-1);
+		current_cursor++;
+		int points_number = *(int*)current_cursor;
+		if(last_three_00_detect() == -1){
+			std::cerr << "ERROR THREE 00 DETECT" << std::endl;
+			break;
+		}
+		int i;
+		for(i = 0; i < points_number; i++){
+			names.push_back(name, pos);
+		}
+		current_cursor++;
+	}
+	data->setPointsNames(names);
+}
+
+void Packet_Parser::parse_name(){
 	vector<Vehicle> vehicle_list;
-
 	for(;;){
 
 		if(last_three_00_detect() == -1){
@@ -129,7 +152,23 @@ void Packet_Parser::parse(char * packet_to_analyze, int size){
 		}
 
 	}
-
 	data->setAll(vehicle_list);
+}
+
+void Packet_Parser::parse(char * packet_to_analyze, int size){
+
+	this->packet_to_analyze = packet_to_analyze;
+	last_char = packet_to_analyze + size;
+	current_cursor = packet_to_analyze;
+
+	if(size > 1 && this->packet_to_analyze[0] == 0x0B && this->packet_to_analyze[1] == 0x00){
+		parse_name();
+	}
+	else if(size > 1 && this->packet_to_analyze[0] == 0x05 && this->packet_to_analyze[1] == 0xE6){
+		parse_data();
+	}
+	else{
+		cerr << "UNSUPPORTED PACKET RECEIVED" << endl;
+	}
 
 }

@@ -47,9 +47,20 @@ string Vehicle::getName(){
 
 }
 
+void Vehicle::setPointsNames(vector<string> pointsNames){
+	int i;
+	for(i = 0; i < points.size(); i++){
+		if(i < pointsNames.size()){
+			points[i].name = pointsNames[i];
+		}
+		else{
+			points[i].name = "Unnamed point " + i;
+		}
+	}
+}
+
 vector<Point> Vehicle::getPoints(){
 
 	return points;
 
 }
-

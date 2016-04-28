@@ -18,6 +18,7 @@ class Vehicle {
 		Vehicle();
 		Vehicle(string name, vector<float> float_32_data);
 		void print_data();
+		void setPointsNames(vector<string> pointsNames);
 		vector<Point> getPoints();
 		string getName();
 

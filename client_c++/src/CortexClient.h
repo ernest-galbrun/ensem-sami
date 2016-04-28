@@ -23,6 +23,8 @@ class CortexClient {
     string getIp();
     void setIp(string ip);
 
+    void updatePointsName();
+
     string getPort();
     void setPort(string port);
 
