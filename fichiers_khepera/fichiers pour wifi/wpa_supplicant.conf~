@@ -1,0 +1,9 @@
+#shared WEP key connection
+network={
+         ssid="ENSEM-SAMI"
+         key_mgmt=NONE
+	 wep_key0=7a51516e79553948725954414d
+	 auth_alg=SHARED
+	 wep_tx_keyidx=0
+         priority=5
+}

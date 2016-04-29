@@ -1,0 +1,15 @@
+#!/bin/sh
+ipkg install classpath-common_0.96.1-r2_armv5te.ipk
+rm classpath-common_0.96.1-r2_armv5te.ipk
+#ipkg install kernel-module-xeno-nucleus_2.6.24-r1_gumstix-custom-verdex.ipk
+#ipkg install kernel-module-xeno-native_2.6.24-r1_gumstix-custom-verdex.ipk
+#ipkg install kernel-module-xeno-posix_2.6.24-r1_gumstix-custom-verdex.ipk
+#ipkg install kernel-module-xeno-rtdm_2.6.24-r1_gumstix-custom-verdex.ipk
+#ipkg install kernel-module-xeno-switchtest_2.6.24-r1_gumstix-custom-verdex.ipk
+#ipkg install kernel-module-xeno-timerbench_2.6.24-r1_gumstix-custom-verdex.ipk
+#ipkg install linux-uvc_1.3-r0_gumstix-custom-verdex.ipk
+ipkg install *.ipk
+rm *.ipk
+
+
+

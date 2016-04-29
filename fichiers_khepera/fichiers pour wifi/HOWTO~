@@ -1,0 +1,11 @@
+se connecter au robot avec minicom
+
+
+Copier (ctrl+A, S) les fichiers suivant après y avoir édité l'adresse ip du robot :
+interfaces dans /etc/network
+wireless dans /etsc/network/if-pre-up.d
+wpa_supplicant.conf dans /etc/wpa_supplicant
+
+(Attention : le transfert nécessite de supprimer le fichier déjà présent le cas échéant)
+
+Redémarrer le robot. La connection wifi doit fontionner.

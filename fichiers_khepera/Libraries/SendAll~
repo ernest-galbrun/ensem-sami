@@ -1,0 +1,19 @@
+#!/bin/bash
+IP=$1
+scp /home/chercheur/khepera3toolbox/Programs/codeblockstest/bin/Release/samitcpserver root@$IP:/etc/init.d/
+scp ./mjpg_streamer root@$IP:/usr/bin/
+echo ${IP:9}>./robotid
+ssh root@$IP mkdir /etc/khepera
+cp ./robotid root@$IP:/etc/khepera/
+scp ./S91tcpserver_SAMI root@$IP:/etc/rc5.d/
+scp ./*.so.* root@$IP:/usr/lib/
+scp ./*.so root@$IP:/usr/lib/
+for FILE in `ls | grep .ipk | grep -v 'jamvm\|classpath' `
+do
+scp ${FILE} root@$IP:/home/root/
+done
+scp ./ipkg_autoinstall root@$IP:/home/root/
+scp ./xenomai.tar root@$IP:/home/root/
+ssh root@$IP tar -xvf xenomai.tar -C /
+ssh root@$IP rm xenomai.tar
+

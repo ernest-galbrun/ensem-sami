@@ -1,0 +1,6 @@
+#!/bin/sh
+ifconfig eth0 up
+iwconfig eth0 essid ENSEM-SAMI
+ifconfig eth0 192.168.1.7
+route add default gw 192.168.1.254 eth0
+wpa_supplicant -c /etc/wpa_supplicant/wpa_supplicant.conf -i eth0 -Dwext -B

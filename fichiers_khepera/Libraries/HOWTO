@@ -1,0 +1,3 @@
+Lancer le script 'SendAll IP' où IP est l'adresse IP du robot sur lequel placer les fichiers requis.
+Puis se connecter au robot (ssh root@IP)
+et exécuter le script ipkg_autoinstall (supprimer le script après exécution)

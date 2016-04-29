@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="samitcpserver" />
+		<Option pch_mode="2" />
+		<Option compiler="armelfgcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/samitcpserver" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="armelfgcc" />
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/samitcpserver" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="armelfgcc" />
+			</Target>
+		</Build>
+		<Compiler>
+			<Add directory="/home/chercheur/khepera3toolbox/Modules" />
+			<Add directory="/home/chercheur/boost_1_50_0" />
+			<Add directory="/home/chercheur/development_k2_v1.0/libkorebot-1.19-kb1/build-korebot-2.6/include" />
+		</Compiler>
+		<Linker>
+			<Add option="-lstdc++" />
+			<Add option="-pthread" />
+			<Add library="/home/chercheur/khepera3toolbox/Modules/commandline/commandline.a" />
+			<Add library="/home/chercheur/khepera3toolbox/Modules/khepera3/khepera3.a" />
+			<Add library="/home/chercheur/khepera3toolbox/Modules/i2cal/i2cal.a" />
+			<Add library="boost_system" />
+			<Add library="boost_date_time" />
+			<Add library="boost_thread" />
+			<Add library="korebot" />
+			<Add library="boost_chrono" />
+			<Add directory="/home/chercheur/boost_1_50_0/stage_arm/lib" />
+			<Add directory="/home/chercheur/development_k2_v1.0/libkorebot-1.11-kb1/build-korebot-2.6/lib" />
+		</Linker>
+		<Unit filename="cyberglove_gripper.cpp" />
+		<Unit filename="cyberglove_gripper.h" />
+		<Unit filename="khepera3_gripper.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="khepera3_gripper.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="sami_tp1A.hpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
