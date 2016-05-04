@@ -20,10 +20,10 @@ int main(int argc, char* argv[]) {
     while(1){
       sleep(2);
       vector<string> vehicleNames = client.getVehiclesNames();
-      Vehicle myVehicle = client.getXYPosition("markerset_robot8");
+      Vehicle myVehicle = client.getXYPosition("markerset_robot3");
       client.updatePointsName();
       int i;
-      cout << "markerset_robot8" << endl;
+      cout << "markerset_robot3" << endl;
       myVehicle.print_data();
       /*for(i = 0; i < myVehicle.getPoints(); i++){
         cout << vehicleNames[i] << endl;

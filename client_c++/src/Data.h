@@ -1,16 +1,19 @@
+#ifndef DATA_H
+#define DATA_H
+
 #include <vector>
 #include "Vehicle.h"
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/lock_guard.hpp>
 
-#ifndef DATA_H
-#define DATA_H
+	class CortexClient;
 
 using namespace std;
 class Data
 {
 
 	private:
+		CortexClient & client;
 		boost::mutex dataLock;
 		vector<Vehicle> data;
 		vector<string> nameInfo;
@@ -18,7 +21,7 @@ class Data
 		vector<string> getPointsNames(string name);
 
 	public:
-		Data();
+		Data(CortexClient & client);
   	Data(const Data & data);
 		vector<string> getVehiclesNames();
 		Vehicle getVehicle(string name);

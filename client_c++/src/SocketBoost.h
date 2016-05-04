@@ -1,10 +1,11 @@
+#ifndef SOCKET_BOOST_H
+#define SOCKET_BOOST_H
+
 #include <boost/asio.hpp>
 #include <boost/thread/thread.hpp>
 #include "PacketParser.h"
 #include "Data.h"
 
-#ifndef SOCKET_BOOST_H
-#define SOCKET_BOOST_H
 
 #define BUFLEN 2048
 

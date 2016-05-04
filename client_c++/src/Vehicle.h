@@ -1,12 +1,10 @@
+#ifndef VEHICLE_H
+#define VEHICLE_H
+
 #include "Point.h"
 #include <stdio.h>
 #include<vector>
 #include<string>
-
-
-#ifndef VEHICLE_H
-#define VEHICLE_H
-
 
 using namespace std;
 

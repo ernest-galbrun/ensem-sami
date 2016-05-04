@@ -7,14 +7,13 @@
 #include <vector>
 #include <boost/thread/mutex.hpp>
 
-#include "Data.h"
 #include "Vehicle.h"
 #include "CortexClient.h"
 
 using namespace std;
 using std::vector;
 
-Data::Data(){}
+Data::Data(CortexClient & client):client(client){}
 
 vector<string> Data::getVehiclesNames(){
   boost::lock_guard<boost::mutex> guard(dataLock);
@@ -72,7 +71,7 @@ void Data::setPointsNames(vector<string> nameInfo, vector<int> posInfo){
   this->posInfo = posInfo;
 }
 
-Data::Data(const Data & _data):dataLock(),data(_data.data){}
+Data::Data(const Data & _data):dataLock(),data(_data.data),client(_data.client){}
 
 void Data::setAll(vector<Vehicle> data) {
   boost::lock_guard<boost::mutex> guard(dataLock);

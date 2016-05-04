@@ -92,7 +92,10 @@ void Packet_Parser::parse_name(){
 	vector<string> names;
 	vector<int> pos;
 
-	for(;;){
+	uint8_t number_vehicle = (uint8_t)*current_cursor;
+	int i;
+
+	for(i = 0; i < number_vehicle; i++){
 
 		if(*current_cursor == 0x01){
 			break;
@@ -119,33 +122,35 @@ void Packet_Parser::parse_name(){
 
 void Packet_Parser::parse_data(){
 	vector<Vehicle> vehicle_list;
-	for(;;){
+
+	packet_number = (uint32_t)*current_cursor; //Currently unused
+	current_cursor+=sizeof(uint32_t);
+
+	uint8_t number_vehicle = (uint8_t)*current_cursor;
+	cout << "Number_vehicle " << (int)number_vehicle << endl;
+	int i;
+
+	for(uint8_t i = 0; i < number_vehicle; i++){
 
 		if(last_three_00_detect() == -1){
-
+			std::cerr << "ERROR THREE 00 DETECT" << std::endl;
 			break;
-
 		}
-		if(*current_cursor == 0x01){
 
-			break;
-
-		}
 		string name = parsing_name();
 		current_cursor++;
 		int triplet_number = *(int*)current_cursor;
-		if(last_three_00_detect() == -1){
 
+		if(last_three_00_detect() == -1){
 			std::cerr << "ERROR THREE 00 DETECT" << std::endl;
 			break;
-
 		}
-		if(parsing_32bit_float(triplet_number) == -1){
 
+		if(parsing_32bit_float(triplet_number) == -1){
 			std::cerr << "ERROR PARSING 32 BIT FLOAT COORD" << std::endl;
 			break;
-
 		}
+
 		vehicle_list.push_back(Vehicle(name,points_value));
 		if(*(int *)current_cursor == 1){
 			parsing_40bit_data();
@@ -158,13 +163,14 @@ void Packet_Parser::parse_data(){
 void Packet_Parser::parse(char * packet_to_analyze, int size){
 
 	this->packet_to_analyze = packet_to_analyze;
+	current_header = (struct packet_header *)packet_to_analyze;
 	last_char = packet_to_analyze + size;
-	current_cursor = packet_to_analyze;
+	current_cursor = packet_to_analyze + sizeof(struct packet_header);
 
-	if(size > 1 && this->packet_to_analyze[0] == 0x0B && this->packet_to_analyze[1] == 0x00){
+	if(size > sizeof(struct packet_header) && current_header->packet_type == NAME_PACKET){
 		parse_name();
 	}
-	else if(size > 1 && this->packet_to_analyze[0] == 0x05 && this->packet_to_analyze[1] == 0xE6){
+	else if(size > sizeof(struct packet_header) && current_header->packet_type == DATA_PACKET){
 		parse_data();
 	}
 	else{

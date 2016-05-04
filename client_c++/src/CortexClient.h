@@ -1,9 +1,9 @@
+#ifndef CORTEX_H
+#define CORTEX_H
+
 #include "Vehicle.h"
 #include "SocketBoost.h"
 #include "Data.h"
-
-#ifndef CORTEX_H
-#define CORTEX_H
 
 class CortexClient {
 

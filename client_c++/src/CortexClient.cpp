@@ -7,7 +7,7 @@
 
 using namespace std;
 
-CortexClient::CortexClient():socket(data) {}
+CortexClient::CortexClient():socket(data),data(*this) {}
 
 void CortexClient::init() {
   socket.init(getIp(), getPort(), getTimeToWait());

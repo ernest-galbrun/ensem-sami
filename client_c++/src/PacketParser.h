@@ -1,15 +1,25 @@
+#ifndef PACKET_PARSER_H
+#define PACKET_PARSER_H
+
 #include<vector>
 #include"Data.h"
 
-#ifndef PACKET_PARSER_H
-#define PACKET_PARSER_H
+#define NAME_PACKET 11
+#define DATA_PACKET 13
+
 
 using namespace std;
 
 class Packet_Parser {
 
 	private:
+		struct packet_header{
+			uint16_t packet_type;
+			uint16_t packet_size;
+		};
 
+		struct packet_header * current_header;
+		uint64_t packet_number; 
 		char * packet_to_analyze;
 		char * last_char;
 		char * current_cursor;
