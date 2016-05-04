@@ -1,5 +1,5 @@
-test: ./src/test.cpp CortexClient SocketBoost PacketParser Vehicle Point Data
-	g++ -I /usr/lib/boost_1_60_0 -L /usr/lib/boost_1_60_0/lib -lboost_system -lboost_thread -lpthread ./src/test.cpp -o ./built/test ./built/CortexClient ./built/SocketBoost ./built/PacketParser ./built/Vehicle ./built/Point ./built/Data
+test: ./src/test.cpp CortexProtocol CortexClient SocketBoost PacketParser Vehicle Point  Data
+	g++ -I /usr/lib/boost_1_60_0 -L /usr/lib/boost_1_60_0/lib -lboost_system -lboost_thread -lpthread ./src/test.cpp -o ./built/test ./built/CortexProtocol ./built/CortexClient ./built/SocketBoost ./built/PacketParser ./built/Vehicle ./built/Point ./built/Data
 
 CortexClient: ./src/CortexClient.cpp
 	g++ -c -I /usr/lib/boost_1_60_0 ./src/CortexClient.cpp -o ./built/CortexClient
@@ -15,6 +15,9 @@ Vehicle: ./src/Vehicle.cpp
 
 Point: ./src/Point.cpp
 	g++ -c ./src/Point.cpp -o ./built/Point
+
+CortexProtocol: ./src/CortexProtocol.cpp
+	g++ -c ./src/CortexProtocol.cpp -o ./built/CortexProtocol
 
 Data: ./src/Data.cpp
 	g++ -c -I /usr/lib/boost_1_60_0 ./src/Data.cpp -o ./built/Data
