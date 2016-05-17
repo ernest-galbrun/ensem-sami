@@ -1,5 +1,5 @@
 test: ./src/test.cpp CortexClient SocketBoost PacketParser Vehicle Point Data
-	g++ -I /usr/lib/boost_1_60_0 -L /usr/lib/boost_1_60_0/lib -lboost_system -lboost_thread -lpthread ./src/test.cpp -o ./built/test ./built/CortexClient ./built/SocketBoost ./built/PacketParser ./built/Vehicle ./built/Point ./built/Data
+	g++ -I/usr/lib/x86_64-linux-gnu -L/usr/local/lib/ ./src/test.cpp -o ./built/test ./built/CortexClient ./built/SocketBoost ./built/PacketParser ./built/Vehicle ./built/Point ./built/Data -lpthread -lboost_thread -lboost_system
 
 CortexClient: ./src/CortexClient.cpp
 	g++ -c -I /usr/lib/boost_1_60_0 ./src/CortexClient.cpp -o ./built/CortexClient
