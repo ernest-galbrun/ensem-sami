@@ -19,9 +19,7 @@ Vehicle::Vehicle(string name, vector<float> float_32_data){
 
 	int i;
 	for(i = 0; i < size; i++ ){
-
 		points.push_back(Point(float_32_data[3*i],float_32_data[3*i+1],float_32_data[3*i+2]));
-
 	}
 
 }
@@ -33,6 +31,7 @@ void Vehicle::print_data(){
 
 	for(i = 0; i < points.size(); i++){
 
+		cout << "Point name : " << points[i].name << " ;";
 		cout << "Coord x : " << points[i].x  << " ;";
 		cout << "Coord y : " << points[i].y  << " ;";
 		cout << "Coord z : " << points[i].z  << " ;" << endl;

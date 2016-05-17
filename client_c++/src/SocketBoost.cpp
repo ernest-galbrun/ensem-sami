@@ -1,13 +1,4 @@
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <boost/asio.hpp>
-#include <boost/bind.hpp>
-#include <boost/thread/thread.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 #include "SocketBoost.h"
-#include "Data.h"
 
 #define SERVICE_IP "100.64.209.183"
 #define SERVICE_PORT "1510"
@@ -31,6 +22,13 @@ void SocketBoost::init(string ip, string port, int timeToWait) {
     setPort(port);
     setTimeToWait(timeToWait);
 	init();
+}
+
+void SocketBoost::init_name(string ip, string port, int timeToWait) {
+	setIp(ip);
+    setPort(port);
+    setTimeToWait(timeToWait);
+	getPointsName();
 }
 
 void SocketBoost::start() {

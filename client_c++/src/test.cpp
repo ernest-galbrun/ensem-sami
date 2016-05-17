@@ -25,10 +25,6 @@ int main(int argc, char* argv[]) {
       int i;
       cout << "markerset_robot3" << endl;
       myVehicle.print_data();
-      /*for(i = 0; i < myVehicle.getPoints(); i++){
-        cout << vehicleNames[i] << endl;
-        markerset_robot8
-      }*/
     }
 
     return 0;

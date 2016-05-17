@@ -7,7 +7,7 @@
 
 using namespace std;
 
-CortexClient::CortexClient():socket(data),data(*this) {}
+CortexClient::CortexClient():socket(data){}
 
 void CortexClient::init() {
   socket.init(getIp(), getPort(), getTimeToWait());
@@ -31,6 +31,7 @@ string CortexClient::getIp() {
 
 void CortexClient::setIp(string ip) {
   socket.setIp(ip);
+  data.setIp(ip);
 }
 
 string CortexClient::getPort() {
@@ -39,6 +40,7 @@ string CortexClient::getPort() {
 
 void CortexClient::setPort(string port) {
     socket.setPort(port);
+    data.setPort(port);
 }
 
 int CortexClient::getTimeToWait() {
@@ -51,4 +53,5 @@ void CortexClient::updatePointsName(){
 
 void CortexClient::setTimeToWait(int timeToWait) {
   socket.setTimeToWait(timeToWait);
+  data.setTimeToWait(timeToWait);
 }

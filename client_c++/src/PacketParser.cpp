@@ -8,6 +8,8 @@
 #include "PacketParser.h"
 #include "Vehicle.h"
 
+#define DEBUG 0
+
 using namespace std;
 
 Packet_Parser::Packet_Parser(Data & data):data(&data){}
@@ -34,11 +36,10 @@ int Packet_Parser::last_three_00_detect(){ //Position to the next char after det
 
 }
 
-char * Packet_Parser::parsing_name(){ //Get the name of the first object. Must be executed after checking you are at the beginning of the name.
+string Packet_Parser::parsing_name(){ //Get the name of the first object. Must be executed after checking you are at the beginning of the name.
 
 	char * limit_cursor = current_cursor;
 	int name_size = 1;
-
 
 	while(*limit_cursor != 0x00){
 
@@ -57,7 +58,7 @@ char * Packet_Parser::parsing_name(){ //Get the name of the first object. Must b
 
 	object_name[i] = 0x00; //Ending the char by \o
 
-	return object_name;
+	return string(object_name);
 
 }
 
@@ -89,32 +90,36 @@ void Packet_Parser::parsing_40bit_data(){
 }
 
 void Packet_Parser::parse_name(){
+	if(DEBUG == 1)cout << "UPDATING DATA NAME" << endl;
 	vector<string> names;
 	vector<int> pos;
+	int curr_pos;
 
 	uint8_t number_vehicle = (uint8_t)*current_cursor;
 	int i;
-
+	if(DEBUG == 1)cout << "NUMBER VEHICLE " << (int)number_vehicle << endl;
 	for(i = 0; i < number_vehicle; i++){
 
-		if(*current_cursor == 0x01){
-			break;
-		}
 		if(last_three_00_detect() == -1){
+			if(DEBUG == 1)std::cerr << "ERROR THREE 00 DETECT" << std::endl;
 			break;
 		}
 		names.push_back(parsing_name());
-		pos.push_back(names.size()-1);
+		curr_pos = names.size()-1;
+		pos.push_back(curr_pos);
 		current_cursor++;
-		int points_number = *(int*)current_cursor;
-		if(last_three_00_detect() == -1){
-			std::cerr << "ERROR THREE 00 DETECT" << std::endl;
-			break;
-		}
+		uint8_t points_number = *(uint8_t*)current_cursor;
+		if(DEBUG == 1)cout << "NUMBER POINTS " << (int)points_number << endl;
+		current_cursor+=4;
 		int i;
 		for(i = 0; i < points_number; i++){
 			names.push_back(parsing_name());
 			current_cursor++;
+		}
+		uint8_t squeleton_number = *(uint8_t*)current_cursor;
+		if(squeleton_number > 0){
+			current_cursor+=4;
+			parsing_name();
 		}
 	}
 	data->setPointsNames(names, pos);
@@ -127,13 +132,13 @@ void Packet_Parser::parse_data(){
 	current_cursor+=sizeof(uint32_t);
 
 	uint8_t number_vehicle = (uint8_t)*current_cursor;
-	cout << "Number_vehicle " << (int)number_vehicle << endl;
+	if(DEBUG == 1)cout << "Number_vehicle " << (int)number_vehicle << endl;
 	int i;
 
 	for(uint8_t i = 0; i < number_vehicle; i++){
 
 		if(last_three_00_detect() == -1){
-			std::cerr << "ERROR THREE 00 DETECT" << std::endl;
+			if(DEBUG == 1)std::cerr << "ERROR THREE 00 DETECT" << std::endl;
 			break;
 		}
 
@@ -142,12 +147,12 @@ void Packet_Parser::parse_data(){
 		int triplet_number = *(int*)current_cursor;
 
 		if(last_three_00_detect() == -1){
-			std::cerr << "ERROR THREE 00 DETECT" << std::endl;
+			if(DEBUG == 1)std::cerr << "ERROR THREE 00 DETECT" << std::endl;
 			break;
 		}
 
 		if(parsing_32bit_float(triplet_number) == -1){
-			std::cerr << "ERROR PARSING 32 BIT FLOAT COORD" << std::endl;
+			if(DEBUG == 1)std::cerr << "ERROR PARSING 32 BIT FLOAT COORD" << std::endl;
 			break;
 		}
 
@@ -174,7 +179,7 @@ void Packet_Parser::parse(char * packet_to_analyze, int size){
 		parse_data();
 	}
 	else{
-		cerr << "UNSUPPORTED PACKET RECEIVED" << endl;
+		if(DEBUG == 1)cerr << "UNSUPPORTED PACKET RECEIVED" << endl;
 	}
 
 }
