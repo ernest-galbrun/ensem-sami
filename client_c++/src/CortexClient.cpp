@@ -47,10 +47,6 @@ int CortexClient::getTimeToWait() {
   return socket.getTimeToWait();
 }
 
-void CortexClient::updatePointsName(){
-  socket.getPointsName();
-}
-
 void CortexClient::setTimeToWait(int timeToWait) {
   socket.setTimeToWait(timeToWait);
   data.setTimeToWait(timeToWait);

@@ -11,7 +11,7 @@
 
 #include "PacketParser.h"
 #include "Data.h"
-
+#include "CortexProtocol.h"
 
 #define BUFLEN 2048
 
@@ -25,18 +25,19 @@ class SocketBoost {
 		char buf[BUFLEN];
 		char bufNames[BUFLEN];
 
-    boost::asio::io_service io_service;
-    udp::endpoint server_endpoint;
-    udp::endpoint client_endpoint;
-    udp::socket s;
+	    boost::asio::io_service io_service;
+	    udp::endpoint server_endpoint;
+	    udp::endpoint client_endpoint;
+	    udp::socket s;
 
 		udp::resolver resolver;
 
-    boost::thread t;
+    	boost::thread t;
 
-    Packet_Parser parser;
+    	Packet_Parser parser;
+		CortexProtocol cortexProtocol;
 
-    int timeToWait;
+    	int timeToWait;
 		string ip;
 		string port;
 

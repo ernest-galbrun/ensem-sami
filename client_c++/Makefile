@@ -16,6 +16,9 @@ Vehicle: ./src/Vehicle.cpp
 Point: ./src/Point.cpp
 	g++ -c ./src/Point.cpp -o ./built/Point
 
+CortexProtocol: ./src/CortexProtocol.cpp
+	g++ -c ./src/CortexProtocol.cpp -o ./built/CortexProtocol
+
 Data: ./src/Data.cpp
 	g++ -c -I /usr/lib/boost_1_60_0 ./src/Data.cpp -o ./built/Data
 
