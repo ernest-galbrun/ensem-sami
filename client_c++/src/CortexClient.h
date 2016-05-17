@@ -15,15 +15,13 @@ class CortexClient {
     CortexClient();
 
     void init();
+    void stop();
+
     vector<string> getVehiclesNames();
     Vehicle getXYPosition(string name);
-    // getVehicleNames() : liste de tous les véhicules présents
-    void stop();
 
     string getIp();
     void setIp(string ip);
-
-    void updatePointsName();
 
     string getPort();
     void setPort(string port);
