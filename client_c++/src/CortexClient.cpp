@@ -11,6 +11,7 @@ CortexClient::CortexClient():socket(data){}
 
 void CortexClient::init() {
   socket.init(getIp(), getPort(), getTimeToWait());
+  sleep(1);//Wait for first values comming
 }
 
 vector<string> CortexClient::getVehiclesNames(){

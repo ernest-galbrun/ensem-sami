@@ -15,14 +15,20 @@ int main(int argc, char* argv[]) {
     client.setTimeToWait(200);
     client.init();
 
-
-
-    while(1){
-      sleep(2);
+    int input = 0;
+    sleep(3);
+    while(input != -1){
       vector<string> vehicleNames = client.getVehiclesNames();
-      Vehicle myVehicle = client.getXYPosition("markerset_robot7");
-      cout << "markerset_robot3" << endl;
-      myVehicle.print_data();
+      cout << "Select vehicle number or use -1 to exit" << endl;
+      for(int i = 1; i < (vehicleNames.size() +1); i++) {
+          cout << i << " " << vehicleNames[i -1] << "\n";
+      }
+
+      input = 0;
+      cout << "Vehicle number : ";
+      cin >> input;
+
+      if(input < vehicleNames.size())client.getXYPosition(vehicleNames[input-1]).print_data();
     }
 
     return 0;
