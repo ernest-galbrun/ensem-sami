@@ -28,7 +28,7 @@ void SocketBoost::init_name(string ip, string port, int timeToWait) {
 
 void SocketBoost::start() {
     char* msg = (char*)malloc(512*sizeof(char));
-    int sizeMsg = cortexProtocol.generatePacket(NULL, REGULAR_MESSAGE, msg);
+    int sizeMsg = cortexProtocol.generatePacket(NULL, 0, REGULAR_MESSAGE, msg);
 
     while(1) {
        sendReceive(msg, sizeMsg, buf, BUFLEN);
@@ -48,7 +48,7 @@ void SocketBoost::stop() {
 
 void SocketBoost::getPointsName() {
   char* msg = (char*)malloc(512*sizeof(char));
-  int sizeMsg = cortexProtocol.generatePacket(NULL, POINTS_NAME_MESSAGE, msg);
+  int sizeMsg = cortexProtocol.generatePacket(NULL, 0, POINTS_NAME_MESSAGE, msg);
 
 	sendReceive(msg, sizeMsg, bufNames, BUFLEN);
 	parser.parse(bufNames, BUFLEN);

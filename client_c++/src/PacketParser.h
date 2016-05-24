@@ -29,7 +29,7 @@ class Packet_Parser {
 		int last_three_00_detect();//Position to the next char after detecting 00 00 00 hex. (VERIFIED)
 		string parsing_name();//Get the name of the first object. Must be executed after checking you are at the beginning of the name.
 		int parsing_32bit_float(int triplet_number);//Collect 32bit float data position triplet
-		void parsing_40bit_data();
+		void parsing_64bit_data();
 		void parse_name();
 		void parse_data();
 

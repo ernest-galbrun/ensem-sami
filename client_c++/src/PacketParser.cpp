@@ -42,23 +42,18 @@ string Packet_Parser::parsing_name(){ //Get the name of the first object. Must b
 	int name_size = 1;
 
 	while(*limit_cursor != 0x00){
-
 		limit_cursor++;
 		name_size++;
-
 	}
 
-	char * object_name = (char *)malloc(sizeof(char) * name_size);
+	string object_name;
 	int i;
 	for(i = 0; i < name_size - 1; i++){ //Copy the object name from the packet to the variable
-
-		object_name[i] = *current_cursor;
+		object_name.push_back(*current_cursor);
 		current_cursor++;
 	}
 
-	object_name[i] = 0x00; //Ending the char by \o
-
-	return string(object_name);
+	return object_name;
 
 }
 
@@ -83,9 +78,15 @@ int Packet_Parser::parsing_32bit_float(int triplet_number){ //Collect 32bit floa
 	return 0;
 }
 
-void Packet_Parser::parsing_40bit_data(){
-
-	current_cursor+=59; //Arbritrary Jump
+void Packet_Parser::parsing_64bit_data(){
+	double * current_double = (double *)current_cursor;
+	int i;
+	for(i = 0; i < 7; i++){
+		//cout << "Double: " << *current_double << endl;
+		current_double++;
+	}
+	current_cursor = (char *)current_double;
+	//current_cursor+=59; //Arbritrary Jump
 
 }
 
@@ -157,8 +158,9 @@ void Packet_Parser::parse_data(){
 		}
 
 		vehicle_list.push_back(Vehicle(name,points_value));
-		if(*(int *)current_cursor == 1){
-			parsing_40bit_data();
+		if(*(int *)current_cursor == 1){ //Should be a for loop into bones 
+			current_cursor += 4;
+			parsing_64bit_data();
 		}
 
 	}
